@@ -7,10 +7,11 @@ Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Bac
 
 ## Status
 - ✅ Universe (`src/data/universe.json`, `npm run universe` + `node scripts/pyth-onchain.mjs`), fair value, cross-issuer quotes, board `/`, ticker `/s/[symbol]`, tape `/tape`, wallet connect, `/api/v1/quote`, `/api/v1/universe`, snapshot cron.
-- ✅ Guard program source written (`programs/fair_fill_guard/src/lib.rs`), not yet built/deployed.
-- ⬜ Execution (`src/lib/guard.ts` + `TradePanel`): Jupiter `swap-instructions` composed with snapshot/verify; Ultra fallback for RFQ-only (Ondo) and non-sponsored names.
-- ⬜ Program build/deploy via Solana Playground (see `docs/PROGRAM.md`), IDL into `src/data/`.
-- ⬜ Neon `DATABASE_URL` for tape history; Vercel deploy; README "what's real" table; demo video during US market hours (9:30–16:00 ET).
+- ✅ Guard program source written (`programs/fair_fill_guard/src/lib.rs`), not yet built/deployed. **Must apply `docs/PROGRAM_PATCH.md` first** (Receipt PDA was seeded by slot, which a client can't know; now a client nonce).
+- ✅ Execution: `POST /api/v1/swap` (`src/lib/execute.ts`) returns one unsigned tx in mode `guarded` (snapshot→swap→verify, when `NEXT_PUBLIC_GUARD_PROGRAM_ID` is set) / `plain` (Jupiter swap, pre-sign fair-value check) / `ultra` (Ondo RFQ, non-sponsored names). `TradePanel` signs, confirms, records to `fills`, shows fill vs fair + Solscan. Encoders in `src/lib/guard.ts` need no IDL.
+- ⬜ First real fills: fund demo wallet (`scripts/generate-demo-wallet.mjs` → `DEMO_WALLET_SECRET_KEY`), run `scripts/test-swap.mjs` per issuer, list signatures in README.
+- ⬜ Program build/deploy via Solana Playground (see `docs/PROGRAM.md`), set `NEXT_PUBLIC_GUARD_PROGRAM_ID`.
+- ⬜ Neon `DATABASE_URL` for tape + fill history; Vercel deploy; README "what's real" table; demo video during US market hours (9:30–16:00 ET).
 
 ## Hard constraints of this environment
 - Bandwidth ~150 KB/s. **Use `npm` (never pnpm); keep dependencies minimal.** New packages take minutes; think before adding.

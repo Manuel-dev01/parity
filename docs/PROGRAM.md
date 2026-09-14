@@ -9,7 +9,7 @@ This Windows machine has no Solana CLI / Anchor / cargo, and the link is ~150 KB
 ## Steps (Tuesday)
 
 1. Open https://beta.solpg.io → **Create a new project → Anchor (Rust)**, name `fair_fill_guard`.
-2. Replace `src/lib.rs` with `programs/fair_fill_guard/src/lib.rs`. In `Cargo.toml` (Playground's) add:
+2. Replace `src/lib.rs` with `programs/fair_fill_guard/src/lib.rs` **and apply `docs/PROGRAM_PATCH.md`** (nonce-seeded Receipt; the client is already written against it). In `Cargo.toml` (Playground's) add:
    ```toml
    anchor-spl = { version = "0.31.1", features = ["token_2022"] }
    pyth-solana-receiver-sdk = "0.6"
@@ -24,14 +24,16 @@ This Windows machine has no Solana CLI / Anchor / cargo, and the link is ~150 KB
 
 ## Client composition (Monday/Tuesday, `src/lib/guard.ts`)
 
+Implemented in `src/lib/execute.ts` (`buildSwap`) with encoders in `src/lib/guard.ts`:
+
 ```
 tx = [
-  computeBudget (from Jupiter swap-instructions),
-  createATA(out_token) if missing,
-  fair_fill_guard.snapshot(owner, in_token=USDC ATA, out_token=stock ATA),
-  ...jupiter setupInstructions, swapInstruction, cleanupInstruction,
-  fair_fill_guard.verify(owner, in_token, out_token, in_mint, out_mint, price_update=<sponsored Pyth account>, receipt PDA, args),
-]  + Jupiter's address lookup tables
+  ...jupiter computeBudgetInstructions,
+  ...jupiter setupInstructions (creates the stock ATA — must precede snapshot so it can be read),
+  fair_fill_guard.snapshot(owner, in_token=USDC ATA, out_token=stock ATA, nonce),
+  jupiter swapInstruction, ...otherInstructions, cleanupInstruction?,
+  fair_fill_guard.verify(owner, in_token, out_token, in_mint, out_mint, price_update=<sponsored Pyth account>, receipt PDA(nonce), args),
+]  + Jupiter's address lookup tables, compiled to a v0 message
 ```
 
 - `price_update` = `fair.onchainAccount` from `/api/v1/quote` (Pyth push-oracle PDA, shard 1 for the 16 sponsored majors).
