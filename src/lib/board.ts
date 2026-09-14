@@ -1,0 +1,71 @@
+import { multiIssuer } from "./universe";
+import { jupiterPrices, type JupPrice } from "./fairvalue";
+import type { IssuerId, Underlying } from "./types";
+
+export interface BoardPrint {
+  issuer: IssuerId;
+  symbol: string;
+  mint: string;
+  px: number | null;
+  bps: number | null;
+  liquidity: number;
+}
+
+export interface BoardRow {
+  symbol: string;
+  name: string;
+  ref: number | null;
+  refAt: string | null;
+  prints: BoardPrint[];
+  /** richest print minus cheapest print across issuers, in bps of the cheapest */
+  spreadBps: number | null;
+  cheapest: IssuerId | null;
+  richest: IssuerId | null;
+  liquidity: number;
+}
+
+/**
+ * Cheap, keyless live board: one Jupiter Price v3 batch per 50 mints gives the last
+ * on-chain print per issuer token and the underlying stock reference price.
+ */
+export async function liveBoard(limit = 30, minIssuers = 2): Promise<BoardRow[]> {
+  const list: Underlying[] = multiIssuer(minIssuers).slice(0, limit);
+  const mints = list.flatMap((u) => u.tokens.map((t) => t.mint));
+  const prices: Record<string, JupPrice> = {};
+  for (let i = 0; i < mints.length; i += 50) {
+    Object.assign(prices, await jupiterPrices(mints.slice(i, i + 50)).catch(() => ({})));
+  }
+  return list
+    .map((u) => {
+      const stock = u.tokens.map((t) => prices[t.mint]?.stockData).find(Boolean) ?? null;
+      const ref = stock?.price ?? null;
+      const prints: BoardPrint[] = u.tokens.map((t) => {
+        const px = prices[t.mint]?.usdPrice ?? null;
+        return {
+          issuer: t.issuer,
+          symbol: t.symbol,
+          mint: t.mint,
+          px,
+          bps: px != null && ref ? Math.round(((px - ref) / ref) * 1e4) : null,
+          liquidity: Math.round(prices[t.mint]?.liquidity ?? t.liquidity),
+        };
+      });
+      // Only prints with real pool depth count toward the spread; RFQ-only tokens are
+      // priced properly on the ticker page, where we quote at size.
+      const priced = prints.filter((p) => p.px != null && p.liquidity > 1000);
+      const lo = priced.length ? priced.reduce((a, b) => ((b.px as number) < (a.px as number) ? b : a)) : null;
+      const hi = priced.length ? priced.reduce((a, b) => ((b.px as number) > (a.px as number) ? b : a)) : null;
+      return {
+        symbol: u.symbol,
+        name: u.name,
+        ref,
+        refAt: stock?.updatedAt ?? null,
+        prints,
+        spreadBps: lo && hi && lo !== hi ? Math.round((((hi.px as number) - (lo.px as number)) / (lo.px as number)) * 1e4) : null,
+        cheapest: lo?.issuer ?? null,
+        richest: hi?.issuer ?? null,
+        liquidity: prints.reduce((s, p) => s + p.liquidity, 0),
+      };
+    })
+    .sort((a, b) => (b.spreadBps ?? -1) - (a.spreadBps ?? -1));
+}
