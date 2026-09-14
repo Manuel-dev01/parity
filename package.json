@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "universe": "node scripts/build-universe.mjs"
+    "universe": "node scripts/build-universe.mjs && node scripts/pyth-onchain.mjs"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.4",

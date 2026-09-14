@@ -54,7 +54,15 @@
     "us": "152244dc24665ca7dd3f257b8f442dc449b6346f48235b7b229268cb770dda2d",
     "index": "27e65b49e4572601374c5bde284411c20f49eb74845cc7f7801f9d27fba2b4b2"
    },
-   "liquidity": 2292845
+   "liquidity": 2292845,
+   "pythOnchain": {
+    "us": {
+     "address": "4eMZuk9khRP5uMnk5f1i1uA8joNMcHtBwDGCstW65bai",
+     "shard": 1,
+     "ageSec": 11,
+     "price": 926.4909500000001
+    }
+   }
   },
   {
    "symbol": "SKHY",
@@ -219,7 +227,15 @@
     "us": "e1e80251e5f5184f2195008382538e847fafc36f751896889dd3d1b1f6111f09",
     "index": "109b49ea13e04334cb570ba3b0fb1a18d500d8eeaf32ad1987816eb4bb26d8f3"
    },
-   "liquidity": 897058
+   "liquidity": 897058,
+   "pythOnchain": {
+    "us": {
+     "address": "KDQSrjsiur6YxyuY4veB7Gd13MKhwNoMZTQWvx1c93S",
+     "shard": 1,
+     "ageSec": 3,
+     "price": 131.10968
+    }
+   }
   },
   {
    "symbol": "HOOD",
@@ -274,7 +290,15 @@
     "us": "306736a4035846ba15a3496eed57225b64cc19230a50d14f3ed20fd7219b7849",
     "index": "4a4f96283d157d08b7b8aa596363f7978587d4fa59a77dcb90f84af7d870a630"
    },
-   "liquidity": 494874
+   "liquidity": 494874,
+   "pythOnchain": {
+    "us": {
+     "address": "5tZizzQN776ZWTibPJKecjk1DkTSDHu47dXM3SxR5D5i",
+     "shard": 0,
+     "ageSec": 2645600,
+     "price": 95.53625000000001
+    }
+   }
   },
   {
    "symbol": "SNDK",
@@ -329,7 +353,15 @@
     "us": "c86a1f20cd7d5d07932baea30bcd8e479b775c4f51f82526bf1de6dc79fa3f76",
     "index": "9a972ccd0df577006dda1679dc39e00f370e330c318f21bdcb34e83fa5a70002"
    },
-   "liquidity": 335684
+   "liquidity": 335684,
+   "pythOnchain": {
+    "us": {
+     "address": "GfKS3Bk6MBMAM4ZpxYSJZ1f2pfSHmVmycYMH9DmzCZ8a",
+     "shard": 1,
+     "ageSec": 9,
+     "price": 1550.53995
+    }
+   }
   },
   {
    "symbol": "MRNA",
@@ -604,7 +636,15 @@
     "us": "c1751e085ee292b8b3b9dd122a135614485a201c35dfc653553f0e28c1baf3ff",
     "index": "cecbc86ad1adfa72b78b573375dc36eb4664e096252c0a3e55e625ea838685f1"
    },
-   "liquidity": 79853
+   "liquidity": 79853,
+   "pythOnchain": {
+    "us": {
+     "address": "FK3GQy2PjQ18G2yPEV8eTpK8GFPoTFkVYhFcWmDc3rRG",
+     "shard": 1,
+     "ageSec": 14,
+     "price": 97.07000000000001
+    }
+   }
   },
   {
    "symbol": "BOT",
@@ -769,7 +809,15 @@
     "us": "70dcf5fd56553d0023693e4b590336a8c9bcfd0d98dd9f093b1f697820d98325",
     "index": null
    },
-   "liquidity": 56509
+   "liquidity": 56509,
+   "pythOnchain": {
+    "us": {
+     "address": "AmhgzXb37V3YegqdXoDTGL5QVhSV83dESyadboJwc7sQ",
+     "shard": 0,
+     "ageSec": 11292900,
+     "price": 991.0108500000001
+    }
+   }
   },
   {
    "symbol": "IBM",
@@ -879,7 +927,15 @@
     "us": "2132cbc333161e94b91da745ed73b1450410fdc870f2235bf628c28da358b652",
     "index": null
    },
-   "liquidity": 31292
+   "liquidity": 31292,
+   "pythOnchain": {
+    "us": {
+     "address": "8fnWtZJsXpe8T6xRxb5qNLWrMYGQxphw4mMyPtAkPmq6",
+     "shard": 0,
+     "ageSec": 10168768,
+     "price": 22.611150000000002
+    }
+   }
   },
   {
    "symbol": "QUBT",
@@ -1415,7 +1471,15 @@
     "us": "19e09bb805456ada3979a7d1cbb4b6d63babc3a0f8e8a9509f68afa5c4c11cd5",
     "index": null
    },
-   "liquidity": 4073213
+   "liquidity": 4073213,
+   "pythOnchain": {
+    "us": {
+     "address": "CRDaGwcVnKdRNRtx6fjHtvrBgKM5U55AhbqBWhtPMDA",
+     "shard": 1,
+     "ageSec": 11,
+     "price": 759.2550000000001
+    }
+   }
   },
   {
    "symbol": "CRCL",
@@ -1456,7 +1520,15 @@
     "us": "92b8527aabe59ea2b12230f7b532769b133ffb118dfbd48ff676f14b273f1365",
     "index": "59751961c9aa1943ece2d3e9060070d8d665a99a28642e4b10fcae972c10b833"
    },
-   "liquidity": 2006898
+   "liquidity": 2006898,
+   "pythOnchain": {
+    "us": {
+     "address": "7zWGncBP5aGTDmEK7Ej4GYwGc2kXFHZJZFxmq28ocCaG",
+     "shard": 0,
+     "ageSec": 1623534,
+     "price": 88.77502000000001
+    }
+   }
   },
   {
    "symbol": "NVDA",
@@ -1497,7 +1569,15 @@
     "us": "b1073854ed24cbc755dc527418f52b7d271f6cc967bbf8d8129112b18860a593",
     "index": "a470c4ac46f44b547b2cba52338f311fb642b79375ce5f0cfd5cb5b99227b852"
    },
-   "liquidity": 1829064
+   "liquidity": 1829064,
+   "pythOnchain": {
+    "us": {
+     "address": "5VETJ8h3p4JrESYrzhjTDAWPEjDjfcnduqe9CjxgqBNd",
+     "shard": 1,
+     "ageSec": 5,
+     "price": 211.77004000000002
+    }
+   }
   },
   {
    "symbol": "QQQ",
@@ -1538,7 +1618,15 @@
     "us": "9695e2b96ea7b3859da9ed25b7a46a920a776e2fdae19a7bcfdf2b219230452d",
     "index": null
    },
-   "liquidity": 1714911
+   "liquidity": 1714911,
+   "pythOnchain": {
+    "us": {
+     "address": "TWtoAxPvaXy46uy3Vr4UwFxmWdgyMjpZAJSFxV4RGbF",
+     "shard": 1,
+     "ageSec": 8,
+     "price": 703.8900000000001
+    }
+   }
   },
   {
    "symbol": "TSLA",
@@ -1579,7 +1667,15 @@
     "us": "16dad506d7db8da01c87581c87ca897a012a153557d4d578c3b9c9e1bc0632f1",
     "index": "e6da44bff5b8b06897a3739dd331b440d6662595bb862e37046892c568ae3fc0"
    },
-   "liquidity": 1253098
+   "liquidity": 1253098,
+   "pythOnchain": {
+    "us": {
+     "address": "FQB8c4zB8Emrp9W8bmyk6GanCLq4aRytHYPDAnaEpq9z",
+     "shard": 1,
+     "ageSec": 9,
+     "price": 359.69609
+    }
+   }
   },
   {
    "symbol": "AAPL",
@@ -1620,7 +1716,15 @@
     "us": "49f6b65cb1de6b10eaf75e7c03ca029c306d0357e91b5311b175084a5ad55688",
     "index": "aaba35e6f33fb973bb2201d48a79ae24795affa6ba8bd50a93dcaf7da0030f36"
    },
-   "liquidity": 808929
+   "liquidity": 808929,
+   "pythOnchain": {
+    "us": {
+     "address": "D9uk39pqZMcnmtPP9WeC8cREUpKZmyXLga9mSQ79SphW",
+     "shard": 1,
+     "ageSec": 3,
+     "price": 332.67497000000003
+    }
+   }
   },
   {
    "symbol": "MSFT",
@@ -1661,7 +1765,15 @@
     "us": "d0ca23c1cc005e004ccf1db5bf76aeb6a49218f43dac3d4b275e92de12ded4d1",
     "index": "d9144b30a3a162a2748d384dc53387571f3ec77b9edfe31739349396ed67a63a"
    },
-   "liquidity": 438615
+   "liquidity": 438615,
+   "pythOnchain": {
+    "us": {
+     "address": "EKhrgXYwqsjgxF71Gxznui1zdoeqgxJzzPzfefEmm5un",
+     "shard": 1,
+     "ageSec": 8,
+     "price": 495.66495000000003
+    }
+   }
   },
   {
    "symbol": "STRC",
@@ -1702,7 +1814,15 @@
     "us": "27c7bbc9755d847f7fc63620c2edcc6a91d2c0c67a28c7999907b59c505b3c17",
     "index": null
    },
-   "liquidity": 389363
+   "liquidity": 389363,
+   "pythOnchain": {
+    "us": {
+     "address": "GcEfvXPFyoWLfZeKCoA2gRwLCQds49anRfVzVRcU9cai",
+     "shard": 0,
+     "ageSec": 2645603,
+     "price": 94.76764000000001
+    }
+   }
   },
   {
    "symbol": "MCD",
@@ -1743,7 +1863,15 @@
     "us": "d3178156b7c0f6ce10d6da7d347952a672467b51708baaf1a57ffe1fb005824a",
     "index": null
    },
-   "liquidity": 354998
+   "liquidity": 354998,
+   "pythOnchain": {
+    "us": {
+     "address": "4gRz4DRNxWauuA6nWVw286qWdn7yzeMFupqXakAG2Bza",
+     "shard": 0,
+     "ageSec": 2645600,
+     "price": 272.83327
+    }
+   }
   },
   {
    "symbol": "GOOGL",
@@ -1784,7 +1912,15 @@
     "us": "5a48c03e9b9cb337801073ed9d166817473697efff0d138874e0f6a33d6d5aa6",
     "index": "ad519718d387de4f0d7d29ea16a3730ce42e49c59fef6fba6fc9bac477645f6f"
    },
-   "liquidity": 353425
+   "liquidity": 353425,
+   "pythOnchain": {
+    "us": {
+     "address": "7aUtbtC3o3GVwRWvaDp5fxKjBq53QL3UrVmDzDgeNo8M",
+     "shard": 1,
+     "ageSec": 9,
+     "price": 339.65500000000003
+    }
+   }
   },
   {
    "symbol": "COIN",
@@ -1825,7 +1961,15 @@
     "us": "fee33f2a978bf32dd6b662b65ba8083c6773b494f8401194ec1870c640860245",
     "index": "49387483ff50427bf0ff5928082b0cf16331421067c59f4c582a07aa117db1ac"
    },
-   "liquidity": 339259
+   "liquidity": 339259,
+   "pythOnchain": {
+    "us": {
+     "address": "91JXaWGHr57awfqhXQP2TxrkLX6CpvtBaaRjz1PEQqXn",
+     "shard": 0,
+     "ageSec": 2645599,
+     "price": 148.44500000000002
+    }
+   }
   },
   {
    "symbol": "DKNG",
@@ -1907,7 +2051,15 @@
     "us": "6f9cd89ef1b7fd39f667101a91ad578b6c6ace4579d5f7f285a4b06aa4504be6",
     "index": null
    },
-   "liquidity": 290860
+   "liquidity": 290860,
+   "pythOnchain": {
+    "us": {
+     "address": "6AvVgYACju3WKAMSMZibU8UtDeQhF6si9f1vyrdthiJp",
+     "shard": 0,
+     "ageSec": 2645599,
+     "price": 18.645000000000003
+    }
+   }
   },
   {
    "symbol": "GLD",
@@ -1948,7 +2100,15 @@
     "us": "e190f467043db04548200354889dfe0d9d314c08b8d4e62fabf4d5a3140fecca",
     "index": null
    },
-   "liquidity": 284695
+   "liquidity": 284695,
+   "pythOnchain": {
+    "us": {
+     "address": "4ZVfYJzpww4uQ6qaVnonfKVgPeZ6kHZ3mE8W3hK7eiFf",
+     "shard": 0,
+     "ageSec": 2387021,
+     "price": 405.46419000000003
+    }
+   }
   },
   {
    "symbol": "META",
@@ -1989,7 +2149,15 @@
     "us": "78a3e3b8e676a8f73c439f5d749737034b139bbbe899ba5775216fba596607fe",
     "index": "2cc0c022f7f37920485a5947f3cea8633783b6cb7fff6d94ee52f48687b7783d"
    },
-   "liquidity": 229501
+   "liquidity": 229501,
+   "pythOnchain": {
+    "us": {
+     "address": "6NJCSCAWy1yB1jEGhPbsMTrT4WH13o8BGD5wgPbBtdY9",
+     "shard": 1,
+     "ageSec": 11,
+     "price": 650.67002
+    }
+   }
   },
   {
    "symbol": "AMZN",
@@ -2030,7 +2198,15 @@
     "us": "b5d0e0fa58a1f8b81498ae670ce93c872d14434b72c364885d4fa1b257cbb07a",
     "index": "329635cf9e705e01ed2d842fafbb6c426d7e5630e75847740d89957222fd68b8"
    },
-   "liquidity": 227074
+   "liquidity": 227074,
+   "pythOnchain": {
+    "us": {
+     "address": "4eT5d4SJ7GjD8HMpMysSNoPV7RBVTBGzoSEkynmPLMPS",
+     "shard": 1,
+     "ageSec": 5,
+     "price": 254.28005000000002
+    }
+   }
   },
   {
    "symbol": "TTWO",
@@ -2112,7 +2288,15 @@
     "us": "11a70634863ddffb71f2b11f2cff29f73f3db8f6d0b78c49f2b5f4ad36e885f0",
     "index": "52c7c6b70032b7151c8d0febf684f14318e1e13315976e171267639955400bb9"
    },
-   "liquidity": 178663
+   "liquidity": 178663,
+   "pythOnchain": {
+    "us": {
+     "address": "7RP45Z6dsTrHQakMg7xha1RLZGk1x2pVViBjpUMpzdBK",
+     "shard": 0,
+     "ageSec": 6360802,
+     "price": 129.32246
+    }
+   }
   },
   {
    "symbol": "DJT",
@@ -2235,7 +2419,15 @@
     "us": "9aa471dccea36b90703325225ac76189baf7e0cc286b8843de1de4f31f9caa7d",
     "index": null
    },
-   "liquidity": 118191
+   "liquidity": 118191,
+   "pythOnchain": {
+    "us": {
+     "address": "58TvF41sXqh2bYD5hzgVH25Ns3tLzx6Qxy39tkvhUHCa",
+     "shard": 0,
+     "ageSec": 2645603,
+     "price": 87.69505000000001
+    }
+   }
   },
   {
    "symbol": "AMC",
@@ -2358,7 +2550,15 @@
     "us": "d0c9aef79b28308b256db7742a0a9b08aaa5009db67a52ea7fa30ed6853f243b",
     "index": null
    },
-   "liquidity": 50615
+   "liquidity": 50615,
+   "pythOnchain": {
+    "us": {
+     "address": "2jgfs5FsDQkdCrgcCKHEd7p9KNtKAyWznMSyu21WbFgS",
+     "shard": 0,
+     "ageSec": 10181902,
+     "price": 406.74501000000004
+    }
+   }
   },
   {
    "symbol": "SLV",
@@ -2806,7 +3006,15 @@
     "us": "4a1a12070192e8db9a89ac235bb032342a390dde39389b4ee1ba8e41e7eae5d8",
     "index": null
    },
-   "liquidity": 17064
+   "liquidity": 17064,
+   "pythOnchain": {
+    "us": {
+     "address": "8EV2DC3WqFBYffRekh48haP9dRm6HpXwXBYKgjUqM42M",
+     "shard": 0,
+     "ageSec": 2645601,
+     "price": 160.01999
+    }
+   }
   },
   {
    "symbol": "AMD",
@@ -2847,7 +3055,15 @@
     "us": "3622e381dbca2efd1859253763b1adc63f7f9abb8e76da1aa8e638a57ccde93e",
     "index": null
    },
-   "liquidity": 13312
+   "liquidity": 13312,
+   "pythOnchain": {
+    "us": {
+     "address": "4est8NR419iGFnMvEVczBW1cCMstB6N2xK54TaCanCN1",
+     "shard": 1,
+     "ageSec": 8,
+     "price": 488.19000000000005
+    }
+   }
   },
   {
    "symbol": "UNH",
@@ -2888,7 +3104,15 @@
     "us": "05380f8817eb1316c0b35ac19c3caa92c9aa9ea6be1555986c46dce97fed6afd",
     "index": null
    },
-   "liquidity": 9707
+   "liquidity": 9707,
+   "pythOnchain": {
+    "us": {
+     "address": "HBCUey2zP688M1XcH5CXj5sr7P9YqNDb6ERTnjDziKLW",
+     "shard": 0,
+     "ageSec": 10168768,
+     "price": 392.83698000000004
+    }
+   }
   },
   {
    "symbol": "NVO",
@@ -2929,7 +3153,15 @@
     "us": "8dde322496e031d942b9eee8ca769d618cd2e69b18196644369379f5a1e7c23d",
     "index": null
    },
-   "liquidity": 8911
+   "liquidity": 8911,
+   "pythOnchain": {
+    "us": {
+     "address": "96q5heUgagmBhXZLBYCk3dvbhoPewy7tLbdVsJvp1Jq",
+     "shard": 0,
+     "ageSec": 11292891,
+     "price": 45.92631
+    }
+   }
   },
   {
    "symbol": "NFLX",
@@ -3011,7 +3243,15 @@
     "us": "be230eddb16aad5ad273a85e581e74eb615ebf67d378f885768d9b047df0c843",
     "index": null
    },
-   "liquidity": 5364
+   "liquidity": 5364,
+   "pythOnchain": {
+    "us": {
+     "address": "48poNkAU9LTF7ovyfXfmxRfzAEyjJpCVvAbvPuSWUvNY",
+     "shard": 0,
+     "ageSec": 2645600,
+     "price": 140.805
+    }
+   }
   },
   {
    "symbol": "ORCL",
@@ -3708,7 +3948,15 @@
     "us": "eff690a187797aa225723345d4612abec0bf0cec1ae62347c0e7b1905d730879",
     "index": null
    },
-   "liquidity": 152
+   "liquidity": 152,
+   "pythOnchain": {
+    "us": {
+     "address": "JB5qxBAeY2e3V8oAVPaPPyLt3D4QDJxSDPxReJoxwsub",
+     "shard": 0,
+     "ageSec": 6363085,
+     "price": 295.10008000000005
+    }
+   }
   },
   {
    "symbol": "IREN",
@@ -4159,7 +4407,15 @@
     "us": "baed936d3c6c2e34104e92c6b015b97ce96adc5ab4f04230c1270e1162e7a270",
     "index": null
    },
-   "liquidity": 62
+   "liquidity": 62,
+   "pythOnchain": {
+    "us": {
+     "address": "8zWQVp313FFdanpZoQeDohp5HE7ugoJE2VaX4sYPHj4e",
+     "shard": 0,
+     "ageSec": 10181902,
+     "price": 629.13277
+    }
+   }
   },
   {
    "symbol": "SBET",
@@ -4241,7 +4497,15 @@
     "us": "244fdf268ed7ecfad2cf84529c46d0fcef7a643428ff4ef8b16e8dbb63e0f2d9",
     "index": null
    },
-   "liquidity": 52
+   "liquidity": 52,
+   "pythOnchain": {
+    "us": {
+     "address": "5f9eekiFMRESBFgdCS7CPaJGtt6kZAPsMtaFraeGjDRD",
+     "shard": 0,
+     "ageSec": 11292886,
+     "price": 472.72239
+    }
+   }
   },
   {
    "symbol": "RIOT",
@@ -8493,7 +8757,15 @@
     "us": "ac9de86ae3dcff03514bde733f5793f1446b2cd31f1539a1c449acc3e76cacc1",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "CmuiU9H1WmLZrPnfJLZ4DuktUJwDU3mpKFosnihAWbTn",
+     "shard": 0,
+     "ageSec": 10168768,
+     "price": 439.65012
+    }
+   }
   },
   {
    "symbol": "ISRG",
@@ -9313,7 +9585,15 @@
     "us": "40589e289317e4fbd997b1a267606e20a1cc7c3e4689f9e5a5992957917816c8",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "H2tjxYMHGVN9F8S7ewVaECDZtRpVxgfrtAMEGtRDvqYe",
+     "shard": 0,
+     "ageSec": 10168768,
+     "price": 127.85545
+    }
+   }
   },
   {
    "symbol": "ALB",
@@ -9723,7 +10003,15 @@
     "us": "2a78b78189d6d6eff30a825e4698fd14a0b1ca659bb0079bb7e80521c0e8c75d",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "6MgWmNscPXnj77YazE7qH27fgWn28QRtYr8iELw5b8zR",
+     "shard": 1,
+     "ageSec": 5,
+     "price": 82.95042000000001
+    }
+   }
   },
   {
    "symbol": "GLXY",
@@ -9764,7 +10052,15 @@
     "us": "67e031d1723e5c89e4a826d80b2f3b41a91b05ef6122d523b8829a02e0f563aa",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "EHEfCJoRUewTW91Lv2k33eLW72JkbxbVH6YsisTskg1n",
+     "shard": 0,
+     "ageSec": 29,
+     "price": 23.55
+    }
+   }
   },
   {
    "symbol": "SNOW",
@@ -12391,7 +12687,15 @@
     "us": "e65ff435be42630439c96396653a342829e877e2aafaeaf1a10d0ee5fd2cf3f2",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "9bsQhkxKkuct1JYzi3WnEarHLWgviVcTK6GPSJ5nSXF2",
+     "shard": 0,
+     "ageSec": 6362889,
+     "price": 355.88100000000003
+    }
+   }
   },
   {
    "symbol": "VSH",
@@ -19459,7 +19763,15 @@
     "us": "725ae6c67201359f9601d6ee8228c821f0abc93fef5cc509acfcee3f7bc2a388",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "54f3QWxFrEDByLpuen8k9qaSTYiCRcAcpzWcH6pbZ7Ht",
+     "shard": 0,
+     "ageSec": 11292875,
+     "price": 174.37508000000003
+    }
+   }
   },
   {
    "symbol": "XRX",
@@ -19900,7 +20212,15 @@
     "us": "236b30dd09a9c00dfeec156c7b1efd646c0f01825a1758e3e4a0679e3bdff179",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "LVreNUP8XfYuhsVQgXEm9csBUKiLTESKrxCFYdZ4HjN",
+     "shard": 0,
+     "ageSec": 6361733,
+     "price": 683.2085300000001
+    }
+   }
   },
   {
    "symbol": "BDWAP",
@@ -30277,7 +30597,15 @@
     "us": "1feb5bc35d3a601d1e39c4d1dd65de285a04f5e7923fdaba1d87359d8c14a9ae",
     "index": null
    },
-   "liquidity": 0
+   "liquidity": 0,
+   "pythOnchain": {
+    "us": {
+     "address": "2hxcaArrSKpNsUmeGr7dsDHsuYxUcxRpCWkiCfStp3Du",
+     "shard": 0,
+     "ageSec": 10168768,
+     "price": 95.26058
+    }
+   }
   },
   {
    "symbol": "VFS",
@@ -31587,5 +31915,6 @@
    },
    "liquidity": 0
   }
- ]
+ ],
+ "pythOnchainCheckedAt": "2026-09-14T10:53:54.461Z"
 }

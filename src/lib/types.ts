@@ -23,13 +23,24 @@ export interface Underlying {
   issuers: IssuerId[];
   liquidity: number;
   pyth: { us: string; index: string | null } | null;
+  /** Pyth push-oracle accounts sponsored on mainnet (read directly, no API key) */
+  pythOnchain?: { us?: PythOnchainRef; index?: PythOnchainRef };
+}
+
+export interface PythOnchainRef {
+  address: string;
+  shard: number;
+  ageSec: number;
+  price: number;
 }
 
 export interface FairValue {
   price: number;
   /** +/- confidence band in USD (0 when the source has none) */
   conf: number;
-  source: "pyth-24/7" | "pyth-us" | "jupiter-stock" | "backpack-perp";
+  source: "pyth-onchain" | "pyth-24/7" | "pyth-us" | "jupiter-stock" | "backpack-perp";
+  /** on-chain PriceUpdateV2 account the guard can verify against, when one exists */
+  onchainAccount: string | null;
   asOf: string;
   ageSec: number;
   stale: boolean;
