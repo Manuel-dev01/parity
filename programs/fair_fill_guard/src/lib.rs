@@ -24,7 +24,9 @@ const PRICE_SCALE: i32 = 8;
 pub mod fair_fill_guard {
     use super::*;
 
-    pub fn snapshot(ctx: Context<Snapshot>) -> Result<()> {
+    /// `nonce` is chosen by the client and seeds the Receipt PDA, so the receipt address is
+    /// known before the transaction lands (the slot is not).
+    pub fn snapshot(ctx: Context<Snapshot>, nonce: u64) -> Result<()> {
         let s = &mut ctx.accounts.snapshot;
         s.owner = ctx.accounts.owner.key();
         s.in_mint = ctx.accounts.in_token.mint;
@@ -32,6 +34,7 @@ pub mod fair_fill_guard {
         s.in_before = ctx.accounts.in_token.amount;
         s.out_before = ctx.accounts.out_token.amount;
         s.slot = Clock::get()?.slot;
+        s.nonce = nonce;
         s.bump = ctx.bumps.snapshot;
         Ok(())
     }
@@ -93,6 +96,7 @@ pub mod fair_fill_guard {
         r.slot = clock.slot;
         r.ts = clock.unix_timestamp;
         r.feed_id = args.feed_id;
+        r.nonce = s.nonce;
         r.bump = ctx.bumps.receipt;
 
         emit!(FillVerified {
@@ -182,7 +186,7 @@ pub struct Verify<'info> {
         init,
         payer = owner,
         space = 8 + Receipt::INIT_SPACE,
-        seeds = [b"receipt", owner.key().as_ref(), out_token.mint.as_ref(), &snapshot.slot.to_le_bytes()],
+        seeds = [b"receipt", owner.key().as_ref(), out_token.mint.as_ref(), &snapshot.nonce.to_le_bytes()],
         bump
     )]
     pub receipt: Account<'info, Receipt>,
@@ -198,6 +202,7 @@ pub struct SnapshotState {
     pub in_before: u64,
     pub out_before: u64,
     pub slot: u64,
+    pub nonce: u64,
     pub bump: u8,
 }
 
@@ -219,6 +224,7 @@ pub struct Receipt {
     pub slot: u64,
     pub ts: i64,
     pub feed_id: [u8; 32],
+    pub nonce: u64,
     pub bump: u8,
 }
 

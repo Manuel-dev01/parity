@@ -2,7 +2,7 @@
 
 ## Context
 
-Stocklana is Solana's one-week tokenized-stocks hackathon. **Submissions close Friday 18 Sept 2026, 4:00pm ET** — today is **Sunday 13 Sept**, so this is a **~5.5-day** build, not 7. Solo, near full-time, non-US, mainnet with small real funds, thin Anchor program allowed. Lantern (Tripothon, due Oct 5) pauses until Sept 18.
+Stocklana is Solana's one-week tokenized-stocks hackathon. **Submissions close Friday 25 Sept 2026, 4:00pm ET** (extended from 18 Sept on 21 Sept). Written Sunday 13 Sept as a ~5.5-day plan; day-by-day roadmap below is the original and is stale — `CLAUDE.md` status is current. Solo, near full-time, non-US, mainnet with small real funds, thin Anchor program allowed. Lantern (Tripothon, due Oct 5) pauses until Sept 18.
 
 Goal: win outright. The judging bar is explicitly *"Could this be a real app that people will actually use?"* scored on (1) a real user + problem, (2) a working end-to-end demo, (3) a reason it belongs on Solana, (4) execution quality. Single $100K pool, no sub-tracks. Suggested build areas: Trading, Investing, Credit/yield, Infrastructure, Consumer. Submission = at least one of GitHub / live demo / video (do all three).
 

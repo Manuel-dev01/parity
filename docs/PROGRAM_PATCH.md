@@ -1,8 +1,8 @@
-# fair_fill_guard — required patch before building
+# fair_fill_guard — Receipt PDA seed fix (applied)
 
-**Apply this in Solana Playground before the first build, then mirror it into
-`programs/fair_fill_guard/src/lib.rs`.** The client (`src/lib/guard.ts`) is already written
-against the patched layout.
+**Applied to `programs/fair_fill_guard/src/lib.rs` on 2026-09-21** — paste that file into
+Playground as-is. Kept here as the record of why the Receipt seed changed. The client
+(`src/lib/guard.ts`) targets this layout.
 
 ## Why
 

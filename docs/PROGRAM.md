@@ -9,14 +9,14 @@ This Windows machine has no Solana CLI / Anchor / cargo, and the link is ~150 KB
 ## Steps (Tuesday)
 
 1. Open https://beta.solpg.io → **Create a new project → Anchor (Rust)**, name `fair_fill_guard`.
-2. Replace `src/lib.rs` with `programs/fair_fill_guard/src/lib.rs` **and apply `docs/PROGRAM_PATCH.md`** (nonce-seeded Receipt; the client is already written against it). In `Cargo.toml` (Playground's) add:
+2. Replace `src/lib.rs` with `programs/fair_fill_guard/src/lib.rs` (already includes the nonce-seeded Receipt from `docs/PROGRAM_PATCH.md`). In `Cargo.toml` (Playground's) add:
    ```toml
    anchor-spl = { version = "0.31.1", features = ["token_2022"] }
    pyth-solana-receiver-sdk = "0.6"
    ```
    If Playground's Anchor version differs, match `anchor-lang`/`anchor-spl` to it. If `pyth-solana-receiver-sdk` fails to resolve after the Aug-2026 Pyth Core upgrade, check https://docs.pyth.network/price-feeds/core/use-real-time-data/pull-integration/solana for the current crate name/version.
 3. **Build** (hammer icon). Fix compile errors in the Playground editor; mirror every change back into this repo.
-4. Playground wallet: export its keypair (settings → wallet) and fund it with **~2.5 SOL** on mainnet (deploy rent for a ~200 KB program is ~1.5–2 SOL; keep a margin).
+4. Playground wallet: export its keypair (settings → wallet) and fund it on mainnet. Deploy rent is ~0.0051 SOL per KB of program (a 200 KB build ≈ 1.02 SOL, ~$115 at $112/SOL); check the built size in Playground before funding. The rent is a deposit — `solana program close` returns it after the hackathon.
 5. Switch cluster to **mainnet-beta** (bottom bar) and **Deploy**. Copy the program id.
 6. Replace `declare_id!` in `lib.rs` **and** the id in `programs/Anchor.toml` with the deployed id, rebuild + redeploy once so the IDL matches (Playground → "IDL" tab → upload/init IDL is optional; the app builds instructions manually).
 7. Download the IDL (Playground exports `idl.json`) into `src/data/fair_fill_guard.idl.json`; the client uses the discriminators from it.
@@ -43,4 +43,4 @@ tx = [
 
 ## Hard cut
 
-If the program is not deployed to mainnet by **Tuesday 2026-09-15 night**, ship with the client-side guard (quote-time check + slippage) and say so plainly in the README. The rest of the product does not depend on it.
+If the program is not deployed to mainnet by **Wed 2026-09-23**, ship with the client-side guard (quote-time check + slippage) and say so plainly in the README. The rest of the product does not depend on it.
