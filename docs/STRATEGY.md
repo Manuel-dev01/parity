@@ -128,18 +128,40 @@ Cut lines are explicit: **P0** must ship, **P1** if on schedule, **P2** stretch.
 ### Fri 18 (until 4pm ET) — Buffer
 - Fix whatever broke overnight; re-verify live demo URL; final submission edit by **3:00pm ET**. Do not add features.
 
-### 90-second demo script
-1. (0–15s) "SpaceX listed on Nasdaq in June. Within ten days the same share traded at $122 on one Solana issuer and $176 on another. Every US stock now exists three times on Solana, and nobody tells you which one is fair."
-2. (15–45s) Type NVDA. Fair value from Pyth. Three issuer cards, premiums in bps, effective price at $1k. Best route glows.
-3. (45–70s) Click Buy $50. Phantom pops. One transaction: snapshot → swap → oracle verify. Receipt: fill vs fair, "saved $X vs worst issuer", Solscan link.
-4. (70–90s) Tape page: "here's every mispricing on Solana right now" + the public API call for agents. "Parity — every stock on Solana, one fair price."
+### 2-minute demo script (two halves: mainnet execution, devnet guard)
+
+Recorded during the US regular session so divergence is live. The guard is deliberately **not**
+on mainnet — it is unaudited — so the fill and the guard are shown separately and labelled. Do not
+imply one mainnet transaction does snapshot → swap → verify; it does not, and a judge who checks
+the signature will see that.
+
+1. **(0–15s) The problem.** "SpaceX listed on Nasdaq in June. Within ten days the same share traded
+   at $122 on one Solana issuer and $176 on another. Every US stock now exists two or three times
+   on Solana, and nobody tells you which one is fair."
+2. **(15–50s) Price truth.** Type NVDA. Fair value straight from Pyth's on-chain account — point at
+   the source badge, not a REST API. Issuer cards: premium in bps, effective price at $1k, depth,
+   rights. Best route glows. Call out a live number ("Ondo is quoting 358 bps over fair right now,
+   xStocks 23") — the spread is the product.
+3. **(50–85s) A real fill, on mainnet.** Buy $2 of NVDA. Wallet pops, one signature, real
+   transaction. Success panel: fill vs fair, deviation in bps, "$ saved vs worst issuer", Solscan
+   link — open it. Say plainly: *"Before I was asked to sign, the server priced this route against
+   Pyth and would have refused outside my 50 bps guard. The transaction itself is Jupiter's audited
+   program — nothing unaudited of ours is in the path of real money."*
+4. **(85–110s) The guard, proven on devnet.** Cut to the devnet clip from
+   `scripts/guard-proof.mjs`. Two transactions, both on Solscan: one fill at fair value — `snapshot`
+   → fill → `verify` writes a **Receipt PDA** with fill price, fair price and signed bps; then the
+   same transaction with a fill 300 bps off and a ±50 bps guard — it **reverts** with
+   `FillOffFairValue`. *"Same program, same Pyth account type, same instruction order as the mainnet
+   path. It ships to mainnet behind one env var once it is audited — not before."*
+5. **(110–120s) Reach.** Tape page: every mispricing on Solana right now. One `curl` of
+   `/api/v1/quote`. "Parity — every stock on Solana, one fair price."
 
 ---
 
 ## Verification
 - **Data:** for 5 names, hand-check fair value against a brokerage quote and each issuer's DEX price on Jupiter UI; premium bps must match within rounding.
-- **Execution:** ≥1 real mainnet fill per issuer with tx signatures listed in README; one intentionally failed guard tx (revert reason visible).
-- **Guard:** `anchor test` passes locally; mainnet Receipt PDA decodes correctly in-app.
+- **Execution:** ≥1 real mainnet fill per issuer with tx signatures listed in README (xStocks/Backpack via Jupiter swap instructions, Ondo via Ultra RFQ); a rejected build shown for a fill outside the guard.
+- **Guard:** deployed to **devnet** and proven by `node scripts/guard-proof.mjs` — one Receipt PDA written, one `FillOffFairValue` revert, both with devnet Solscan links in the README. Mainnet deploy is out of scope until audited; `NEXT_PUBLIC_GUARD_CLUSTER` enforces that in code.
 - **Off-hours:** app on a weekend/after-close shows "market closed" mode with widened confidence and still quotes/executes.
 - **API:** `curl https://<app>/api/v1/quote?symbol=SPCX&usd=1000` returns in <2s.
 - **Demo:** live URL loads cold in <3s on phone width; video plays; repo public; submission page shows all three links.
