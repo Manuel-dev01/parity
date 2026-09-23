@@ -16,11 +16,14 @@ This Windows machine has no Solana CLI / Anchor / cargo, and the link is ~150 KB
    ```
    If Playground's Anchor version differs, match `anchor-lang`/`anchor-spl` to it. If `pyth-solana-receiver-sdk` fails to resolve after the Aug-2026 Pyth Core upgrade, check https://docs.pyth.network/price-feeds/core/use-real-time-data/pull-integration/solana for the current crate name/version.
 3. **Build** (hammer icon). Fix compile errors in the Playground editor; mirror every change back into this repo.
-4. Playground wallet: export its keypair (settings → wallet) and fund it on mainnet. Deploy rent is ~0.0051 SOL per KB of program (a 200 KB build ≈ 1.02 SOL, ~$115 at $112/SOL); check the built size in Playground before funding. The rent is a deposit — `solana program close` returns it after the hackathon.
-5. Switch cluster to **mainnet-beta** (bottom bar) and **Deploy**. Copy the program id.
+4. Playground wallet: switch cluster to **devnet** (bottom bar) and airdrop to it (`solana airdrop 2`, or https://faucet.solana.com). Free.
+5. **Deploy** to devnet. Copy the program id.
+
+   > Mainnet deploy is deliberately out of scope: rent is ~0.0051 SOL per KB (a 200 KB build ≈ 1.02 SOL ≈ $115), and shipping an unaudited program that touches real funds is the wrong call regardless of budget. Mainnet buys route through Jupiter's audited programs with a pre-sign fair-value check instead; `NEXT_PUBLIC_GUARD_CLUSTER=devnet` enforces that in code (`mainnetGuardProgram()` returns null).
 6. Replace `declare_id!` in `lib.rs` **and** the id in `programs/Anchor.toml` with the deployed id, rebuild + redeploy once so the IDL matches (Playground → "IDL" tab → upload/init IDL is optional; the app builds instructions manually).
 7. Download the IDL (Playground exports `idl.json`) into `src/data/fair_fill_guard.idl.json`; the client uses the discriminators from it.
-8. Record the program id in `.env` as `NEXT_PUBLIC_GUARD_PROGRAM_ID` and in README.
+8. Record the program id in `.env` as `NEXT_PUBLIC_GUARD_PROGRAM_ID` (leave `NEXT_PUBLIC_GUARD_CLUSTER=devnet`) and in README.
+9. Run `node scripts/guard-proof.mjs` — it mints a mock market on devnet and runs the guard twice against a real Pyth account: one fill at fair value (writes a Receipt) and one 300 bps off (reverts with `FillOffFairValue`). Both print devnet Solscan links for the README and the video.
 
 ## Client composition (Monday/Tuesday, `src/lib/guard.ts`)
 
@@ -43,4 +46,4 @@ tx = [
 
 ## Hard cut
 
-If the program is not deployed to mainnet by **Wed 2026-09-23**, ship with the client-side guard (quote-time check + slippage) and say so plainly in the README. The rest of the product does not depend on it.
+The guard is a devnet artifact by design, so there is nothing to cut on the mainnet path — real fills already work through Jupiter with the pre-sign check. If the devnet deploy itself is not done by **Wed 2026-09-24**, drop the guard from the demo and keep the two mainnet fills; the rest of the product does not depend on it.

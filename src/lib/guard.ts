@@ -14,17 +14,29 @@ export const ASSOCIATED_TOKEN_PROGRAM = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiq
 
 const PLACEHOLDER_ID = "FFGuardPARiTy1111111111111111111111111111111";
 
-export function guardProgramId(): PublicKey | null {
+export type GuardCluster = "devnet" | "mainnet";
+
+/** Where fair_fill_guard currently lives, if anywhere. Unaudited, so devnet by default. */
+export function guardDeployment(): { id: PublicKey; cluster: GuardCluster } | null {
   const id = process.env.NEXT_PUBLIC_GUARD_PROGRAM_ID;
   if (!id || id === PLACEHOLDER_ID) return null;
+  const cluster: GuardCluster = process.env.NEXT_PUBLIC_GUARD_CLUSTER === "mainnet" ? "mainnet" : "devnet";
   try {
-    return new PublicKey(id);
+    return { id: new PublicKey(id), cluster };
   } catch {
     return null;
   }
 }
 
-export const isGuardDeployed = () => guardProgramId() !== null;
+/**
+ * The program id to compose into a mainnet buy — null while the guard is only on devnet.
+ * A devnet program cannot be called from a mainnet transaction, so mainnet fills fall back
+ * to the pre-sign fair-value check until the program is audited and deployed to mainnet.
+ */
+export function mainnetGuardProgram(): PublicKey | null {
+  const d = guardDeployment();
+  return d?.cluster === "mainnet" ? d.id : null;
+}
 
 export const GUARD_DEFAULTS = { maxConfBps: 50, maxAgeSecRegular: 120, maxAgeSecOffHours: 900 };
 

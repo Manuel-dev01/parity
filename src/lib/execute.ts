@@ -21,7 +21,8 @@ import {
   deriveReceiptPda,
   deriveSnapshotPda,
   feedIdFromHex,
-  guardProgramId,
+  guardDeployment,
+  mainnetGuardProgram,
   newNonce,
 } from "./guard";
 
@@ -79,12 +80,16 @@ export async function buildSwap(p: { underlying: Underlying; token: UniverseToke
   const quoteBase = { symbol: u.symbol, issuer: token.issuer, mint: token.mint, usd, fairPx: fair.price, fairSource: fair.source, marketState: fair.marketState };
   const labels = (plan: { swapInfo?: { label?: string } }[]) => [...new Set(plan.map((r) => r.swapInfo?.label).filter(Boolean) as string[])];
 
-  const program = guardProgramId();
+  const program = mainnetGuardProgram();
+  const deployment = guardDeployment();
   const composable = token.issuer !== "ondo";
   let reason: string;
   if (!composable) reason = "This issuer's token only quotes through JupiterZ RFQ (market-maker signed), which cannot be composed with the on-chain guard.";
   else if (!fair.onchainAccount) reason = `No sponsored Pyth on-chain feed for ${u.symbol}; the on-chain guard has nothing to verify against.`;
-  else if (!program) reason = "fair_fill_guard is not deployed yet; the fill is checked against fair value before you sign.";
+  else if (!program)
+    reason = deployment
+      ? "fair_fill_guard is unaudited, so it runs on devnet only — this mainnet fill routes through Jupiter's audited programs and is checked against fair value before you sign."
+      : "fair_fill_guard is not deployed yet; the fill is checked against fair value before you sign.";
   else reason = "Verified on-chain against Pyth in the same transaction.";
 
   if (composable) {
