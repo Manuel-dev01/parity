@@ -59,7 +59,6 @@ pub mod fair_fill_guard {
         s.out_before = out_before;
         s.slot = Clock::get()?.slot;
         s.nonce = nonce;
-        s.bump = *ctx.bumps.get("snapshot").ok_or(GuardError::BumpMissing)?;
         Ok(())
     }
 
@@ -125,7 +124,6 @@ pub mod fair_fill_guard {
         r.ts = clock.unix_timestamp;
         r.feed_id = args.feed_id;
         r.nonce = s.nonce;
-        r.bump = *ctx.bumps.get("receipt").ok_or(GuardError::BumpMissing)?;
 
         emit!(FillVerified {
             owner: r.owner,
@@ -258,8 +256,10 @@ pub struct Verify<'info> {
         mut,
         close = owner,
         has_one = owner,
+        // recomputed rather than stored: ctx.bumps changed shape between Anchor versions and
+        // this program must build on whatever Solana Playground ships.
         seeds = [b"snapshot", owner.key().as_ref(), out_token.key().as_ref()],
-        bump = snapshot.bump
+        bump
     )]
     pub snapshot: Account<'info, SnapshotState>,
     /// CHECK: must be owned by the Pyth receiver; layout, feed id and staleness are validated
@@ -286,7 +286,6 @@ pub struct SnapshotState {
     pub out_before: u64,
     pub slot: u64,
     pub nonce: u64,
-    pub bump: u8,
 }
 
 /// Permanent, per-fill proof that the trade executed within `dev_bps` of the oracle.
@@ -308,7 +307,6 @@ pub struct Receipt {
     pub ts: i64,
     pub feed_id: [u8; 32],
     pub nonce: u64,
-    pub bump: u8,
 }
 
 #[event]
@@ -354,6 +352,4 @@ pub enum GuardError {
     FillOffFairValue,
     #[msg("math overflow")]
     MathOverflow,
-    #[msg("pda bump missing")]
-    BumpMissing,
 }
