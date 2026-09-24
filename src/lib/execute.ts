@@ -8,8 +8,8 @@
 // than the caller's max_dev_bps, so the client-side guard applies even where the on-chain one can't.
 import { AddressLookupTableAccount, PublicKey, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import type { FairValue, IssuerId, Underlying, UniverseToken } from "./types";
-import { USDC_MINT } from "./universe";
-import { getFairValue } from "./fairvalue";
+import { STABLES, USDC_MINT } from "./universe";
+import { getFairValue, jupiterPrices, type JupPrice } from "./fairvalue";
 import { rpc } from "./pyth-onchain";
 import { JupiterError, swapInstructions, swapQuote, ultraOrder } from "./jupiter";
 import {
@@ -40,7 +40,11 @@ export interface SwapBuild {
     symbol: string;
     issuer: IssuerId;
     mint: string;
+    /** amount of the input stablecoin spent, and what that was worth in USD */
     usd: number;
+    payToken: string;
+    payMint: string;
+    payPriceUsd: number;
     shares: number;
     fillPx: number;
     fairPx: number;
@@ -60,24 +64,66 @@ export class SwapRejected extends Error {
 
 const bps = (px: number, fair: number) => Math.round(((px - fair) / fair) * 1e4);
 
-export async function buildSwap(p: { underlying: Underlying; token: UniverseToken; usd: number; owner: string; maxDevBps: number }): Promise<SwapBuild> {
+async function stableBalance(owner: PublicKey, mint: string): Promise<number> {
+  try {
+    const ata = deriveAta(owner, new PublicKey(mint), TOKEN_PROGRAM);
+    const r = await rpc().getTokenAccountBalance(ata);
+    return Number(r.value.amount);
+  } catch {
+    return 0; // no token account yet
+  }
+}
+
+export async function buildSwap(p: {
+  underlying: Underlying;
+  token: UniverseToken;
+  usd: number;
+  owner: string;
+  maxDevBps: number;
+  inputMint?: string;
+}): Promise<SwapBuild> {
   const { underlying: u, token, usd, maxDevBps } = p;
+  const payMint = p.inputMint ?? USDC_MINT;
+  const pay = STABLES[payMint];
+  if (!pay) throw new SwapRejected(`${payMint} is not an accepted input stablecoin`, 400);
   const owner = new PublicKey(p.owner);
   const fair = await getFairValue(u);
   if (fair.stale) throw new SwapRejected(`reference price for ${u.symbol} is stale (${fair.ageSec}s old); refusing to quote`);
-  const amount = Math.round(usd * 1e6);
+  const amount = Math.round(usd * 10 ** pay.decimals);
+
+  // A stablecoin is not exactly a dollar. Price the input leg too, or a depegged USDT would
+  // silently shift every deviation we report and guard against.
+  const payPriceUsd = (await jupiterPrices([payMint]).catch(() => ({}) as Record<string, JupPrice>))[payMint]?.usdPrice ?? 1;
+  const usdValue = usd * payPriceUsd;
+
+  // Refuse early rather than let the wallet sign something that fails on-chain for want of funds.
+  const held = await stableBalance(owner, payMint);
+  if (held < amount) {
+    throw new SwapRejected(`wallet holds ${(held / 10 ** pay.decimals).toFixed(2)} ${pay.symbol}, needs ${usd.toFixed(2)}`, 400);
+  }
 
   const check = (outAmount: string) => {
     const shares = Number(outAmount) / 10 ** token.decimals;
     if (!(shares > 0)) throw new SwapRejected("route returned zero output");
-    const fillPx = usd / shares;
+    const fillPx = usdValue / shares;
     const devBps = bps(fillPx, fair.price);
     if (Math.abs(devBps) > maxDevBps) {
       throw new SwapRejected(`fill would be ${devBps > 0 ? "+" : ""}${devBps} bps from fair value (${fair.price.toFixed(2)}); your guard is ±${maxDevBps} bps`);
     }
     return { shares, fillPx, devBps };
   };
-  const quoteBase = { symbol: u.symbol, issuer: token.issuer, mint: token.mint, usd, fairPx: fair.price, fairSource: fair.source, marketState: fair.marketState };
+  const quoteBase = {
+    symbol: u.symbol,
+    issuer: token.issuer,
+    mint: token.mint,
+    usd,
+    payToken: pay.symbol,
+    payMint,
+    payPriceUsd,
+    fairPx: fair.price,
+    fairSource: fair.source,
+    marketState: fair.marketState,
+  };
   const labels = (plan: { swapInfo?: { label?: string } }[]) => [...new Set(plan.map((r) => r.swapInfo?.label).filter(Boolean) as string[])];
 
   const program = mainnetGuardProgram();
@@ -95,7 +141,7 @@ export async function buildSwap(p: { underlying: Underlying; token: UniverseToke
   if (composable) {
     let quote;
     try {
-      quote = await swapQuote({ inputMint: USDC_MINT, outputMint: token.mint, amount, slippageBps: Math.min(maxDevBps, 100) });
+      quote = await swapQuote({ inputMint: payMint, outputMint: token.mint, amount, slippageBps: Math.min(maxDevBps, 100) });
     } catch (e) {
       if (!(e instanceof JupiterError && /NO_ROUTES/i.test(e.code))) throw e;
       reason = "No pool route for this size; falling back to Jupiter Ultra (client-side guard).";
@@ -107,7 +153,7 @@ export async function buildSwap(p: { underlying: Underlying; token: UniverseToke
       const instructions: TransactionInstruction[] = [...ixs.computeBudget, ...ixs.setup];
       let guard: SwapBuild["guard"];
       if (guarded && program && fair.onchainAccount) {
-        const inMint = new PublicKey(USDC_MINT);
+        const inMint = new PublicKey(payMint);
         const outMint = new PublicKey(token.mint);
         const inAta = deriveAta(owner, inMint, TOKEN_PROGRAM);
         const outAta = deriveAta(owner, outMint, new PublicKey(token.tokenProgram));
@@ -168,7 +214,7 @@ export async function buildSwap(p: { underlying: Underlying; token: UniverseToke
     }
   }
 
-  const order = await ultraOrder({ inputMint: USDC_MINT, outputMint: token.mint, amount, taker: p.owner });
+  const order = await ultraOrder({ inputMint: payMint, outputMint: token.mint, amount, taker: p.owner });
   if (!order.transaction) throw new SwapRejected("Jupiter Ultra returned no transaction for this order", 502);
   const q = check(order.outAmount);
   return {

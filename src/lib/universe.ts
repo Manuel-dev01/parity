@@ -29,3 +29,12 @@ export function searchUnderlyings(q: string, limit = 12): Underlying[] {
 }
 
 export const USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+export const USDT_MINT = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB";
+
+/** Stablecoins accepted as the input leg of a buy. Both are classic SPL Token, 6 decimals. */
+export const STABLES: Record<string, { symbol: string; decimals: number }> = {
+  [USDC_MINT]: { symbol: "USDC", decimals: 6 },
+  [USDT_MINT]: { symbol: "USDT", decimals: 6 },
+};
+
+export const stableBySymbol = (s: string) => Object.entries(STABLES).find(([, v]) => v.symbol === s.toUpperCase())?.[0];

@@ -27,6 +27,7 @@ const bytesToB64 = (b: Uint8Array) => btoa(String.fromCharCode(...b));
 export function TradePanel({ underlying, quote, usd }: { underlying: Underlying; quote: ParityQuote | null; usd: number }) {
   const { address, signTransaction, signAndSendTransaction } = useWallet();
   const [maxDev, setMaxDev] = useState(50);
+  const [pay, setPay] = useState<"USDC" | "USDT">("USDC");
   const [amount, setAmount] = useState(Math.min(usd, 100));
   const [stage, setStage] = useState<Stage>("idle");
   const [err, setErr] = useState<string | null>(null);
@@ -48,7 +49,7 @@ export function TradePanel({ underlying, quote, usd }: { underlying: Underlying;
       const r = await fetch("/api/v1/swap", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ symbol: underlying.symbol, mint: best.token.mint, usd: amount, owner: address, maxDevBps: maxDev }),
+        body: JSON.stringify({ symbol: underlying.symbol, mint: best.token.mint, usd: amount, owner: address, maxDevBps: maxDev, pay }),
       });
       const build = (await r.json()) as SwapBuild & { error?: string };
       if (!r.ok) throw new Error(build.error || r.statusText);
@@ -116,8 +117,7 @@ export function TradePanel({ underlying, quote, usd }: { underlying: Underlying;
             <Row
               k="You pay"
               v={
-                <span className="flex items-center gap-1 justify-end">
-                  <span className="text-muted">$</span>
+                <span className="flex items-center gap-1.5 justify-end">
                   <input
                     type="number"
                     min={1}
@@ -128,7 +128,15 @@ export function TradePanel({ underlying, quote, usd }: { underlying: Underlying;
                     onChange={(e) => setAmount(Math.max(1, Math.min(100_000, Number(e.target.value) || 1)))}
                     className="num w-24 bg-surface-2 rounded-lg px-2 py-1 text-right outline-none focus:ring-1 ring-[var(--accent)]"
                   />
-                  <span className="text-muted">USDC</span>
+                  <select
+                    value={pay}
+                    disabled={busy}
+                    onChange={(e) => setPay(e.target.value as "USDC" | "USDT")}
+                    className="bg-surface-2 rounded-lg px-1.5 py-1 text-muted outline-none focus:ring-1 ring-[var(--accent)]"
+                  >
+                    <option value="USDC">USDC</option>
+                    <option value="USDT">USDT</option>
+                  </select>
                 </span>
               }
             />
@@ -185,7 +193,7 @@ function FillReceipt({ fill, symbol, onReset }: { fill: Fill; symbol: string; on
         {q.shares.toFixed(4)} {symbol}
       </div>
       <div className="text-xs text-muted">
-        for {fmt(q.usd)} via <IssuerChip id={q.issuer} />
+        for {q.usd.toLocaleString()} {q.payToken} via <IssuerChip id={q.issuer} />
       </div>
       <dl className="mt-4 grid grid-cols-2 gap-y-2 text-sm">
         <dt className="text-muted">Fill price</dt>

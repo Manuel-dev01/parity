@@ -1,5 +1,5 @@
 // Executes ONE real mainnet buy through the local /api/v1/swap with the demo wallet.
-//   node scripts/test-swap.mjs NVDA <mint> 5 [maxDevBps] [--dry]
+//   node scripts/test-swap.mjs NVDA <mint> 5 [maxDevBps] [--dry] [--pay=USDC|USDT]
 // --dry builds and simulates but does not send. Requires `npm run dev` on :3000 (or BASE_URL).
 import { Connection, Keypair, VersionedTransaction } from "@solana/web3.js";
 import bs58 from "bs58";
@@ -7,8 +7,9 @@ import { readFileSync } from "node:fs";
 
 const [symbol, mint, usdArg, devArg] = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const dry = process.argv.includes("--dry");
+const pay = process.argv.find((a) => a.startsWith("--pay="))?.split("=")[1] ?? "USDC";
 if (!symbol || !mint) {
-  console.error("usage: node scripts/test-swap.mjs <SYMBOL> <mint> [usd=5] [maxDevBps=50] [--dry]");
+  console.error("usage: node scripts/test-swap.mjs <SYMBOL> <mint> [usd=5] [maxDevBps=50] [--dry] [--pay=USDC|USDT]");
   process.exit(1);
 }
 const usd = Number(usdArg || 5);
@@ -29,13 +30,13 @@ const post = (path, body) =>
   fetch(`${BASE}${path}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then(async (r) => [r.ok, await r.json()]);
 
 async function main() {
-  console.log(`wallet ${kp.publicKey.toBase58()}  buying $${usd} of ${symbol} via ${mint}  guard ±${maxDevBps} bps${dry ? "  (dry run)" : ""}`);
-  const [ok, build] = await post("/api/v1/swap", { symbol, mint, usd, owner: kp.publicKey.toBase58(), maxDevBps });
+  console.log(`wallet ${kp.publicKey.toBase58()}  buying ${usd} ${pay} of ${symbol} via ${mint}  guard ±${maxDevBps} bps${dry ? "  (dry run)" : ""}`);
+  const [ok, build] = await post("/api/v1/swap", { symbol, mint, usd, owner: kp.publicKey.toBase58(), maxDevBps, pay });
   if (!ok) {
     console.error("swap build rejected:", build);
     return 2;
   }
-  console.log(`mode=${build.mode}  fill=${build.quote.fillPx.toFixed(4)}  fair=${build.quote.fairPx.toFixed(4)}  dev=${build.quote.devBps} bps  shares=${build.quote.shares}`);
+  console.log(`mode=${build.mode}  pay=${build.quote.payToken}@$${build.quote.payPriceUsd.toFixed(4)}  fill=$${build.quote.fillPx.toFixed(4)}  fair=$${build.quote.fairPx.toFixed(4)}  dev=${build.quote.devBps} bps  shares=${build.quote.shares}`);
   console.log(`reason: ${build.reason}`);
   if (build.guard) console.log(`guard: program=${build.guard.programId} receipt=${build.guard.receipt}`);
 

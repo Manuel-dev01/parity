@@ -10,7 +10,7 @@ Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Bac
 - ✅ Guard program source written (`programs/fair_fill_guard/src/lib.rs`, nonce-seeded Receipt per `docs/PROGRAM_PATCH.md`). **Deploys to devnet only** — unaudited, and mainnet rent is ~1 SOL (~$115). `NEXT_PUBLIC_GUARD_CLUSTER=devnet` makes `mainnetGuardProgram()` return null so a devnet id can never be composed into a mainnet tx.
 - ✅ Execution: `POST /api/v1/swap` (`src/lib/execute.ts`) returns one unsigned tx in mode `guarded` (snapshot→swap→verify, when `NEXT_PUBLIC_GUARD_PROGRAM_ID` is set) / `plain` (Jupiter swap, pre-sign fair-value check) / `ultra` (Ondo RFQ, non-sponsored names). `TradePanel` signs, confirms, records to `fills`, shows fill vs fair + Solscan. Encoders in `src/lib/guard.ts` need no IDL.
 - ⬜ Devnet guard proof: deploy in Playground (free), then `node scripts/guard-proof.mjs` → one Receipt tx + one `FillOffFairValue` revert, both on devnet Solscan.
-- ⬜ First real fills: demo wallet `4N6FeA9CzNSZVE3qTd6PevishNUtWDjwry3Nv66BWdvA` (secret in `.env`). **Budget is $20 total** → fund 0.02 SOL + $10 USDC; ~$0.60 is actually consumed (ATA rent + fees + spread), the rest stays as stock tokens. Run `scripts/test-swap.mjs` at $2 per issuer, list signatures in README.
+- ⬜ First real fills: demo wallet `4N6FeA9CzNSZVE3qTd6PevishNUtWDjwry3Nv66BWdvA` **funded 2026-09-24 with 0.0210 SOL + 9.82 USDT**. A $2 USDT buy of `NVDAx` simulates clean (166k CU). Run `scripts/test-swap.mjs <SYM> <mint> 2 50 --pay=USDT` per issuer, list signatures in README.
 - ⬜ Program build/deploy via Solana Playground (see `docs/PROGRAM.md`), set `NEXT_PUBLIC_GUARD_PROGRAM_ID`.
 - ⬜ Neon `DATABASE_URL` for tape + fill history; Vercel deploy; README "what's real" table; demo video during US market hours (9:30–16:00 ET).
 
@@ -19,6 +19,7 @@ Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Bac
 - No Solana CLI / Anchor / cargo locally → program is built in Solana Playground.
 - Pyth Hermes is key-gated and the free key is *not entitled to equities*. Do not depend on Hermes. Fair value reads Pyth's **sponsored on-chain accounts** (`src/lib/pyth-onchain.ts`, shard 1, 16 majors), then Jupiter Price v3 `stockData.price`, then Backpack perp marks.
 - All three issuers' tokens are Token-2022. Ondo quotes only via JupiterZ RFQ (MM-signed tx; cannot compose with the guard).
+- Input leg is USDC **or USDT** (`STABLES` in `src/lib/universe.ts`); the stablecoin's own USD price is fetched and applied, so a depeg does not distort the deviation we guard against. `/api/v1/swap` refuses up front if the wallet lacks the balance.
 - Jupiter lite-api is keyless but rate-limited; a `JUPITER_API_KEY` from portal.jup.ag switches to api.jup.ag (not yet wired).
 
 ## Conventions
