@@ -136,8 +136,8 @@ function decodeReceipt(d) {
 
 async function attempt(o) {
   const nonce = randomBytes(8).readBigUInt64LE();
-  const snapshotPda = PublicKey.findProgramAddressSync([Buffer.from("snapshot"), kp.publicKey.toBuffer(), o.stockMint.toBuffer()], PROGRAM)[0];
-  const receiptPda = PublicKey.findProgramAddressSync([Buffer.from("receipt"), kp.publicKey.toBuffer(), o.stockMint.toBuffer(), u64(nonce)], PROGRAM)[0];
+  const snapshotPda = PublicKey.findProgramAddressSync([Buffer.from("snapshot"), kp.publicKey.toBuffer(), o.stockAta.toBuffer()], PROGRAM)[0];
+  const receiptPda = PublicKey.findProgramAddressSync([Buffer.from("receipt"), kp.publicKey.toBuffer(), o.stockAta.toBuffer(), u64(nonce)], PROGRAM)[0];
   const args = Buffer.alloc(45);
   o.feedId.copy(args, 0);
   args.writeUInt16LE(o.maxDevBps, 32);

@@ -1,11 +1,11 @@
 [toolchain]
-anchor_version = "0.31.1"
+anchor_version = "0.29.0"
 
 [features]
 resolution = true
 skip-lint = false
 
-[programs.mainnet]
+[programs.devnet]
 fair_fill_guard = "FFGuardPARiTy1111111111111111111111111111111"
 
 [programs.localnet]
@@ -15,7 +15,7 @@ fair_fill_guard = "FFGuardPARiTy1111111111111111111111111111111"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "mainnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

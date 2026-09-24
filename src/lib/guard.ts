@@ -54,12 +54,14 @@ export function deriveAta(owner: PublicKey, mint: PublicKey, tokenProgram: Publi
   return PublicKey.findProgramAddressSync([owner.toBuffer(), tokenProgram.toBuffer(), mint.toBuffer()], ASSOCIATED_TOKEN_PROGRAM)[0];
 }
 
-export function deriveSnapshotPda(programId: PublicKey, owner: PublicKey, outMint: PublicKey) {
-  return PublicKey.findProgramAddressSync([Buffer.from("snapshot"), owner.toBuffer(), outMint.toBuffer()], programId)[0];
+// Both PDAs are seeded by the output *token account*, not the mint — the program reads untyped
+// accounts, which cannot be dereferenced inside a seeds constraint.
+export function deriveSnapshotPda(programId: PublicKey, owner: PublicKey, outAta: PublicKey) {
+  return PublicKey.findProgramAddressSync([Buffer.from("snapshot"), owner.toBuffer(), outAta.toBuffer()], programId)[0];
 }
 
-export function deriveReceiptPda(programId: PublicKey, owner: PublicKey, outMint: PublicKey, nonce: bigint) {
-  return PublicKey.findProgramAddressSync([Buffer.from("receipt"), owner.toBuffer(), outMint.toBuffer(), u64le(nonce)], programId)[0];
+export function deriveReceiptPda(programId: PublicKey, owner: PublicKey, outAta: PublicKey, nonce: bigint) {
+  return PublicKey.findProgramAddressSync([Buffer.from("receipt"), owner.toBuffer(), outAta.toBuffer(), u64le(nonce)], programId)[0];
 }
 
 export function feedIdFromHex(hex: string): Buffer {

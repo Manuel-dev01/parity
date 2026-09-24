@@ -112,8 +112,8 @@ export async function buildSwap(p: { underlying: Underlying; token: UniverseToke
         const inAta = deriveAta(owner, inMint, TOKEN_PROGRAM);
         const outAta = deriveAta(owner, outMint, new PublicKey(token.tokenProgram));
         const nonce = newNonce();
-        const snapshotPda = deriveSnapshotPda(program, owner, outMint);
-        const receiptPda = deriveReceiptPda(program, owner, outMint, nonce);
+        const snapshotPda = deriveSnapshotPda(program, owner, outAta);
+        const receiptPda = deriveReceiptPda(program, owner, outAta, nonce);
         const priceUpdate = new PublicKey(fair.onchainAccount);
         const maxAgeSec = fair.marketState === "regular" ? GUARD_DEFAULTS.maxAgeSecRegular : GUARD_DEFAULTS.maxAgeSecOffHours;
         instructions.push(buildSnapshotIx({ programId: program, owner, inAta, outAta, snapshotPda, nonce }));

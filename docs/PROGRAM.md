@@ -9,14 +9,11 @@ This Windows machine has no Solana CLI / Anchor / cargo, and the link is ~150 KB
 ## Steps (Tuesday)
 
 1. Open https://beta.solpg.io → **Create a new project → Anchor (Rust)**, name `fair_fill_guard`.
-2. Replace `src/lib.rs` with `programs/fair_fill_guard/src/lib.rs` (already includes the nonce-seeded Receipt from `docs/PROGRAM_PATCH.md`). In `Cargo.toml` (Playground's) add:
-   ```toml
-   anchor-spl = { version = "0.31.1", features = ["token_2022"] }
-   pyth-solana-receiver-sdk = "0.6"
-   ```
-   If Playground's Anchor version differs, match `anchor-lang`/`anchor-spl` to it. If `pyth-solana-receiver-sdk` fails to resolve after the Aug-2026 Pyth Core upgrade, check https://docs.pyth.network/price-feeds/core/use-real-time-data/pull-integration/solana for the current crate name/version.
+2. Replace `src/lib.rs` with `programs/fair_fill_guard/src/lib.rs`. **Nothing else to configure** — the program depends on `anchor-lang` only, which Playground's Anchor template already has. Do not try to add a `Cargo.toml`: Playground builds against a fixed crate list and forces uploaded files into `src/` ([issue #349](https://github.com/solana-playground/solana-playground/issues/349)).
+
+   > Playground supports `anchor-lang 0.29.0`, `pyth-sdk-solana 0.8.0` and an `anchor-spl` without the `token_2022` feature. It has **no** `pyth-solana-receiver-sdk`, and `pyth-sdk-solana 0.8` reads the old pythnet format, not the pull-oracle `PriceUpdateV2` accounts Parity uses. The program therefore parses `PriceUpdateV2` and the SPL/Token-2022 account layouts itself, with explicit owner checks (`PYTH_RECEIVER`, `TOKEN_PROGRAM`, `TOKEN_2022_PROGRAM`) replacing the typed wrappers.
 3. **Build** (hammer icon). Fix compile errors in the Playground editor; mirror every change back into this repo.
-4. Playground wallet: switch cluster to **devnet** (bottom bar) and airdrop to it (`solana airdrop 2`, or https://faucet.solana.com). Free.
+4. Playground wallet: switch cluster to **devnet** (bottom bar) and fund it. `solana airdrop 2` in the Playground terminal usually fails with a 429 (the public faucet is IP-rate-limited and often dry; Playground reports it as `body stream already read`). Use **https://faucet.solana.com** with a GitHub login instead — 2 SOL/day, enough for one deploy.
 5. **Deploy** to devnet. Copy the program id.
 
    > Mainnet deploy is deliberately out of scope: rent is ~0.0051 SOL per KB (a 200 KB build ≈ 1.02 SOL ≈ $115), and shipping an unaudited program that touches real funds is the wrong call regardless of budget. Mainnet buys route through Jupiter's audited programs with a pre-sign fair-value check instead; `NEXT_PUBLIC_GUARD_CLUSTER=devnet` enforces that in code (`mainnetGuardProgram()` returns null).

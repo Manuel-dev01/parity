@@ -11,14 +11,32 @@
 //!
 //! The guard is issuer-agnostic: it only cares about the underlying's fair price and the
 //! token decimals, so it works identically for xStocks, Ondo and Backpack tokens.
+//!
+//! Dependencies are deliberately limited to `anchor-lang`. Solana Playground — the only
+//! toolchain available for this build — compiles against a fixed crate list that has neither
+//! `pyth-solana-receiver-sdk` nor an `anchor-spl` with the `token_2022` feature, so this
+//! program reads the SPL/Token-2022 account layouts and Pyth's `PriceUpdateV2` layout
+//! directly, with explicit owner checks in place of the typed wrappers those crates provide.
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{Mint, TokenAccount};
-use pyth_solana_receiver_sdk::price_update::PriceUpdateV2;
 
 declare_id!("FFGuardPARiTy1111111111111111111111111111111");
 
 /// Effective and fair prices are compared at this fixed scale (USD * 1e8).
 const PRICE_SCALE: i32 = 8;
+
+/// rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ — the Pyth receiver program, the only valid
+/// owner of a PriceUpdateV2 account.
+const PYTH_RECEIVER: Pubkey = Pubkey::new_from_array([
+    12, 183, 250, 187, 82, 247, 166, 72, 187, 91, 49, 125, 154, 1, 139, 144, 87, 203, 2, 71, 116, 250, 254, 1, 230, 196, 223, 152, 204, 56, 88, 129,
+]);
+/// TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+const TOKEN_PROGRAM: Pubkey = Pubkey::new_from_array([
+    6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206, 235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140, 245, 133, 126, 255, 0, 169,
+]);
+/// TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb — every issuer's stock token is Token-2022.
+const TOKEN_2022_PROGRAM: Pubkey = Pubkey::new_from_array([
+    6, 221, 246, 225, 238, 117, 143, 222, 24, 66, 93, 188, 228, 108, 205, 218, 182, 26, 252, 77, 131, 185, 13, 39, 254, 189, 249, 40, 216, 161, 139, 252,
+]);
 
 #[program]
 pub mod fair_fill_guard {
@@ -27,37 +45,50 @@ pub mod fair_fill_guard {
     /// `nonce` is chosen by the client and seeds the Receipt PDA, so the receipt address is
     /// known before the transaction lands (the slot is not).
     pub fn snapshot(ctx: Context<Snapshot>, nonce: u64) -> Result<()> {
+        let owner = ctx.accounts.owner.key();
+        let (in_mint, in_authority, in_before) = read_token_account(&ctx.accounts.in_token)?;
+        let (out_mint, out_authority, out_before) = read_token_account(&ctx.accounts.out_token)?;
+        require_keys_eq!(in_authority, owner, GuardError::TokenAccountNotOwned);
+        require_keys_eq!(out_authority, owner, GuardError::TokenAccountNotOwned);
+
         let s = &mut ctx.accounts.snapshot;
-        s.owner = ctx.accounts.owner.key();
-        s.in_mint = ctx.accounts.in_token.mint;
-        s.out_mint = ctx.accounts.out_token.mint;
-        s.in_before = ctx.accounts.in_token.amount;
-        s.out_before = ctx.accounts.out_token.amount;
+        s.owner = owner;
+        s.in_mint = in_mint;
+        s.out_mint = out_mint;
+        s.in_before = in_before;
+        s.out_before = out_before;
         s.slot = Clock::get()?.slot;
         s.nonce = nonce;
-        s.bump = ctx.bumps.snapshot;
+        s.bump = *ctx.bumps.get("snapshot").ok_or(GuardError::BumpMissing)?;
         Ok(())
     }
 
     pub fn verify(ctx: Context<Verify>, args: VerifyArgs) -> Result<()> {
         let clock = Clock::get()?;
+        let owner = ctx.accounts.owner.key();
         let s = &ctx.accounts.snapshot;
         // snapshot and verify must be the same transaction; slot equality is the cheapest proxy
         // and the snapshot PDA is closed below so it cannot be replayed.
         require!(s.slot == clock.slot, GuardError::SnapshotNotInThisTransaction);
-        require_keys_eq!(s.in_mint, ctx.accounts.in_token.mint, GuardError::MintMismatch);
-        require_keys_eq!(s.out_mint, ctx.accounts.out_token.mint, GuardError::MintMismatch);
+
+        let (in_mint, in_authority, in_after) = read_token_account(&ctx.accounts.in_token)?;
+        let (out_mint, out_authority, out_after) = read_token_account(&ctx.accounts.out_token)?;
+        require_keys_eq!(in_authority, owner, GuardError::TokenAccountNotOwned);
+        require_keys_eq!(out_authority, owner, GuardError::TokenAccountNotOwned);
+        require_keys_eq!(s.in_mint, in_mint, GuardError::MintMismatch);
+        require_keys_eq!(s.out_mint, out_mint, GuardError::MintMismatch);
+        require_keys_eq!(s.in_mint, ctx.accounts.in_mint.key(), GuardError::MintMismatch);
         require_keys_eq!(s.out_mint, ctx.accounts.out_mint.key(), GuardError::MintMismatch);
 
-        let spent = s.in_before.checked_sub(ctx.accounts.in_token.amount).ok_or(GuardError::NothingSpent)?;
-        let received = ctx.accounts.out_token.amount.checked_sub(s.out_before).ok_or(GuardError::NothingReceived)?;
+        let spent = s.in_before.checked_sub(in_after).ok_or(GuardError::NothingSpent)?;
+        let received = out_after.checked_sub(s.out_before).ok_or(GuardError::NothingReceived)?;
         require!(spent > 0, GuardError::NothingSpent);
         require!(received > 0, GuardError::NothingReceived);
 
         // effective price per share, scaled 1e8:
         //   (spent / 10^in_dec) / (received / 10^out_dec) * 10^8
-        let in_dec = ctx.accounts.in_mint.decimals as i32;
-        let out_dec = ctx.accounts.out_mint.decimals as i32;
+        let in_dec = read_mint_decimals(&ctx.accounts.in_mint)? as i32;
+        let out_dec = read_mint_decimals(&ctx.accounts.out_mint)? as i32;
         let num = (spent as u128)
             .checked_mul(pow10((out_dec + PRICE_SCALE - in_dec).max(0) as u32))
             .ok_or(GuardError::MathOverflow)?;
@@ -68,14 +99,11 @@ pub mod fair_fill_guard {
 
         // fair price from Pyth, scaled 1e8; the client picks the feed (US session or 24/7)
         // and the acceptable staleness for the current market state.
-        let p = ctx
-            .accounts
-            .price_update
-            .get_price_no_older_than(&clock, args.max_age_sec, &args.feed_id)
-            .map_err(|_| GuardError::OraclePriceUnavailable)?;
+        let p = read_pyth_price(&ctx.accounts.price_update, &args.feed_id, args.max_age_sec, &clock)?;
         require!(p.price > 0, GuardError::OraclePriceUnavailable);
         let fair = scale(p.price as u128, p.exponent, PRICE_SCALE).ok_or(GuardError::MathOverflow)?;
         let conf = scale(p.conf as u128, p.exponent, PRICE_SCALE).ok_or(GuardError::MathOverflow)?;
+        require!(fair > 0, GuardError::OraclePriceUnavailable);
         // refuse to guard against a reference we cannot trust
         require!(conf.saturating_mul(10_000) / fair <= args.max_conf_bps as u128, GuardError::OracleConfidenceTooWide);
 
@@ -97,7 +125,7 @@ pub mod fair_fill_guard {
         r.ts = clock.unix_timestamp;
         r.feed_id = args.feed_id;
         r.nonce = s.nonce;
-        r.bump = ctx.bumps.receipt;
+        r.bump = *ctx.bumps.get("receipt").ok_or(GuardError::BumpMissing)?;
 
         emit!(FillVerified {
             owner: r.owner,
@@ -128,6 +156,55 @@ fn scale(v: u128, expo: i32, target: i32) -> Option<u128> {
     }
 }
 
+fn bytes32(src: &[u8]) -> Pubkey {
+    let mut b = [0u8; 32];
+    b.copy_from_slice(src);
+    Pubkey::new_from_array(b)
+}
+
+/// SPL Token and Token-2022 share the first 72 bytes of a token account: mint, owner, amount.
+/// Token-2022 extensions live past byte 165 and do not move these fields.
+fn read_token_account(ai: &UncheckedAccount) -> Result<(Pubkey, Pubkey, u64)> {
+    require!(*ai.owner == TOKEN_PROGRAM || *ai.owner == TOKEN_2022_PROGRAM, GuardError::NotATokenAccount);
+    let d = ai.try_borrow_data()?;
+    require!(d.len() >= 72, GuardError::NotATokenAccount);
+    let amount = u64::from_le_bytes(d[64..72].try_into().map_err(|_| GuardError::NotATokenAccount)?);
+    Ok((bytes32(&d[0..32]), bytes32(&d[32..64]), amount))
+}
+
+/// Mint layout: mint_authority (COption, 36) + supply (8) + decimals (1) at offset 44.
+fn read_mint_decimals(ai: &UncheckedAccount) -> Result<u8> {
+    require!(*ai.owner == TOKEN_PROGRAM || *ai.owner == TOKEN_2022_PROGRAM, GuardError::NotAMint);
+    let d = ai.try_borrow_data()?;
+    require!(d.len() >= 45, GuardError::NotAMint);
+    Ok(d[44])
+}
+
+struct OraclePrice {
+    price: i64,
+    conf: u64,
+    exponent: i32,
+}
+
+/// Pyth `PriceUpdateV2`, as posted by the Solana receiver program:
+///   8 discriminator | 32 write_authority | 1 verification_level (+1 if Partial)
+///   | 32 feed_id | 8 price | 8 conf | 4 exponent | 8 publish_time | ...
+/// Only a fully verified update is accepted, which is what the sponsored feeds publish.
+fn read_pyth_price(ai: &UncheckedAccount, feed_id: &[u8; 32], max_age_sec: u64, clock: &Clock) -> Result<OraclePrice> {
+    require_keys_eq!(*ai.owner, PYTH_RECEIVER, GuardError::NotAPythAccount);
+    let d = ai.try_borrow_data()?;
+    require!(d.len() >= 101, GuardError::NotAPythAccount);
+    require!(d[40] == 1, GuardError::OracleNotFullyVerified);
+    require!(&d[41..73] == feed_id.as_ref(), GuardError::OracleFeedMismatch);
+    let price = i64::from_le_bytes(d[73..81].try_into().map_err(|_| GuardError::NotAPythAccount)?);
+    let conf = u64::from_le_bytes(d[81..89].try_into().map_err(|_| GuardError::NotAPythAccount)?);
+    let exponent = i32::from_le_bytes(d[89..93].try_into().map_err(|_| GuardError::NotAPythAccount)?);
+    let publish_time = i64::from_le_bytes(d[93..101].try_into().map_err(|_| GuardError::NotAPythAccount)?);
+    let age = clock.unix_timestamp.saturating_sub(publish_time);
+    require!(age >= 0 && (age as u64) <= max_age_sec, GuardError::OraclePriceUnavailable);
+    Ok(OraclePrice { price, conf, exponent })
+}
+
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct VerifyArgs {
     /// Pyth feed id for the underlying (Equity.US.X/USD or Equity.Index.X/USD)
@@ -146,15 +223,18 @@ pub struct VerifyArgs {
 pub struct Snapshot<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
-    #[account(token::authority = owner)]
-    pub in_token: InterfaceAccount<'info, TokenAccount>,
-    #[account(token::authority = owner)]
-    pub out_token: InterfaceAccount<'info, TokenAccount>,
+    /// CHECK: layout and program ownership are validated in `read_token_account`; the authority
+    /// is checked against `owner` in the instruction.
+    pub in_token: UncheckedAccount<'info>,
+    /// CHECK: same as `in_token`.
+    pub out_token: UncheckedAccount<'info>,
     #[account(
         init,
         payer = owner,
         space = 8 + SnapshotState::INIT_SPACE,
-        seeds = [b"snapshot", owner.key().as_ref(), out_token.mint.as_ref()],
+        // keyed by the token account, not the mint: an untyped account cannot be read inside
+        // a seeds constraint. One live snapshot per token account, which is the same guarantee.
+        seeds = [b"snapshot", owner.key().as_ref(), out_token.key().as_ref()],
         bump
     )]
     pub snapshot: Account<'info, SnapshotState>,
@@ -166,27 +246,30 @@ pub struct Snapshot<'info> {
 pub struct Verify<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
-    #[account(token::authority = owner)]
-    pub in_token: InterfaceAccount<'info, TokenAccount>,
-    #[account(token::authority = owner)]
-    pub out_token: InterfaceAccount<'info, TokenAccount>,
-    pub in_mint: InterfaceAccount<'info, Mint>,
-    pub out_mint: InterfaceAccount<'info, Mint>,
+    /// CHECK: validated in `read_token_account`.
+    pub in_token: UncheckedAccount<'info>,
+    /// CHECK: validated in `read_token_account`.
+    pub out_token: UncheckedAccount<'info>,
+    /// CHECK: validated in `read_mint_decimals`; identity is checked against the snapshot.
+    pub in_mint: UncheckedAccount<'info>,
+    /// CHECK: validated in `read_mint_decimals`; identity is checked against the snapshot.
+    pub out_mint: UncheckedAccount<'info>,
     #[account(
         mut,
         close = owner,
         has_one = owner,
-        seeds = [b"snapshot", owner.key().as_ref(), out_token.mint.as_ref()],
+        seeds = [b"snapshot", owner.key().as_ref(), out_token.key().as_ref()],
         bump = snapshot.bump
     )]
     pub snapshot: Account<'info, SnapshotState>,
-    /// Pyth PriceUpdateV2 posted by the pyth-solana-receiver (any poster; freshness is checked)
-    pub price_update: Account<'info, PriceUpdateV2>,
+    /// CHECK: must be owned by the Pyth receiver; layout, feed id and staleness are validated
+    /// in `read_pyth_price`.
+    pub price_update: UncheckedAccount<'info>,
     #[account(
         init,
         payer = owner,
         space = 8 + Receipt::INIT_SPACE,
-        seeds = [b"receipt", owner.key().as_ref(), out_token.mint.as_ref(), &snapshot.nonce.to_le_bytes()],
+        seeds = [b"receipt", owner.key().as_ref(), out_token.key().as_ref(), &snapshot.nonce.to_le_bytes()],
         bump
     )]
     pub receipt: Account<'info, Receipt>,
@@ -247,6 +330,18 @@ pub enum GuardError {
     SnapshotNotInThisTransaction,
     #[msg("token account mint does not match snapshot")]
     MintMismatch,
+    #[msg("token account is not owned by the signer")]
+    TokenAccountNotOwned,
+    #[msg("account is not an SPL Token or Token-2022 token account")]
+    NotATokenAccount,
+    #[msg("account is not an SPL Token or Token-2022 mint")]
+    NotAMint,
+    #[msg("account is not owned by the Pyth receiver program")]
+    NotAPythAccount,
+    #[msg("oracle price update is not fully verified")]
+    OracleNotFullyVerified,
+    #[msg("oracle price update is for a different feed")]
+    OracleFeedMismatch,
     #[msg("no input tokens were spent")]
     NothingSpent,
     #[msg("no output tokens were received")]
@@ -259,4 +354,6 @@ pub enum GuardError {
     FillOffFairValue,
     #[msg("math overflow")]
     MathOverflow,
+    #[msg("pda bump missing")]
+    BumpMissing,
 }

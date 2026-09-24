@@ -76,6 +76,6 @@ owner + out mint, no slot) is closed on verify so it cannot be replayed.
 
 - `snapshot` data: `sha256("global:snapshot")[..8] ++ nonce:u64 LE`
 - `verify` data: `sha256("global:verify")[..8] ++ feed_id[32] ++ max_dev_bps:u16 ++ max_conf_bps:u16 ++ max_age_sec:u64 ++ issuer:u8`
-- Receipt PDA: `["receipt", owner, out_mint, nonce LE]`; Snapshot PDA: `["snapshot", owner, out_mint]`
+- Receipt PDA: `["receipt", owner, out_token_account, nonce LE]`; Snapshot PDA: `["snapshot", owner, out_token_account]` — seeded by the **token account**, not the mint: after the dependency-free rewrite the accounts are untyped and a seeds constraint cannot dereference `.mint`.
 - After deploying, set `NEXT_PUBLIC_GUARD_PROGRAM_ID=<program id>` in `.env`; `/api/v1/swap`
   switches composable venues from `plain` to `guarded` automatically.
