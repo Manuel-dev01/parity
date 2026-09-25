@@ -24,11 +24,28 @@ export interface BoardRow {
   liquidity: number;
 }
 
+// Jupiter's keyless endpoint is rate-limited and every board render costs several calls.
+// Instances are reused, so a short in-memory TTL keeps repeat loads off the wire entirely.
+const CACHE_MS = 20_000;
+const cache = new Map<string, { at: number; rows: Promise<BoardRow[]> }>();
+
+export function liveBoard(limit = 30, minIssuers = 2): Promise<BoardRow[]> {
+  const key = `${limit}:${minIssuers}`;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.rows;
+  const rows = buildBoard(limit, minIssuers).catch((e) => {
+    cache.delete(key); // never cache a failure
+    throw e;
+  });
+  cache.set(key, { at: Date.now(), rows });
+  return rows;
+}
+
 /**
  * Cheap, keyless live board: one Jupiter Price v3 batch per 50 mints gives the last
  * on-chain print per issuer token and the underlying stock reference price.
  */
-export async function liveBoard(limit = 30, minIssuers = 2): Promise<BoardRow[]> {
+async function buildBoard(limit: number, minIssuers: number): Promise<BoardRow[]> {
   const list: Underlying[] = multiIssuer(minIssuers).slice(0, limit);
   const mints = list.flatMap((u) => u.tokens.map((t) => t.mint));
   const prices: Record<string, JupPrice> = {};
