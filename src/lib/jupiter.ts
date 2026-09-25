@@ -9,7 +9,13 @@ const BASE = JUP_BASE;
 const headers: Record<string, string> = { "content-type": "application/json", ...jupHeaders() };
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`${BASE}${path}`, { ...init, headers: { ...headers, ...(init?.headers as Record<string, string>) }, cache: "no-store" });
+  // Nothing upstream is allowed to hang a render: every call is bounded.
+  const r = await fetch(`${BASE}${path}`, {
+    ...init,
+    headers: { ...headers, ...(init?.headers as Record<string, string>) },
+    cache: "no-store",
+    signal: AbortSignal.timeout(12_000),
+  });
   const j = (await r.json().catch(() => ({}))) as T & { error?: string; errorMessage?: string; errorCode?: string };
   if (!r.ok || j.error || j.errorMessage) throw new JupiterError(j.error || j.errorMessage || `jupiter ${r.status}`, j.errorCode ?? String(r.status));
   return j;

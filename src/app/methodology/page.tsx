@@ -84,17 +84,7 @@ export default function Methodology() {
       </div>
 
       {SECTIONS.map(([n, title, body]) => (
-        <div
-          key={n}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(48px,110px) minmax(0,1fr) minmax(0,1.1fr)",
-            gap: "8px 32px",
-            padding: "24px 0",
-            borderTop: "1px solid var(--ink)",
-            alignItems: "baseline",
-          }}
-        >
+        <div key={n} className="editorial">
           <span className="num" style={{ fontSize: 13, color: "var(--vermilion)" }}>
             {n}
           </span>

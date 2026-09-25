@@ -10,6 +10,15 @@ const BACKPACK = "https://api.backpack.exchange/api/v1";
 
 type Ref = { source: string; price: number; conf: number; asOf: string; account?: string };
 
+/** seconds before a source is no longer trustworthy: [regular session, outside it] */
+const STALE_AFTER: Record<FairValue["source"], [number, number]> = {
+  "pyth-onchain": [90, 900],
+  "pyth-us": [90, 900],
+  "pyth-24/7": [180, 900],
+  "jupiter-stock": [300, 6 * 3600],
+  "backpack-perp": [300, 900],
+};
+
 async function pythRefs(u: Underlying): Promise<Ref[]> {
   if (!PYTH_KEY || !u.pyth) return [];
   const ids = [u.pyth.us, u.pyth.index].filter(Boolean) as string[];
@@ -18,6 +27,7 @@ async function pythRefs(u: Underlying): Promise<Ref[]> {
     const r = await fetch(`${HERMES}/v2/updates/price/latest?${qs}&parsed=true`, {
       headers: { Authorization: `Bearer ${PYTH_KEY}` },
       next: { revalidate: 5 },
+      signal: AbortSignal.timeout(6000),
     });
     if (!r.ok) return [];
     const j = (await r.json()) as { parsed: { id: string; price: { price: string; conf: string; expo: number; publish_time: number } }[] };
@@ -34,7 +44,7 @@ async function pythRefs(u: Underlying): Promise<Ref[]> {
 
 /** Jupiter Price v3 carries the underlying stock reference price for tokenized equities (keyless). */
 export async function jupiterPrices(mints: string[]) {
-  const r = await fetch(`${JUP_BASE}/price/v3?ids=${mints.join(",")}`, { headers: jupHeaders(), next: { revalidate: 5 } });
+  const r = await fetch(`${JUP_BASE}/price/v3?ids=${mints.join(",")}`, { headers: jupHeaders(), next: { revalidate: 5 }, signal: AbortSignal.timeout(8000) });
   if (!r.ok) return {} as Record<string, JupPrice>;
   return (await r.json()) as Record<string, JupPrice>;
 }
@@ -49,7 +59,7 @@ export type JupPrice = {
 
 async function backpackPerpRef(symbol: string): Promise<Ref | null> {
   try {
-    const r = await fetch(`${BACKPACK}/ticker?symbol=${symbol}.US_USDC_PERP`, { next: { revalidate: 5 } });
+    const r = await fetch(`${BACKPACK}/ticker?symbol=${symbol}.US_USDC_PERP`, { next: { revalidate: 5 }, signal: AbortSignal.timeout(6000) });
     if (r.status !== 200) return null;
     const j = (await r.json()) as { lastPrice: string; timestamp?: number };
     return { source: "backpack-perp", price: Number(j.lastPrice), conf: 0, asOf: new Date().toISOString() };
@@ -87,8 +97,11 @@ export async function getFairValue(u: Underlying, jup?: Record<string, JupPrice>
   if (fresh(oc, marketState === "regular" ? 90 : 900)) pick = oc;
   else if (marketState === "regular" && fresh(us, 90)) pick = us;
   else if (fresh(idx, 180)) pick = idx;
-  else if (fresh(js, 6 * 3600)) pick = js;
+  // A live perp mark beats a lagging stock reference: picking `js` first and then calling it
+  // stale blocked every non-Pyth symbol from being quoted at all.
+  else if (fresh(js, 120)) pick = js;
   else if (bp) pick = bp;
+  else if (fresh(js, 6 * 3600)) pick = js;
   else pick = us ?? idx ?? js ?? oc ?? refs[0];
 
   if (!pick) throw new Error(`no reference price for ${u.symbol}`);
@@ -99,7 +112,8 @@ export async function getFairValue(u: Underlying, jup?: Record<string, JupPrice>
     source: pick.source as FairValue["source"],
     asOf: pick.asOf,
     ageSec,
-    stale: marketState === "regular" ? ageSec > 90 : ageSec > 6 * 3600,
+    // Each source ages differently: an oracle tick is stale in seconds, a perp mark never is.
+    stale: ageSec > STALE_AFTER[pick.source as FairValue["source"]][marketState === "regular" ? 0 : 1],
     marketState,
     onchainAccount: oc && fresh(oc, 900) ? (oc.account ?? null) : null,
     refs: refs.map(({ source, price, asOf }) => ({ source, price, asOf })),

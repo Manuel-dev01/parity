@@ -37,7 +37,7 @@ export default async function TickerPage({ params, searchParams }: Props) {
       datelineRight={initial ? `Fair value updated ${initial.fair.ageSec}s ago` : undefined}
       active="markets"
     >
-      <Ticker underlying={u} initial={initial} guardCluster={cluster} />
+      <Ticker underlying={u} initial={initial} guardCluster={cluster} size={size} />
     </Sheet>
   );
 }

@@ -25,12 +25,12 @@ export async function GET(req: Request) {
     for (const p of r.prints) {
       if (p.px == null) continue;
       const i = values.length;
-      tuples.push(`($${i + 1}, $${i + 2}, $${i + 3}, $${i + 4}, $${i + 5}, $${i + 6}, $${i + 7}, $${i + 8})`);
-      values.push(ts, r.symbol, p.issuer, p.mint, p.px, r.ref, p.bps, p.liquidity);
+      tuples.push(`($${i + 1}, $${i + 2}, $${i + 3}, $${i + 4}, $${i + 5}, $${i + 6}, $${i + 7}, $${i + 8}, $${i + 9})`);
+      values.push(ts, r.symbol, p.issuer, p.mint, p.px, r.ref, p.bps, p.liquidity, p.comparable);
     }
   }
   if (tuples.length) {
-    await sql(`insert into snapshots (ts, symbol, issuer, mint, px, ref, bps, liquidity) values ${tuples.join(",")} on conflict do nothing`, values);
+    await sql(`insert into snapshots (ts, symbol, issuer, mint, px, ref, bps, liquidity, comparable) values ${tuples.join(",")} on conflict do nothing`, values);
   }
   return NextResponse.json({ ok: true, ts, rows: tuples.length });
 }

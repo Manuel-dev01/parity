@@ -29,6 +29,9 @@ import {
 
 export type SwapMode = "guarded" | "plain" | "ultra";
 
+/** The widest guard the UI can express. Keep in step with OrderSlip's slider. */
+export const GUARD_MAX_BPS = 150;
+
 export interface SwapBuild {
   mode: SwapMode;
   /** base64 transaction: unsigned v0 (guarded/plain) or Ultra's ready-to-sign tx */
@@ -169,8 +172,10 @@ async function refusal(p: {
   }
 
   // 3. widen the guard, with the cost stated in dollars
-  const widened = Math.min(1000, Math.ceil(Math.abs(devBps) / 5) * 5 + 5);
-  options.push({
+  // Capped at the slider's own maximum: offering ±485 would pin the thumb at 150 and the
+  // next drag would silently snap the guard back.
+  const widened = Math.min(GUARD_MAX_BPS, Math.ceil(Math.abs(devBps) / 5) * 5 + 5);
+  if (widened > maxDevBps) options.push({
     kind: "guard",
     title: `Widen guard to ±${widened} bps`,
     detail: `You would pay $${Math.round(awayUsd)} ${devBps > 0 ? "above" : "below"} fair`,
@@ -182,13 +187,16 @@ async function refusal(p: {
 
 const bps = (px: number, fair: number) => Math.round(((px - fair) / fair) * 1e4);
 
-async function stableBalance(owner: PublicKey, mint: string): Promise<number> {
+/** null means "could not read", which is not the same as "holds nothing". */
+async function stableBalance(owner: PublicKey, mint: string): Promise<number | null> {
+  const ata = deriveAta(owner, new PublicKey(mint), TOKEN_PROGRAM);
   try {
-    const ata = deriveAta(owner, new PublicKey(mint), TOKEN_PROGRAM);
     const r = await rpc().getTokenAccountBalance(ata);
     return Number(r.value.amount);
-  } catch {
-    return 0; // no token account yet
+  } catch (e) {
+    // An absent account genuinely is a zero balance; anything else is an RPC failure and
+    // must not be reported to the user as an empty wallet.
+    return /could not find account|not found/i.test(String(e)) ? 0 : null;
   }
 }
 
@@ -230,7 +238,7 @@ export async function buildSwap(p: {
     // Funding is checked only once the price is acceptable: a bad quote is the more useful
     // thing to report, and it is true whether or not the wallet happens to be funded.
     const held = await stableBalance(owner, payMint);
-    if (held < amount) {
+    if (held != null && held < amount) {
       throw new SwapRejected(`wallet holds ${(held / 10 ** pay.decimals).toFixed(2)} ${pay.symbol}, needs ${usd.toFixed(2)}`, 400);
     }
     return { shares, fillPx, devBps };

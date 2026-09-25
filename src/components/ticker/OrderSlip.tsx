@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import type { SwapBuild, SwapRefusal } from "@/lib/execute";
+import { GUARD_MAX_BPS, type SwapBuild, type SwapRefusal } from "@/lib/execute";
 import type { ParityQuote, Underlying, VenueQuote } from "@/lib/types";
 import { ISSUERS } from "@/lib/issuers";
 import { useWallet } from "../wallet/Wallet";
@@ -12,6 +12,10 @@ type Tier = "checked" | "enforced";
 interface Fill {
   sig: string;
   build: SwapBuild;
+  shares: number;
+  fillPx: number;
+  /** whether the receipt actually persisted — the link must not promise a page that 404s */
+  recorded: boolean;
 }
 
 const b64ToBytes = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -49,6 +53,7 @@ export function OrderSlip({
   const [err, setErr] = useState<string | null>(null);
   const [refusal, setRefusal] = useState<SwapRefusal | null>(null);
   const [fill, setFill] = useState<Fill | null>(null);
+  const [mode, setMode] = useState<SwapBuild["mode"] | null>(null);
 
   // Enforced lives on devnet only until the program is audited, so on mainnet it is shown
   // and explained but cannot be chosen. The UI must not imply protection it cannot deliver.
@@ -82,7 +87,11 @@ export function OrderSlip({
         else setErr(build.error || r.statusText);
         return;
       }
+      setMode(build.mode);
       let sig: string;
+      // Jupiter is given up to `guard` bps of slippage, so the fill can land away from the
+      // quote. A receipt that publishes the quote instead of the settled amount is a lie.
+      let settled: number | null = null;
       if (build.mode === "ultra") {
         const signed = await signTransaction(b64ToBytes(build.tx));
         setStage("sending");
@@ -91,15 +100,20 @@ export function OrderSlip({
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ requestId: build.requestId, signedTx: bytesToB64(signed) }),
         });
-        const j = (await ex.json()) as { signature?: string; error?: string };
+        const j = (await ex.json()) as { signature?: string; error?: string; outAmount?: string | null };
         if (!ex.ok || !j.signature) throw new Error(j.error || "execution failed");
         sig = j.signature;
+        if (j.outAmount) settled = Number(j.outAmount);
       } else {
         sig = await signAndSendTransaction(b64ToBytes(build.tx));
         setStage("sending");
-        await waitFor(sig);
+        settled = await waitFor(sig, build.quote.mint, address);
       }
-      await fetch("/api/v1/fills", {
+      // settled is in raw token units when it came from the chain; fall back to the quote
+      // only when the amount could not be read.
+      const shares_ = settled != null && settled > 0 ? settled : build.quote.shares;
+      const fillPx_ = (amount * build.quote.payPriceUsd) / shares_;
+      const recorded = await fetch("/api/v1/fills", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
@@ -109,16 +123,18 @@ export function OrderSlip({
           issuer: build.quote.issuer,
           mint: build.quote.mint,
           usd: amount,
-          shares: build.quote.shares,
-          fillPx: build.quote.fillPx,
+          shares: shares_,
+          fillPx: fillPx_,
           fairPx: build.quote.fairPx,
-          devBps: build.quote.devBps,
+          devBps: Math.round(((fillPx_ - build.quote.fairPx) / build.quote.fairPx) * 1e4),
           guarded: build.mode === "guarded",
           receipt: build.guard?.receipt ?? null,
           routes: build.routes ?? [],
         }),
-      }).catch(() => {});
-      setFill({ sig, build });
+      })
+        .then((r) => r.json())
+        .catch(() => ({ recorded: false }));
+      setFill({ sig, build, shares: shares_, fillPx: fillPx_, recorded: !!recorded?.recorded });
       setStage("filled");
     } catch (e) {
       setStage("quote");
@@ -142,7 +158,7 @@ export function OrderSlip({
         {stage === "filled" && fill ? (
           <Filled fill={fill} onReset={() => { setFill(null); reset(); }} />
         ) : stage === "signing" || stage === "sending" ? (
-          <Signing tier={tier} guard={guard} stage={stage} />
+          <Signing enforced={mode === "guarded"} guard={guard} stage={stage} />
         ) : (
           <>
             <Rows
@@ -172,7 +188,7 @@ export function OrderSlip({
                   ±{guard} bps
                 </span>
               </div>
-              <input type="range" min={10} max={150} step={5} value={guard} onChange={(e) => setGuard(Number(e.target.value))} style={{ width: "100%" }} onClick={(e) => e.stopPropagation()} />
+              <input type="range" min={10} max={GUARD_MAX_BPS} step={5} value={guard} onChange={(e) => setGuard(Number(e.target.value))} style={{ width: "100%" }} onClick={(e) => e.stopPropagation()} />
               <p style={{ margin: 0, fontSize: 14, fontStyle: "italic", color: "var(--muted)" }}>
                 Parity won&apos;t build a trade further than this from fair. At {usd(amount)} that is {usd((amount * guard) / 1e4, 2)}.
               </p>
@@ -319,7 +335,7 @@ function Refused({
             onClick={() => {
               if (o.kind === "issuer" && o.mint) onPick(o.mint);
               if (o.kind === "size" && o.usd) setAmount(o.usd);
-              if (o.kind === "guard" && o.maxDevBps) setGuard(o.maxDevBps);
+              if (o.kind === "guard" && o.maxDevBps) setGuard(Math.min(GUARD_MAX_BPS, o.maxDevBps));
               reset();
             }}
             style={{
@@ -350,16 +366,16 @@ function Refused({
   );
 }
 
-function Signing({ tier, guard, stage }: { tier: Tier; guard: number; stage: Stage }) {
+function Signing({ enforced, guard, stage }: { enforced: boolean; guard: number; stage: Stage }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div className="serif" style={{ fontSize: 28 }}>
         {stage === "signing" ? "Waiting for your wallet" : "Confirming on-chain"}
       </div>
       <p style={{ margin: 0, fontSize: 15 }}>
-        {tier === "checked"
-          ? "Quote checked against fair value. It is re-checked at signing; after that, your slippage limit applies."
-          : `If the fill lands outside ±${guard} bps of fair, the whole transaction reverts and you pay only the network fee.`}
+        {enforced
+          ? `If the fill lands outside ±${guard} bps of fair, the whole transaction reverts and you pay only the network fee.`
+          : "Quote checked against fair value. It is re-checked at signing; after that, your slippage limit applies."}
       </p>
       <div style={{ height: 2, background: "var(--rule-light)", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, width: "60%", background: "var(--ink)", animation: "slide 1.4s ease-in-out infinite" }} />
@@ -377,12 +393,12 @@ function Filled({ fill, onReset }: { fill: Fill; onReset: () => void }) {
         Filled · {fill.build.mode === "guarded" ? "Enforced" : "Checked"}
       </span>
       <div className="serif" style={{ fontSize: 30, lineHeight: 1.05 }}>
-        {q.shares.toFixed(4)} {q.symbol} at {fmtPx(q.fillPx)}
+        {fill.shares.toFixed(4)} {q.symbol} at {fmtPx(fill.fillPx)}
       </div>
       <Rows
         rows={[
           ["Fair at fill", fmtPx(q.fairPx)],
-          ["From fair", bp(q.devBps)],
+          ["From fair", bp(Math.round(((fill.fillPx - q.fairPx) / q.fairPx) * 1e4))],
         ]}
         ruled
       />
@@ -390,7 +406,11 @@ function Filled({ fill, onReset }: { fill: Fill; onReset: () => void }) {
         <a href={`https://solscan.io/tx/${fill.sig}`} target="_blank" rel="noreferrer">
           Transaction ↗
         </a>
-        <a href={`/r/${fill.sig}`}>View receipt</a>
+        {fill.recorded ? (
+          <a href={`/r/${fill.sig}`}>View receipt</a>
+        ) : (
+          <span style={{ fontStyle: "italic", color: "var(--muted)" }}>Receipt not recorded — the transaction above is the record.</span>
+        )}
       </div>
       <p style={{ margin: 0, fontSize: 14, fontStyle: "italic", color: "var(--muted)" }}>{fill.build.reason}</p>
       <button onClick={onReset} style={{ ...btn, height: 46, border: "1px solid var(--ink)", background: "none", color: "var(--ink)" }}>
@@ -400,11 +420,15 @@ function Filled({ fill, onReset }: { fill: Fill; onReset: () => void }) {
   );
 }
 
-async function waitFor(sig: string) {
+/** Polls to confirmation and reports how much of `mint` actually arrived. */
+async function waitFor(sig: string, mint: string, owner: string): Promise<number | null> {
   const until = Date.now() + 90_000;
   while (Date.now() < until) {
-    const j = (await fetch(`/api/v1/swap/status?sig=${sig}`, { cache: "no-store" }).then((r) => r.json())) as { status?: string; err?: string };
-    if (j.status === "confirmed") return;
+    // A single failed poll must not discard a transaction that may have landed.
+    const j = await fetch(`/api/v1/swap/status?sig=${sig}&mint=${mint}&owner=${owner}`, { cache: "no-store" })
+      .then((r) => r.json())
+      .catch(() => ({}) as { status?: string; err?: string; received?: number });
+    if (j.status === "confirmed") return typeof j.received === "number" ? j.received : null;
     if (j.status === "failed") throw new Error(`transaction failed on-chain: ${j.err}`);
     await new Promise((r) => setTimeout(r, 2000));
   }

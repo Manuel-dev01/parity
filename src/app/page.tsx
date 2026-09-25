@@ -32,7 +32,15 @@ export default async function Landing() {
   const heroTokens: HeroToken[] = feature
     ? feature.prints.filter((p) => p.comparable).map((p) => ({ issuer: p.issuer, token: p.symbol, bps: p.bps }))
     : [];
-  const fills = dbConfigured ? await sql<FillRow>(`select * from fills order by ts desc limit 5`).catch(() => []) : [];
+  let fills: FillRow[] = [];
+  let fillsAvailable = dbConfigured;
+  if (dbConfigured) {
+    try {
+      fills = await sql<FillRow>(`select * from fills order by ts desc limit 5`);
+    } catch {
+      fillsAvailable = false; // "could not read" must not render as "none exist"
+    }
+  }
 
   return (
     <Sheet dateline="Live price record · tokenized US stocks on Solana" datelineRight={<Clock withDate />}>
@@ -53,7 +61,7 @@ export default async function Landing() {
             style={{ display: "flex", border: "1px solid var(--ink)", maxWidth: 380, color: "var(--ink)", textDecoration: "none" }}
           >
             <span className="num" style={{ flex: 1, height: 50, display: "flex", alignItems: "center", padding: "0 14px", fontSize: 14, color: "var(--muted)" }}>
-              {feature?.symbol ?? "NVDA"}
+              {feature?.symbol ?? "Browse"}
             </span>
             <span style={{ display: "flex", alignItems: "center", padding: "0 22px", background: "var(--vermilion)", color: "var(--on-vermilion)" }}>Price it →</span>
           </Link>
@@ -83,14 +91,7 @@ export default async function Landing() {
         {STEPS.map(([n, title, body]) => (
           <div
             key={n}
-            style={{
-              display: "grid",
-              gridTemplateColumns: "minmax(48px,110px) minmax(0,1fr) minmax(0,1.1fr)",
-              gap: "8px 32px",
-              padding: "24px 0",
-              borderTop: "1px solid var(--ink)",
-              alignItems: "baseline",
-            }}
+            className="editorial"
           >
             <span className="num" style={{ fontSize: 13, color: "var(--vermilion)" }}>
               {n}
@@ -136,7 +137,11 @@ export default async function Landing() {
               Receipts
             </h2>
           </div>
-          {fills.length === 0 ? (
+          {!fillsAvailable ? (
+            <p style={{ fontSize: 15, fontStyle: "italic", color: "var(--muted)", paddingTop: 10 }}>
+              The receipt record could not be read just now.
+            </p>
+          ) : fills.length === 0 ? (
             <p style={{ fontSize: 15, fontStyle: "italic", color: "var(--muted)", paddingTop: 10 }}>
               No fills recorded yet. Every fill Parity routes is published here.
             </p>

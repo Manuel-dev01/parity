@@ -29,7 +29,8 @@ export default async function Markets({ searchParams }: Props) {
   if (!isNow && dbConfigured) {
     history = await sql<Point>(
       `select symbol, ts, (max(bps) - min(bps)) as spread from snapshots
-       where bps is not null group by symbol, ts order by ts`,
+       where bps is not null and comparable is not false
+       group by symbol, ts having count(*) > 1 order by ts`,
     ).catch(() => []);
     const meta = await sql<{ first: string; last: string; n: number }>(
       `select min(ts) as first, max(ts) as last, count(distinct ts)::int as n from snapshots`,

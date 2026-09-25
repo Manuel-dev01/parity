@@ -18,6 +18,7 @@ export async function sql<T = Record<string, unknown>>(query: string, params: un
     headers: { "content-type": "application/json", "neon-connection-string": url, "neon-array-mode": "false" },
     body: JSON.stringify({ query, params }),
     cache: "no-store",
+    signal: AbortSignal.timeout(10_000),
   });
   if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const j = (await r.json()) as { rows: T[] };
@@ -56,4 +57,7 @@ export async function migrate() {
   // Every issuer's executable price for the same share at the same size and moment. Without
   // this a receipt cannot honestly say a fill was the best of three, only that it happened.
   await sql(`alter table fills add column if not exists routes jsonb`);
+  // History has to exclude the same thin-pool prints the Now board excludes, or Fig. 2
+  // contradicts the tab beside it.
+  await sql(`alter table snapshots add column if not exists comparable boolean default true`);
 }

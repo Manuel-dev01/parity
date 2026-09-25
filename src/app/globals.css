@@ -131,6 +131,37 @@ input[type="range"] {
 ::selection {
   background: var(--tint);
 }
+/* The three-column editorial rows are unreadable below ~640px — one word per line.
+   Container queries, not media queries, because the page root is the container. */
+.editorial {
+  display: grid;
+  grid-template-columns: minmax(48px, 110px) minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 8px 32px;
+  padding: 24px 0;
+  border-top: 1px solid var(--ink);
+  align-items: baseline;
+}
+@container (max-width: 640px) {
+  .editorial {
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+  }
+  .editorial > :nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+/* Nav and inline links need a tappable height on phones without changing the type. */
+@container (max-width: 640px) {
+  .sheet a,
+  .sheet button {
+    min-height: 28px;
+  }
+}
+:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

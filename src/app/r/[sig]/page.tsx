@@ -12,10 +12,15 @@ export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ sig: string }> };
 
-async function getFill(sig: string) {
+/** `undefined` means the store could not be read — different from "no such receipt". */
+async function getFill(sig: string): Promise<FillRow | null | undefined> {
   if (!dbConfigured) return null;
-  const rows = await sql<FillRow>(`select * from fills where sig = $1 limit 1`, [sig]).catch(() => []);
-  return rows[0] ?? null;
+  try {
+    const rows = await sql<FillRow>(`select * from fills where sig = $1 limit 1`, [sig]);
+    return rows[0] ?? null;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,6 +34,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Receipt({ params }: Props) {
   const { sig } = await params;
   const f = await getFill(sig);
+  if (f === undefined) {
+    return (
+      <Sheet dateline={`Receipt · ${shortSig(sig)}`} datelineRight=" " active="receipts">
+        <div style={{ padding: "clamp(40px,6cqw,96px) 0", maxWidth: 640, display: "flex", flexDirection: "column", gap: 14 }}>
+          <h1 className="serif" style={{ margin: 0, fontSize: "clamp(36px,5cqw,72px)", lineHeight: 0.95 }}>
+            This receipt could not be read right now.
+          </h1>
+          <p style={{ margin: 0, fontSize: 18 }}>
+            The record store did not answer. The receipt is not missing — reload in a moment, or read the transaction directly:{" "}
+            <a href={`https://solscan.io/tx/${sig}`} target="_blank" rel="noreferrer">
+              {shortSig(sig)} ↗
+            </a>
+          </p>
+        </div>
+      </Sheet>
+    );
+  }
   if (!f) notFound();
 
   const enforced = f.guarded;
@@ -89,7 +111,7 @@ export default async function Receipt({ params }: Props) {
           <Fact k="Size">{usd(f.usd)}</Fact>
           <Fact k="Receipt record">
             {f.receipt ? (
-              <a href={`https://solscan.io/account/${f.receipt}?cluster=devnet`} target="_blank" rel="noreferrer">
+              <a href={`https://solscan.io/account/${f.receipt}${enforced ? "?cluster=devnet" : ""}`} target="_blank" rel="noreferrer">
                 On-chain · {shortSig(f.receipt)} ↗
               </a>
             ) : (

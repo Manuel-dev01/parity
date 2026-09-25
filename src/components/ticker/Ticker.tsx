@@ -16,47 +16,65 @@ export function Ticker({
   underlying,
   initial,
   guardCluster,
+  size = 1000,
 }: {
   underlying: Underlying;
   initial: ParityQuote | null;
   guardCluster: "devnet" | "mainnet" | null;
+  size?: number;
 }) {
-  const [amount, setAmount] = useState(1000);
+  const [amount, setAmount] = useState(size);
   const [guard, setGuard] = useState(50);
   const [pay, setPay] = useState<"USDC" | "USDT">("USDC");
   const [q, setQ] = useState<ParityQuote | null>(initial);
   const [pickedMint, setPickedMint] = useState<string | null>(null);
   const [src, setSrc] = useState<{ source: Source; x: number; y: number } | null>(null);
+  const [load, setLoad] = useState<"ok" | "loading" | "error">(initial ? "ok" : "loading");
   const root = useRef<HTMLDivElement>(null);
 
   // Re-quote when the size changes: the cheapest token at $1,000 is often not the
   // cheapest at $100,000, which is the entire point of the screen.
+  // Debounced: `amount` changes on every keystroke, and each quote costs several calls to a
+  // rate-limited upstream.
   useEffect(() => {
     let dead = false;
-    const load = async () => {
+    let timer: ReturnType<typeof setInterval>;
+    const pull = async () => {
       try {
         const r = await fetch(`/api/v1/quote?symbol=${underlying.symbol}&usd=${amount}`, { cache: "no-store" });
         const j = (await r.json()) as ParityQuote;
-        if (!dead && j.venues) setQ(j);
+        if (dead) return;
+        if (j.venues) {
+          setQ(j);
+          setLoad("ok");
+        } else setLoad((s) => (s === "ok" ? "ok" : "error"));
       } catch {
-        /* keep the last good quote */
+        // keep the last good quote, but never let a failure read as "nothing is quoting"
+        if (!dead) setLoad((s) => (s === "ok" ? "ok" : "error"));
       }
     };
-    load();
-    const t = setInterval(load, 12_000);
+    const debounce = setTimeout(() => {
+      pull();
+      timer = setInterval(pull, 12_000);
+    }, 450);
     return () => {
       dead = true;
-      clearInterval(t);
+      clearTimeout(debounce);
+      clearInterval(timer);
     };
   }, [underlying.symbol, amount]);
 
   const venues = q?.venues ?? [];
   const routable = venues.filter((v) => v.effPx[String(q?.usd ?? amount)] != null);
-  const effOf = (v: VenueQuote) => v.effPx[String(q?.usd ?? amount)] ?? null;
+  const effOf = (v: VenueQuote) => v.effPx[String(q?.usd ?? amount)] ?? v.effPx[String(amount)] ?? null;
   const passing = routable.filter((v) => v.devBps != null && Math.abs(v.devBps) <= guard);
   const best = passing.length ? passing.reduce((a, b) => ((effOf(b) as number) < (effOf(a) as number) ? b : a)) : null;
   const selected = venues.find((v) => v.token.mint === pickedMint) ?? best ?? routable[0] ?? null;
   const fair = q?.fair;
+  // "Closest" means nearest to fair value — `routable` is sorted by price, which is not the same.
+  const nearestToFair = routable.length
+    ? routable.reduce((a, b) => (Math.abs(b.devBps ?? 1e9) < Math.abs(a.devBps ?? 1e9) ? b : a))
+    : null;
 
   const open = (e: React.MouseEvent, source: Source) => {
     e.stopPropagation();
@@ -117,6 +135,10 @@ export function Ticker({
               </>
             ) : routable.length ? (
               <>At {usd(amount)}, no token is within your guard.</>
+            ) : load === "loading" ? (
+              <>Quoting every {underlying.symbol} token at {usd(amount)}…</>
+            ) : load === "error" ? (
+              <>Quotes for {underlying.symbol} could not be read.</>
             ) : (
               <>No token for {underlying.symbol} is quoting right now.</>
             )}
@@ -129,8 +151,12 @@ export function Ticker({
               </>
             ) : routable.length ? (
               <>
-                The closest is {routable[0].token.symbol} at {bp(routable[0].devBps)} from fair. The order slip lists what you can do instead.
+                The closest is {nearestToFair?.token.symbol} at {bp(nearestToFair?.devBps)} from fair. The order slip lists what you can do instead.
               </>
+            ) : load === "loading" ? (
+              <>Pricing each issuer against the oracle at this size.</>
+            ) : load === "error" ? (
+              <>The quote service did not answer. Nothing below is a statement about the market.</>
             ) : (
               <>Every issuer&apos;s route is unavailable at this size. Ondo quotes only during market hours.</>
             )}
@@ -185,7 +211,7 @@ export function Ticker({
         <div style={{ flex: "1 1 560px", minWidth: 0 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 16, borderBottom: "1px solid var(--ink)", paddingBottom: 6 }}>
             <h2 className="serif" style={{ margin: 0, fontSize: 32, lineHeight: 1.1 }}>
-              The {venues.length} tokens at {usd(amount)}
+              {venues.length ? `The ${venues.length} tokens` : "Tokens"} at {usd(amount)}
             </h2>
             <span style={{ fontSize: 14, fontStyle: "italic", color: "var(--muted)" }}>Ranked by what you&apos;d pay. Dotted figures show their source.</span>
           </div>
