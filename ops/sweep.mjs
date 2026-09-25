@@ -96,7 +96,36 @@ async function audit(page, screen, vpName, width) {
   for (const s of stuck) note(screen, vpName, "bad-text", `page shows "${s}"`);
 }
 
+// A 200 is not proof an asset is ours. Scaffold defaults ship silently because nothing errors,
+// which is exactly how Next's stock favicon survived an entire audit pass.
+async function checkBrandAssets() {
+  const SCAFFOLD = {
+    "/favicon.ico": 25931, // byte length of Next's stock favicon
+    "/next.svg": null,
+    "/vercel.svg": null,
+    "/file.svg": null,
+    "/globe.svg": null,
+    "/window.svg": null,
+  };
+  for (const [path, stockSize] of Object.entries(SCAFFOLD)) {
+    const r = await fetch(BASE + path).catch(() => null);
+    if (!r || !r.ok) continue;
+    const len = Number(r.headers.get("content-length")) || (await r.arrayBuffer()).byteLength;
+    if (stockSize == null || len === stockSize) {
+      note("site", "assets", "placeholder-asset", `${path} is still a framework scaffold asset (${len} bytes)`);
+    }
+  }
+  for (const [path, label] of [
+    ["/icon.svg", "site icon"],
+    ["/opengraph-image", "social share image"],
+  ]) {
+    const r = await fetch(BASE + path).catch(() => null);
+    if (!r || !r.ok) note("site", "assets", "missing-asset", `${label} at ${path} is missing (${r ? r.status : "no response"})`);
+  }
+}
+
 const browser = await chromium.launch();
+await checkBrandAssets();
 for (const [vpName, width, height] of VIEWPORTS) {
   const ctx = await browser.newContext({ viewport: { width, height } });
   for (const [screen, path] of SCREENS) {
