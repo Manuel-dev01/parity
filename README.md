@@ -26,14 +26,14 @@ Everything below can be checked on-chain. Read the Guard section for the one del
 | Mainnet execution | **Real.** Signature below |
 | Pre-sign fair-value check | **Real.** Refuses to return a transaction outside your bps tolerance — including a live refusal recorded during testing |
 | `fair_fill_guard` on-chain guard | **Deployed and proven on devnet, deliberately not on mainnet.** See below |
-| Tape history | Real once `DATABASE_URL` is set (Neon); live-only otherwise |
-| Fill history (`fills` table) | Code complete; unpopulated without `DATABASE_URL` |
+| Tape history | **Real.** Neon Postgres, though Vercel Hobby caps the sampler at one run/day — an external pinger on `/api/cron/snapshot` restores per-minute sampling |
+| Fill history (`fills` table) | **Real.** `GET /api/v1/fills` returns the mainnet fill above |
 
 ### Real mainnet transactions
 
 | What | Signature |
 |---|---|
-| Buy 2 USDT → 0.0088995 `NVDAx`, 18 bps over fair | [`5Tdxx…nddf`](https://solscan.io/tx/5TdxxW3X5seDNtMBEDeGFaZpPHt23EwDTEHXwxaLrPhVMZAYFNoZMRQBKDSwmdbhaKabAfuGMnQxSu82kJPKnddf) |
+| Buy 2 USDT → 0.0088995 `NVDAx` — quoted 18 bps over fair, **settled 38 bps** | [`5Tdxx…nddf`](https://solscan.io/tx/5TdxxW3X5seDNtMBEDeGFaZpPHt23EwDTEHXwxaLrPhVMZAYFNoZMRQBKDSwmdbhaKabAfuGMnQxSu82kJPKnddf) |
 | USDT → USDC (Ondo only pairs with USDC) | [`4qnsh…45TY`](https://solscan.io/tx/4qnsh9W2s44wqj5EUCDWvVoh5rhzQ5CjF9gyn6aVG4PSHgjqSHaqymcRsyUQ7ydp3pVdgqiyrqsgfWVZ8Noh45TY) |
 
 A third fill was **refused, correctly**: Ondo's `NVDAon` quoted +98 bps against a ±50 bps tolerance, and the API returned
@@ -131,6 +131,6 @@ programs/fair_fill_guard  the on-chain guard (anchor-lang only)
 
 - The guard is devnet-only until audited (above).
 - `fills` rows need `DATABASE_URL`; the tape falls back to live-only without it.
-- Recorded fill price is the quoted price, not the settled price — they differed by ~2 bps in the mainnet fill above. Deriving it from the transaction's balance deltas is the next correctness fix.
+- The UI reports the **quoted** fill price; the settled price can differ materially. The mainnet fill above quoted 18 bps and settled at 38 bps once slippage landed. The `fills` row records the settled figure, but the success screen does not yet — deriving it from the transaction's balance deltas is the next correctness fix.
 - Ondo tokens only pair with USDC on Jupiter, so a USDT buyer needs one conversion first.
 - Backpack coverage is thin (44 tokens); many names exist on only one or two issuers.
