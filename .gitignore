@@ -48,3 +48,8 @@ next-env.d.ts
 
 # browser sweep output
 ops/shots/
+
+# agent tooling, not project code
+.agents/
+.claude/
+skills-lock.json

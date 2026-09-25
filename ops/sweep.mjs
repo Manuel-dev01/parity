@@ -116,13 +116,19 @@ for (const [vpName, width, height] of VIEWPORTS) {
     try {
       const resp = await page.goto(BASE + path, { waitUntil: "domcontentloaded", timeout: 90_000 });
       status = resp?.status() ?? 0;
-      await page.waitForTimeout(6000); // let client polling settle
+      await page.waitForLoadState("networkidle", { timeout: 30_000 }).catch(() => {});
+      await page.waitForTimeout(5000); // let client polling settle
     } catch (e) {
       note(screen, vpName, "navigation", `failed to load: ${String(e).slice(0, 120)}`);
     }
     if (status && status >= 400 && screen !== "notfound") note(screen, vpName, "http", `HTTP ${status}`);
 
-    await audit(page, screen, vpName, width);
+    try {
+      await audit(page, screen, vpName, width);
+    } catch (e) {
+      // a client-side navigation can destroy the execution context mid-audit
+      note(screen, vpName, "audit-skipped", String(e).slice(0, 100));
+    }
     for (const e of [...new Set(errors)]) note(screen, vpName, "console", e);
     for (const f of [...new Set(failed)].slice(0, 6)) note(screen, vpName, "request", f);
 
