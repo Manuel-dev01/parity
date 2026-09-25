@@ -2,8 +2,11 @@
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 
 const KEY = process.env.JUPITER_API_KEY;
-const BASE = KEY ? "https://api.jup.ag" : "https://lite-api.jup.ag";
-const headers: Record<string, string> = { "content-type": "application/json", ...(KEY ? { "x-api-key": KEY } : {}) };
+/** Keyless lite-api is heavily rate-limited; a free key from portal.jup.ag lifts the ceiling. */
+export const JUP_BASE = KEY ? "https://api.jup.ag" : "https://lite-api.jup.ag";
+export const jupHeaders = (): Record<string, string> => (KEY ? { "x-api-key": KEY } : {});
+const BASE = JUP_BASE;
+const headers: Record<string, string> = { "content-type": "application/json", ...jupHeaders() };
 
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   const r = await fetch(`${BASE}${path}`, { ...init, headers: { ...headers, ...(init?.headers as Record<string, string>) }, cache: "no-store" });

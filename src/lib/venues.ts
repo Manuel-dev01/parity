@@ -1,8 +1,9 @@
 import type { FairValue, ParityQuote, Underlying, UniverseToken, VenueQuote } from "./types";
 import { USDC_MINT } from "./universe";
 import { getFairValue, jupiterPrices, type JupPrice } from "./fairvalue";
+import { JUP_BASE, jupHeaders } from "./jupiter";
 
-const ULTRA = "https://lite-api.jup.ag/ultra/v1/order";
+
 
 type UltraOrder = {
   outAmount: string;
@@ -17,7 +18,7 @@ type UltraOrder = {
 /** Effective USD price per share when buying `usd` of `token` right now via Jupiter Ultra. */
 async function ultraEffectivePrice(token: UniverseToken, usd: number) {
   const amount = Math.round(usd * 1e6);
-  const r = await fetch(`${ULTRA}?inputMint=${USDC_MINT}&outputMint=${token.mint}&amount=${amount}`, { next: { revalidate: 5 } });
+  const r = await fetch(`${JUP_BASE}/ultra/v1/order?inputMint=${USDC_MINT}&outputMint=${token.mint}&amount=${amount}`, { headers: jupHeaders(), next: { revalidate: 5 } });
   const j = (await r.json()) as UltraOrder;
   if (!r.ok || j.error || j.errorMessage || !j.outAmount) {
     return { effPx: null as number | null, err: j.error || j.errorMessage || `http ${r.status}` };

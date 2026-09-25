@@ -1,10 +1,11 @@
 import type { FairValue, Underlying } from "./types";
 import { readPythOnchain } from "./pyth-onchain";
 import { getMarketState } from "./market";
+import { JUP_BASE, jupHeaders } from "./jupiter";
 
 const HERMES = process.env.PYTH_HERMES_URL || "https://pyth.dourolabs.app/hermes";
 const PYTH_KEY = process.env.PYTH_API_KEY;
-const JUP_PRICE = "https://lite-api.jup.ag/price/v3";
+
 const BACKPACK = "https://api.backpack.exchange/api/v1";
 
 type Ref = { source: string; price: number; conf: number; asOf: string; account?: string };
@@ -33,7 +34,7 @@ async function pythRefs(u: Underlying): Promise<Ref[]> {
 
 /** Jupiter Price v3 carries the underlying stock reference price for tokenized equities (keyless). */
 export async function jupiterPrices(mints: string[]) {
-  const r = await fetch(`${JUP_PRICE}?ids=${mints.join(",")}`, { next: { revalidate: 5 } });
+  const r = await fetch(`${JUP_BASE}/price/v3?ids=${mints.join(",")}`, { headers: jupHeaders(), next: { revalidate: 5 } });
   if (!r.ok) return {} as Record<string, JupPrice>;
   return (await r.json()) as Record<string, JupPrice>;
 }
