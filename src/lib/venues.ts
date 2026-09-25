@@ -53,8 +53,12 @@ export async function quoteVenue(token: UniverseToken, sizes: number[], primary:
   };
 }
 
-export async function parityQuote(u: Underlying, usd: number): Promise<ParityQuote> {
-  const sizes = [...new Set([100, usd, 10_000])].sort((a, b) => a - b);
+/**
+ * `sizes` defaults to the requested amount alone. Quoting the $100/$10k ladder as well
+ * triples the upstream calls, and only a caller that asks for it needs them.
+ */
+export async function parityQuote(u: Underlying, usd: number, extraSizes?: number[]): Promise<ParityQuote> {
+  const sizes = [...new Set([usd, ...(extraSizes ?? [])])].sort((a, b) => a - b);
   const jp = await jupiterPrices(u.tokens.map((t) => t.mint));
   const fair = await getFairValue(u, jp);
   const venues = await Promise.all(u.tokens.map((t) => quoteVenue(t, sizes, usd, fair, jp[t.mint])));

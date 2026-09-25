@@ -5,7 +5,7 @@ import { parityQuote } from "@/lib/venues";
 export const dynamic = "force-dynamic";
 
 /**
- * GET /api/v1/quote?symbol=NVDA&usd=1000
+ * GET /api/v1/quote?symbol=NVDA&usd=1000[&sizes=100,10000]
  * Best-execution quote for a US stock across every Solana issuer, with fair value.
  * Public, keyless, meant for agents and other builders as much as for the UI.
  */
@@ -16,7 +16,12 @@ export async function GET(req: Request) {
   const u = getUnderlying(symbol);
   if (!u) return NextResponse.json({ error: `unknown symbol ${symbol}` }, { status: 404 });
   try {
-    const q = await parityQuote(u, usd);
+    // Opt in to the size ladder: ?sizes=100,10000
+    const extra = (searchParams.get("sizes") || "")
+      .split(",")
+      .map((n) => Number(n))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    const q = await parityQuote(u, usd, extra);
     return NextResponse.json(q, { headers: { "cache-control": "public, max-age=5, stale-while-revalidate=15" } });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 502 });
