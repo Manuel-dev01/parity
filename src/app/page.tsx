@@ -10,7 +10,7 @@ import { ISSUERS } from "@/lib/issuers";
 import { dbConfigured, sql } from "@/lib/db";
 import type { FillRow } from "@/app/api/v1/fills/route";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 
 const STEPS: [string, string, string][] = [
   ["01", "Fair value", "The price of the underlying share, from an on-chain oracle. The black outline in the print above."],

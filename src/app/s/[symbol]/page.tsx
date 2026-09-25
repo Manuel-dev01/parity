@@ -23,7 +23,12 @@ export default async function TickerPage({ params, searchParams }: Props) {
   const u = getUnderlying(symbol);
   if (!u) notFound();
   const size = Math.min(Math.max(Number(usd) || 1000, 1), 100_000);
-  const initial = await parityQuote(u, size).catch(() => null);
+  // Quoting three issuers can take seconds when Jupiter is slow. Render the page with
+  // whatever arrives in time; the client polls on mount and fills in the rest.
+  const initial = await Promise.race([
+    parityQuote(u, size).catch(() => null),
+    new Promise<null>((r) => setTimeout(() => r(null), 4000)),
+  ]);
   const cluster = guardDeployment()?.cluster ?? null;
 
   return (
