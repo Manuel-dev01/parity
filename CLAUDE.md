@@ -9,9 +9,9 @@ Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Bac
 - ✅ Universe (`src/data/universe.json`, `npm run universe` + `node scripts/pyth-onchain.mjs`), fair value, cross-issuer quotes, board `/`, ticker `/s/[symbol]`, tape `/tape`, wallet connect, `/api/v1/quote`, `/api/v1/universe`, snapshot cron.
 - ✅ Guard program source written (`programs/fair_fill_guard/src/lib.rs`, nonce-seeded Receipt per `docs/PROGRAM_PATCH.md`). **Deploys to devnet only** — unaudited, and mainnet rent is ~1 SOL (~$115). `NEXT_PUBLIC_GUARD_CLUSTER=devnet` makes `mainnetGuardProgram()` return null so a devnet id can never be composed into a mainnet tx.
 - ✅ Execution: `POST /api/v1/swap` (`src/lib/execute.ts`) returns one unsigned tx in mode `guarded` (snapshot→swap→verify, when `NEXT_PUBLIC_GUARD_PROGRAM_ID` is set) / `plain` (Jupiter swap, pre-sign fair-value check) / `ultra` (Ondo RFQ, non-sponsored names). `TradePanel` signs, confirms, records to `fills`, shows fill vs fair + Solscan. Encoders in `src/lib/guard.ts` need no IDL.
-- ⬜ Devnet guard proof: deploy in Playground (free), then `node scripts/guard-proof.mjs` → one Receipt tx + one `FillOffFairValue` revert, both on devnet Solscan.
-- ⬜ First real fills: demo wallet `4N6FeA9CzNSZVE3qTd6PevishNUtWDjwry3Nv66BWdvA` **funded 2026-09-24 with 0.0210 SOL + 9.82 USDT**. A $2 USDT buy of `NVDAx` simulates clean (166k CU). Run `scripts/test-swap.mjs <SYM> <mint> 2 50 --pay=USDT` per issuer, list signatures in README.
-- ⬜ Program build/deploy via Solana Playground (see `docs/PROGRAM.md`), set `NEXT_PUBLIC_GUARD_PROGRAM_ID`.
+- ✅ Guard deployed to **devnet**: `ADcP7kHjLkyMmdsRNWvsrb62ivFg54BdGDenvM3eSCpS` (in `.env`). `scripts/guard-proof.mjs` passes both cases — Receipt PDA written at +0 bps, and a 300 bps fill reverts with `FillOffFairValue` (6012). Links in README.
+- ✅ Real mainnet fill: `5Tdxx…nddf` (2 USDT → 0.0088995 NVDAx, 18 bps). Ondo refused at +98 bps by the pre-sign check — kept as evidence, not a failure. Wallet has ~4.8 USDT + 1.0 USDC left.
+- ⬜ Remaining: Neon `DATABASE_URL`, Vercel deploy, demo video during US market hours. Record fill price from tx balance deltas rather than the quote (~2 bps off).
 - ⬜ Neon `DATABASE_URL` for tape + fill history; Vercel deploy; README "what's real" table; demo video during US market hours (9:30–16:00 ET).
 
 ## Hard constraints of this environment
