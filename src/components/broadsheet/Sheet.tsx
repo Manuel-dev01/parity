@@ -86,7 +86,10 @@ export function Footer() {
         Parity
       </span>
       <Link href="/methodology">Methodology</Link>
-      <Link href="/api/v1/quote?symbol=NVDA&usd=1000">API</Link>
+      {/* a JSON endpoint, not a route — Link would prefetch it as RSC and 404 */}
+      <a href="/api/v1/quote?symbol=NVDA&usd=1000" target="_blank" rel="noreferrer">
+        API
+      </a>
       <span style={{ flex: 1 }} />
       <span>Neutral toward every issuer. Not investment advice.</span>
     </div>

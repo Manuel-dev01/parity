@@ -18,6 +18,7 @@ export function Holdings() {
   const { address } = useWallet();
   const [data, setData] = useState<Data | null>(null);
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     if (!address) {
@@ -27,7 +28,7 @@ export function Holdings() {
     }
     let dead = false;
     setState("loading");
-    fetch(`/api/v1/holdings?owner=${address}`, { cache: "no-store" })
+    fetch(`/api/v1/holdings?owner=${address}`, { cache: "no-store", signal: AbortSignal.timeout(30_000) })
       .then((r) => r.json())
       .then((j) => {
         if (dead) return;
@@ -39,11 +40,18 @@ export function Holdings() {
     return () => {
       dead = true;
     };
-  }, [address]);
+  }, [address, attempt]);
 
   if (!address) return <Empty title="Connect a wallet to see what you hold." body="Parity reads your balances straight from the chain. Nothing is stored." />;
   if (state === "loading" && !data) return <Empty title="Reading your balances…" body="One call to the chain for every token account you own." />;
-  if (state === "error") return <Empty title="Could not read your balances." body="The RPC did not answer. Reload to try again — nothing is cached in between." />;
+  if (state === "error")
+    return (
+      <Empty
+        title="Could not read your balances."
+        body="The chain did not answer in time. Nothing is cached in between, so trying again reads it fresh."
+        onRetry={() => setAttempt((n) => n + 1)}
+      />
+    );
   if (!data) return null;
 
   if (!data.positions.length) {
@@ -221,16 +229,26 @@ function Figure({ value, label }: { value: string; label: string }) {
   );
 }
 
-function Empty({ title, body }: { title: string; body: string }) {
+function Empty({ title, body, onRetry }: { title: string; body: string; onRetry?: () => void }) {
   return (
     <div style={{ padding: "clamp(40px,6cqw,96px) 0", maxWidth: 680, display: "flex", flexDirection: "column", gap: 14 }}>
       <h1 className="serif" style={{ margin: 0, fontSize: "clamp(36px,5cqw,72px)", lineHeight: 0.95, letterSpacing: "-0.02em" }}>
         {title}
       </h1>
       <p style={{ margin: 0, fontSize: "clamp(18px,1.7cqw,22px)", lineHeight: 1.4 }}>{body}</p>
-      <Link href="/markets" style={{ fontSize: 15 }}>
-        Browse markets →
-      </Link>
+      <span style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            style={{ font: "inherit", fontSize: 15, padding: "8px 18px", border: "1px solid var(--ink)", background: "none", cursor: "pointer", color: "var(--ink)" }}
+          >
+            Try again
+          </button>
+        )}
+        <Link href="/markets" style={{ fontSize: 15 }}>
+          Browse markets →
+        </Link>
+      </span>
     </div>
   );
 }

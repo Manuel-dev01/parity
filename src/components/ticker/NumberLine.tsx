@@ -38,17 +38,20 @@ export function NumberLine({ marks, guard, size }: { marks: Mark[]; guard: numbe
         {priced.map((m, i) => {
           const top = i * 17;
           const inside = Math.abs(m.bps as number) <= guard;
+          // Near an edge, anchor the label inward or .sheet's overflow clips it.
+          const at = pos(m.bps as number);
+          const anchor = at < 18 ? "0" : at > 82 ? "-100%" : "-50%";
           return (
             <div
               key={m.issuer}
               style={{
                 position: "absolute",
                 top,
-                left: `${pos(m.bps as number)}%`,
-                transform: "translateX(-50%)",
+                left: `${at}%`,
+                transform: `translateX(${anchor})`,
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
+                alignItems: at < 18 ? "flex-start" : at > 82 ? "flex-end" : "center",
                 transition: "left 1.2s cubic-bezier(.2,.8,.2,1)",
               }}
             >
