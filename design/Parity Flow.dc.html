@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>body{margin:0;background:oklch(0.86 0.014 80)} a{color:oklch(0.55 0.19 35);text-decoration:none} a:hover{text-decoration:underline}</style>
+</helmet>
+<section style="padding:80px;display:flex;flex-direction:column;gap:80px;background:oklch(0.86 0.014 80);color:oklch(0.2 0.01 60);font-family:'Newsreader',Georgia,serif">
+
+  <div style="display:flex;flex-direction:column;gap:20px;max-width:1720px">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.1em;text-transform:uppercase">Parity · product flow · broadsheet</span>
+    <span style="font-family:'Instrument Serif',serif;font-size:72px;line-height:0.95;letter-spacing:-0.02em">From first glance to proof of fill</span>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:18px">
+      <a href="#f1" style="color:inherit;padding:8px 14px;border:1px solid oklch(0.2 0.01 60);white-space:nowrap">01 Landing</a><span>→</span>
+      <a href="#f2" style="color:inherit;padding:8px 14px;border:1px solid oklch(0.55 0.19 35);background:oklch(0.965 0.012 85);white-space:nowrap">02 Ticker · price your size</a><span>→</span>
+      <a href="#f3" style="color:inherit;padding:8px 14px;border:1px solid oklch(0.2 0.01 60);white-space:nowrap">03 Guard held / sign</a><span>→</span>
+      <a href="#f4" style="color:inherit;padding:8px 14px;border:1px solid oklch(0.2 0.01 60);white-space:nowrap">04 Receipt</a><span>→</span>
+      <a href="#f5" style="color:inherit;padding:8px 14px;border:1px solid oklch(0.2 0.01 60);white-space:nowrap">05 Holdings</a>
+      <span style="width:28px"></span><span style="font-style:italic">Around it:</span>
+      <a href="#f6" style="color:inherit;padding:8px 14px;border:1px dashed oklch(0.2 0.01 60);white-space:nowrap">06 Markets</a>
+      <a href="#f7" style="color:inherit;padding:8px 14px;border:1px dashed oklch(0.2 0.01 60);white-space:nowrap">07 Receipts ledger</a>
+    </div>
+    <span style="font-size:19px;max-width:1100px;line-height:1.5">One system across every screen: each page opens with a sentence that answers its question, figures carry their source on tap, and every issuer keeps one ink (Ondo magenta, xStocks yellow, Backpack cyan) wherever it appears. Vermilion marks only the answer.</span>
+  </div>
+
+  <div id="f1" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">01</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Landing</span><span style="font-size:18px;font-style:italic">The problem shown live, then "Price it" goes to the ticker.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Landing 3a Broadsheet" style="width:1280px" hint-size="1280px,3400px"></dc-import></div>
+      <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Landing 3a Broadsheet" style="width:390px" hint-size="390px,4400px"></dc-import></div>
+    </div>
+  </div>
+
+  <div id="f2" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">02</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Ticker, /s/NVDA</span><span style="font-size:18px;font-style:italic">The headline is the answer at your size. Try $1k vs $25k vs $100k; tap any dotted figure.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Ticker" scenario="live" style="width:1280px" hint-size="1280px,2300px"></dc-import></div>
+      <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Ticker" scenario="live" style="width:390px" hint-size="390px,4200px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.08em;text-transform:uppercase">Extended hours</span>
+        <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Ticker" scenario="extended" style="width:390px" hint-size="390px,4200px"></dc-import></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="f3" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">03</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Guard held, and filled</span><span style="font-size:18px;font-style:italic">Refusal happens on the order slip, next to the token that does fit. Nothing is signed.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Ticker" scenario="refusal" style="width:1280px" hint-size="1280px,2300px"></dc-import></div>
+      <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Ticker" scenario="refusal" style="width:390px" hint-size="390px,4400px"></dc-import></div>
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.08em;text-transform:uppercase">Filled · Enforced</span>
+        <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Ticker" scenario="filled" style="width:390px" hint-size="390px,4200px"></dc-import></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="f4" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">04</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Receipt, /r/…</span><span style="font-size:18px;font-style:italic">Public, permanent, shareable. The same layout for both protection tiers; only the stated facts differ.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.08em;text-transform:uppercase">Enforced · testnet</span>
+        <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Receipts" view="receipt" tier="enforced" style="width:1280px" hint-size="1280px,1500px"></dc-import></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:0.08em;text-transform:uppercase">Checked · mainnet</span>
+        <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Receipts" view="receipt" tier="checked" style="width:390px" hint-size="390px,2800px"></dc-import></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="f5" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">05</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Holdings</span><span style="font-size:18px;font-style:italic">Grouped by stock, not token. What you paid against fair, whether it was the best token then, and what each wrapper would fetch today.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Holdings" style="width:1280px" hint-size="1280px,2200px"></dc-import></div>
+      <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Holdings" style="width:390px" hint-size="390px,3600px"></dc-import></div>
+    </div>
+  </div>
+
+  <div id="f6" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">06</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Markets</span><span style="font-size:18px;font-style:italic">Board and Tape merged: Now ranks stocks by spread; History shows 30 days and the record gaps.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Markets" view="now" style="width:1280px" hint-size="1280px,1500px"></dc-import></div>
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Markets" view="history" style="width:1280px" hint-size="1280px,1700px"></dc-import></div>
+      <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Markets" view="now" style="width:390px" hint-size="390px,2800px"></dc-import></div>
+    </div>
+  </div>
+
+  <div id="f7" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:16px;flex-wrap:wrap"><span style="font-family:'IBM Plex Mono',monospace;font-size:16px;padding:3px 9px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85)">07</span><span style="font-family:'Instrument Serif',serif;font-size:40px;white-space:nowrap">Receipts ledger</span><span style="font-size:18px;font-style:italic">The public record. New fills arrive at the top every few seconds.</span></div>
+    <div style="display:flex;gap:40px;align-items:flex-start">
+      <div style="box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Receipts" view="ledger" style="width:1280px" hint-size="1280px,1300px"></dc-import></div>
+      <div style="width:390px;border-radius:28px;overflow:hidden;border:1px solid oklch(0.2 0.01 60 / 0.3);box-shadow:0 20px 50px oklch(0.2 0.01 60 / 0.18)"><dc-import name="Broadsheet Receipts" view="ledger" style="width:390px" hint-size="390px,2400px"></dc-import></div>
+    </div>
+  </div>
+</section>
+</x-dc>
+</body>
+</html>

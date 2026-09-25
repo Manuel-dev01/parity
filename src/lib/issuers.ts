@@ -2,6 +2,8 @@ import type { IssuerId } from "./types";
 
 // Facts here are educational, sourced from each issuer's own documentation.
 // Keep the tone neutral: Parity ranks routes by price, never issuers by merit.
+//
+// One ink per issuer, used wherever that issuer appears. Vermilion marks only the answer.
 export const ISSUERS: Record<
   IssuerId,
   {
@@ -20,7 +22,7 @@ export const ISSUERS: Record<
   xstocks: {
     name: "xStocks",
     short: "xStocks",
-    color: "#7c5cff",
+    color: "var(--ink-xstocks)",
     suffix: "x",
     issuerEntity: "Backed Assets (Switzerland)",
     backing: "1:1 shares held by a regulated custodian; Swiss-law tracker certificate",
@@ -32,7 +34,7 @@ export const ISSUERS: Record<
   ondo: {
     name: "Ondo Global Markets",
     short: "Ondo",
-    color: "#2dd4bf",
+    color: "var(--ink-ondo)",
     suffix: "on",
     issuerEntity: "Ondo Global Markets",
     backing: "1:1 shares held at US-registered broker-dealers",
@@ -44,7 +46,7 @@ export const ISSUERS: Record<
   backpack: {
     name: "Backpack Securities",
     short: "Backpack",
-    color: "#f59e0b",
+    color: "var(--ink-backpack)",
     suffix: "",
     issuerEntity: "Backpack Securities (via Sunrise)",
     backing: "1:1 real shares custodied by a US broker-dealer",

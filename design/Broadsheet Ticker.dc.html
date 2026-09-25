@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>body{margin:0} a{color:oklch(0.55 0.19 35);text-decoration:none} a:hover{text-decoration:underline} input[type=range]{accent-color:oklch(0.55 0.19 35)}</style>
+</helmet>
+<div ref="{{ rootRef }}" onClick="{{ closeSrc }}" style="position:relative;container-type:inline-size;overflow:hidden;background:oklch(0.965 0.012 85);color:oklch(0.2 0.01 60);font-family:'Newsreader',Georgia,serif;font-size:17px;line-height:1.5;font-variant-numeric:tabular-nums">
+  <div style="padding:0 clamp(16px,4cqw,56px)">
+    <div style="display:flex;justify-content:space-between;gap:8px 16px;padding:12px 0;border-bottom:1px solid oklch(0.2 0.01 60);font-family:'IBM Plex Mono',monospace;font-size:12px;flex-wrap:wrap">
+      <span>NVDA · NVIDIA Corporation · {{ sessionTxt }}</span>
+      <span>Fair value updated {{ ageTxt }}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px 20px;padding:16px 0 12px;border-bottom:3px double oklch(0.2 0.01 60);flex-wrap:wrap">
+      <div style="font-family:'Instrument Serif',serif;font-size:38px;line-height:1">Parity</div>
+      <div style="display:flex;gap:18px;font-size:15px;align-items:center;flex-wrap:wrap">
+        <span>Markets</span><span>Holdings</span><span>Receipts</span><span>Methodology</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 10px;border:1px solid oklch(0.2 0.01 60);white-space:nowrap">7Fq4…w3kP</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px 40px;padding:clamp(20px,3cqw,36px) 0 16px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(72px,11cqw,150px);line-height:0.85;letter-spacing:-0.045em">NVDA</div>
+        <div style="font-style:italic;color:oklch(0.4 0.01 60)">NVIDIA Corporation, issued as three tokens on Solana</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-start">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Fair value · oracle</span>
+        <span onClick="{{ srcFair }}" style="font-family:'Instrument Serif',serif;font-size:clamp(48px,5.4cqw,72px);line-height:1;border-bottom:1.5px dotted oklch(0.2 0.01 60 / 0.6);cursor:help">{{ fairTxt }}</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:oklch(0.4 0.01 60);padding-top:4px">{{ confTxt }}</span>
+      </div>
+    </div>
+
+    <div style="border-top:3px double oklch(0.2 0.01 60);padding:clamp(20px,3cqw,36px) 0;display:flex;flex-wrap:wrap;gap:24px 48px;align-items:flex-start">
+      <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:12px">
+        <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(40px,5.4cqw,76px);line-height:0.95;letter-spacing:-0.02em;text-wrap:balance">{{ headA }} <span onClick="{{ srcBest }}" style="font-style:italic;color:oklch(0.55 0.19 35);cursor:help;border-bottom:1.5px dotted oklch(0.55 0.19 35 / 0.6)">{{ headToken }}</span>{{ headB }}</h1>
+        <sc-if value="{{ hasBest }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-size:clamp(18px,1.7cqw,22px);line-height:1.4;max-width:640px;text-wrap:pretty">It fills <span style="font-family:'IBM Plex Mono',monospace;font-size:0.85em">{{ bestVsFair }}</span> from fair and costs <span onClick="{{ srcSaved }}" style="font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:oklch(0.55 0.19 35 / 0.12);padding:1px 5px;border-bottom:1px dotted oklch(0.2 0.01 60 / 0.6);cursor:help">{{ savedTxt }}</span> less than the costliest token at this size.</p>
+        </sc-if>
+        <sc-if value="{{ noBest }}" hint-placeholder-val="{{ false }}">
+          <p style="margin:0;font-size:clamp(18px,1.7cqw,22px);line-height:1.4;max-width:640px;text-wrap:pretty">{{ noBestTxt }}</p>
+        </sc-if>
+      </div>
+      <div style="flex:0 1 300px;display:flex;flex-direction:column;gap:8px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Your trade size</span>
+        <div style="display:flex;align-items:center;border:1px solid oklch(0.2 0.01 60);padding:0 14px;height:52px;background:oklch(0.985 0.008 85)">
+          <span style="font-family:'Instrument Serif',serif;font-size:28px;color:oklch(0.4 0.01 60)">$</span>
+          <input value="{{ amountStr }}" onChange="{{ onAmount }}" onClick="{{ stop }}" style="background:none;border:none;outline:none;color:oklch(0.2 0.01 60);font-family:'Instrument Serif',serif;font-size:30px;width:100%;padding-left:6px"></input>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ chips }}" as="ch" hint-placeholder-count="4">
+            <button onClick="{{ ch.onClick }}" style="font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 9px;border:1px solid {{ ch.border }};background:{{ ch.bg }};color:{{ ch.color }};cursor:pointer">{{ ch.label }}</button>
+          </sc-for>
+        </div>
+        <span style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60)">Change it and the ranking changes with it.</span>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid oklch(0.2 0.01 60);padding:14px 0 10px">
+      <div style="position:relative;height:112px">
+        <div style="position:absolute;top:58px;height:28px;left:{{ bandL }};width:{{ bandW }};background:oklch(0.55 0.19 35 / 0.09);border-left:1px dashed oklch(0.55 0.19 35 / 0.6);border-right:1px dashed oklch(0.55 0.19 35 / 0.6)"></div>
+        <div style="position:absolute;top:72px;left:0;right:0;height:1px;background:oklch(0.2 0.01 60 / 0.5)"></div>
+        <div style="position:absolute;top:52px;left:50%;width:1.5px;height:40px;background:oklch(0.2 0.01 60)"></div>
+        <sc-for list="{{ marks }}" as="m" hint-placeholder-count="3">
+          <div style="position:absolute;top:{{ m.top }}px;left:{{ m.left }};transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;transition:left 1.2s cubic-bezier(.2,.8,.2,1)">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:nowrap;line-height:16px;font-style:{{ m.fs }}">{{ m.label }}</div>
+            <div style="width:1px;height:{{ m.h }}px;background:oklch(0.2 0.01 60 / 0.5)"></div>
+            <div style="width:10px;height:10px;border-radius:5px;background:{{ m.ink }};box-shadow:0 0 0 1px oklch(0.2 0.01 60)"></div>
+          </div>
+        </sc-for>
+        <div style="position:absolute;top:94px;left:0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.4 0.01 60)">−150 bps</div>
+        <div style="position:absolute;top:94px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:11px">FAIR</div>
+        <div style="position:absolute;top:94px;right:0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.4 0.01 60)">+150 bps</div>
+      </div>
+      <div style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60);padding-top:6px"><span style="font-style:normal;font-weight:500">Fig. 1</span> What each token would cost at {{ amtTxt }}, measured from fair value. Shaded: your ±{{ guard }} bps guard.</div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;padding:12px 0;border-top:1px solid oklch(0.2 0.01 60);border-bottom:1px solid oklch(0.2 0.01 60);font-size:15px">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase">You own</span>
+      <span><span style="font-family:'IBM Plex Mono',monospace">12.40</span> NVDA <span style="font-style:italic;color:oklch(0.4 0.01 60)">(8.10 NVDAon, 4.30 NVDAx)</span></span>
+      <span>worth <span style="font-family:'IBM Plex Mono',monospace">{{ worthTxt }}</span> at fair</span>
+      <span>paid <span style="font-family:'IBM Plex Mono',monospace">+20 bps</span> over fair on average</span>
+      <span style="flex:1"></span>
+      <a href="#">Your holdings →</a>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:32px 40px;align-items:flex-start;padding:28px 0">
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid oklch(0.2 0.01 60);padding-bottom:6px">
+          <span style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1">The three tokens at {{ amtTxt }}</span>
+          <span style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60)">Ranked by what you'd pay. Dotted figures show their source.</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+          <sc-for list="{{ cards }}" as="c" hint-placeholder-count="3">
+            <div onClick="{{ c.onSelect }}" style="cursor:pointer;padding:14px 16px 16px;border-right:1px solid oklch(0.2 0.01 60 / 0.2);border-bottom:1px solid oklch(0.2 0.01 60 / 0.2);background:{{ c.bg }};display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:{{ c.tagColor }}">{{ c.rank }} · {{ c.tag }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.4 0.01 60)">{{ c.selTxt }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="width:12px;height:12px;border-radius:6px;background:{{ c.ink }};box-shadow:0 0 0 1px oklch(0.2 0.01 60);flex-shrink:0"></span>
+                <span style="display:flex;flex-direction:column;line-height:1.15"><span style="font-family:'Archivo',sans-serif;font-weight:800;font-stretch:112%;font-size:22px;letter-spacing:-0.02em">{{ c.token }}</span><span style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60)">{{ c.issuer }}</span></span>
+              </div>
+              <div>
+                <span onClick="{{ c.onSrc }}" style="font-family:'Instrument Serif',serif;font-size:44px;line-height:1;border-bottom:1.5px dotted oklch(0.2 0.01 60 / 0.6);cursor:help">{{ c.price }}</span>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:13px;padding-top:6px">{{ c.vsFair }}</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:3px 12px;font-size:14px;border-top:1px solid oklch(0.2 0.01 60 / 0.2);padding-top:8px">
+                <span style="color:oklch(0.4 0.01 60)">Quoted vs fair</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px">{{ c.dev }}</span>
+                <span style="color:oklch(0.4 0.01 60)">Impact at your size</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px">{{ c.imp }}</span>
+                <span style="color:oklch(0.4 0.01 60)">Depth within 2%</span><span style="font-family:'IBM Plex Mono',monospace;font-size:13px">{{ c.depth }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="flex:0 1 380px;min-width:290px;border:1px solid oklch(0.2 0.01 60);background:oklch(0.985 0.008 85);display:flex;flex-direction:column">
+        <div style="padding:14px 18px 12px;border-bottom:3px double oklch(0.2 0.01 60);display:flex;flex-direction:column;gap:2px">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Order slip</span>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.05">Buy {{ selToken }}</span><span style="font-style:italic;color:oklch(0.4 0.01 60)">{{ selIssuer }}</span></div>
+        </div>
+        <div style="padding:16px 18px 18px;display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{ showPickNote }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:15px;display:flex;justify-content:space-between;gap:12px;align-items:baseline;padding-bottom:12px;border-bottom:1px solid oklch(0.2 0.01 60 / 0.2)">
+              <span style="font-style:italic">{{ pickNote }}</span>
+              <button onClick="{{ useBest }}" style="background:none;border:none;color:oklch(0.55 0.19 35);font:inherit;cursor:pointer;padding:0;white-space:nowrap">Use {{ bestToken }}</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isQuote }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:15px">
+                <span style="color:oklch(0.4 0.01 60)">You pay</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ payTxt }} USDC</span>
+                <span style="color:oklch(0.4 0.01 60)">You receive about</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ recvTxt }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;justify-content:space-between;font-size:15px"><span>Price guard</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ guardTxt }}</span></div>
+                <input type="range" min="10" max="150" step="5" value="{{ guard }}" onChange="{{ onGuard }}" onClick="{{ stop }}" style="width:100%"></input>
+                <span style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60);text-wrap:pretty">Parity won't build a trade further than this from fair. {{ guardUsd }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;font-size:15px"><span>Protection</span><span onClick="{{ srcGuard }}" style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60);border-bottom:1px dotted oklch(0.2 0.01 60 / 0.6);cursor:help">What's the difference?</span></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                  <div onClick="{{ setMain }}" style="cursor:pointer;padding:10px;border:1px solid {{ mainBorder }};background:{{ mainBg }};display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;gap:3px"><span style="width:18px;height:4px;background:oklch(0.2 0.01 60)"></span><span style="width:18px;height:4px;background:oklch(0.2 0.01 60 / 0.18)"></span></div>
+                    <span style="font-family:'Archivo',sans-serif;font-weight:800;font-stretch:112%;font-size:16px">Checked</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.4 0.01 60)">Mainnet · before you sign</span>
+                  </div>
+                  <div onClick="{{ setTest }}" style="cursor:pointer;padding:10px;border:1px solid {{ testBorder }};background:{{ testBg }};display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;gap:3px"><span style="width:18px;height:4px;background:oklch(0.2 0.01 60)"></span><span style="width:18px;height:4px;background:oklch(0.2 0.01 60)"></span></div>
+                    <span style="font-family:'Archivo',sans-serif;font-weight:800;font-stretch:112%;font-size:16px">Enforced</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.4 0.01 60)">Testnet · reverts on-chain</span>
+                  </div>
+                </div>
+                <span style="font-size:14px;text-wrap:pretty">{{ netDesc }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:15px;border-top:1px solid oklch(0.2 0.01 60 / 0.2);padding-top:12px">
+                <span style="color:oklch(0.4 0.01 60)">Estimated fill</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ estPrice }}</span>
+                <span style="color:oklch(0.4 0.01 60)">From fair</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ estVs }}</span>
+                <span style="color:oklch(0.4 0.01 60)">vs costliest token</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ estSaved }}</span>
+              </div>
+              <sc-if value="{{ canSign }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ sign }}" style="height:50px;background:oklch(0.55 0.19 35);color:oklch(0.99 0.005 85);border:none;font:inherit;font-size:18px;cursor:pointer">Review and sign →</button>
+              </sc-if>
+              <sc-if value="{{ refused }}" hint-placeholder-val="{{ false }}">
+                <div style="border-top:3px double oklch(0.2 0.01 60);padding-top:14px;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase"><span style="width:9px;height:9px;border:1.5px solid oklch(0.2 0.01 60);display:inline-block"></span>The guard held this trade</div>
+                  <div style="font-family:'Instrument Serif',serif;font-size:28px;line-height:1.05;text-wrap:balance">{{ refTitle }}</div>
+                  <div style="font-size:15px;text-wrap:pretty">{{ refBody }}</div>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <sc-for list="{{ opts }}" as="o" hint-placeholder-count="3">
+                      <button onClick="{{ o.onClick }}" style="text-align:left;padding:10px 12px;background:{{ o.bg }};color:{{ o.color }};border:1px solid {{ o.border }};font:inherit;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center">
+                        <span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:16px">{{ o.title }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;opacity:0.85">{{ o.sub }}</span></span>
+                        <span>→</span>
+                      </button>
+                    </sc-for>
+                    <sc-if value="{{ alertSet }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:14px;font-style:italic;color:oklch(0.55 0.19 35)">{{ alertTxt }}</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSigning }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px;padding:6px 0">
+              <span style="font-family:'Instrument Serif',serif;font-size:28px;line-height:1.05">Waiting for your wallet</span>
+              <span style="font-size:15px;text-wrap:pretty">{{ signTxt }}</span>
+              <div style="height:2px;background:oklch(0.2 0.01 60 / 0.15);position:relative;overflow:hidden"><div style="position:absolute;inset:0;width:60%;background:oklch(0.2 0.01 60)"></div></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isFilled }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.55 0.19 35)">Filled · {{ fillNet }}</span>
+              <div style="font-family:'Instrument Serif',serif;font-size:30px;line-height:1.05">{{ fillQty }} at {{ fillPrice }}</div>
+              <div style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:15px;border-top:1px solid oklch(0.2 0.01 60 / 0.2);padding-top:10px">
+                <span style="color:oklch(0.4 0.01 60)">Fair at fill</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ fillFair }}</span>
+                <span style="color:oklch(0.4 0.01 60)">From fair</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px">{{ fillDev }}</span>
+                <span style="color:oklch(0.4 0.01 60)">Saved vs costliest</span><span style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:oklch(0.55 0.19 35)">{{ fillSaved }}</span>
+                <span style="color:oklch(0.4 0.01 60)">Transaction</span><a href="#" style="font-family:'IBM Plex Mono',monospace;font-size:14px">5hQx…9aKq ↗</a>
+              </div>
+              <span style="font-size:14px;font-style:italic;text-wrap:pretty">{{ fillNote }}</span>
+              <div style="display:flex;gap:8px">
+                <button style="flex:1;height:46px;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85);border:none;font:inherit;cursor:pointer">View receipt</button>
+                <button onClick="{{ reset }}" style="flex:1;height:46px;background:none;color:oklch(0.2 0.01 60);border:1px solid oklch(0.2 0.01 60);font:inherit;cursor:pointer">New trade</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:32px 40px;align-items:flex-start;padding:4px 0 40px;border-top:3px double oklch(0.2 0.01 60)">
+      <div style="flex:1 1 560px;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid oklch(0.2 0.01 60);padding:18px 0 6px">
+          <span style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1">What each token gives you</span>
+          <span style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60)">Doesn't affect the ranking</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+          <sc-for list="{{ rights }}" as="r" hint-placeholder-count="3">
+            <div style="padding:14px 16px 14px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.2);display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.4">
+              <span style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:5px;background:{{ r.ink }};box-shadow:0 0 0 1px oklch(0.2 0.01 60)"></span><span style="font-weight:500">{{ r.token }}</span><span style="font-style:italic;color:oklch(0.4 0.01 60)">{{ r.issuer }}</span></span>
+              <span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Structure </span>{{ r.form }}</span>
+              <span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Redemption </span>{{ r.redeem }}</span>
+              <span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Dividends </span>{{ r.div }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:0 1 380px;min-width:290px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid oklch(0.2 0.01 60);padding:18px 0 6px">
+          <span style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1">NVDA receipts</span>
+          <a href="#" style="font-size:15px">All</a>
+        </div>
+        <sc-for list="{{ receipts }}" as="rc" hint-placeholder-count="5">
+          <div style="padding:8px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.15);font-size:15px;line-height:1.35">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:oklch(0.4 0.01 60)">{{ rc.t }}</span><br>
+            {{ rc.size }} of <span style="font-weight:500">{{ rc.token }}</span>, filled <span style="font-family:'IBM Plex Mono',monospace;font-size:13px">{{ rc.dev }}</span> from fair. <span style="font-style:italic;color:oklch(0.4 0.01 60)">{{ rc.guard }}.</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid oklch(0.2 0.01 60);padding:16px 0 26px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:oklch(0.4 0.01 60);align-items:baseline">
+      <span style="font-family:'Instrument Serif',serif;font-size:20px;color:oklch(0.2 0.01 60)">Parity</span><span>Methodology</span><span>API</span><span style="flex:1"></span><span>Neutral toward every issuer. Not investment advice.</span>
+    </div>
+  </div>
+
+  <sc-if value="{{ srcOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ stop }}" style="position:absolute;top:{{ srcTop }}px;left:{{ srcLeft }}px;width:330px;max-width:calc(100% - 24px);z-index:20;background:oklch(0.985 0.008 85);border:1px solid oklch(0.2 0.01 60);box-shadow:6px 6px 0 oklch(0.2 0.01 60 / 0.12);padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid oklch(0.2 0.01 60);padding-bottom:6px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase">Where this figure comes from</span>
+        <button onClick="{{ closeSrc }}" style="background:none;border:none;color:oklch(0.2 0.01 60);font-size:18px;cursor:pointer;padding:0 2px;line-height:1">×</button>
+      </div>
+      <span style="font-family:'Instrument Serif',serif;font-size:24px;line-height:1.1">{{ srcTitle }}</span>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:14px">
+        <sc-for list="{{ srcLines }}" as="l" hint-placeholder-count="3">
+          <span style="color:oklch(0.4 0.01 60)">{{ l.k }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:right">{{ l.v }}</span>
+        </sc-for>
+      </div>
+      <span style="font-size:14px;font-style:italic;line-height:1.4;text-wrap:pretty">{{ srcNote }}</span>
+      <div style="display:flex;gap:16px;font-size:14px;border-top:1px solid oklch(0.2 0.01 60 / 0.2);padding-top:8px"><a href="#">Verify on explorer ↗</a><a href="#">Methodology</a></div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;scenario&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;live&quot;,&quot;refusal&quot;,&quot;filled&quot;,&quot;extended&quot;],&quot;default&quot;:&quot;live&quot;,&quot;tsType&quot;:&quot;'live'|'refusal'|'filled'|'extended'&quot;}}">
+const ISS=[{id:'o',issuer:'Ondo',token:'NVDAon',dev:30,depth:1200000,ink:'oklch(0.66 0.25 350)'},{id:'x',issuer:'xStocks',token:'NVDAx',dev:48,depth:180000,ink:'oklch(0.9 0.17 95)'},{id:'b',issuer:'Backpack',token:'NVDA',dev:-41,depth:60000,ink:'oklch(0.76 0.14 220)'}];
+const EXT={o:9,x:26,b:-14};
+const SC={live:{amount:25000,sel:null,net:'main',step:'quote',session:'reg'},refusal:{amount:40000,sel:'x',net:'main',step:'quote',session:'reg'},filled:{amount:25000,sel:null,net:'test',step:'filled',session:'reg'},extended:{amount:10000,sel:null,net:'main',step:'quote',session:'ext'}};
+const RIGHTS={x:{form:'Swiss tracker certificate (Backed, CH), custodian-held 1:1.',redeem:'For cash, by eligible non-US professionals.',div:'Reinvested via multiplier. No cash payout.'},o:{form:'Shares held at US broker-dealers.',redeem:'Mint and redeem 24/5. Not for US persons.',div:'Passed through.'},b:{form:'US broker-dealer custody.',redeem:'Into a brokerage account via ACATS/DTCC.',div:'Passed through.'}};
+const INK='oklch(0.2 0.01 60)',VER='oklch(0.55 0.19 35)',MUTE='oklch(0.4 0.01 60)',FAINT='oklch(0.2 0.01 60 / 0.25)',SLIP='oklch(0.985 0.008 85)',PAPER='oklch(0.965 0.012 85)',TINT='oklch(0.55 0.19 35 / 0.07)';
+const usd=(n,d=0)=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const bp=n=>{const r=Math.round(n);return (r>0?'+':r<0?'−':'±')+Math.abs(r)+' bps';};
+const px=n=>'$'+n.toFixed(2);
+const dep=n=>n>=1e6?'$'+(n/1e6).toFixed(1)+'M':'$'+Math.round(n/1e3)+'k';
+const ORD=['1st','2nd','3rd'];
+
+class Component extends DCLogic {
+  constructor(p){super(p);const sc=SC[p.scenario]||SC.live;this.state={...sc,guard:50,fair:182.41,j:{o:0,x:0,b:0},src:null,alert:false,fill:null,age:1};this.rootRef=React.createRef();}
+  componentDidMount(){
+    if(this.state.step==='filled')this.setState({fill:this.snap()});
+    this.t=setInterval(()=>this.setState(s=>{const j={};for(const k in s.j)j[k]=Math.max(-3,Math.min(3,s.j[k]+(Math.random()-0.5)*2));return{fair:+(s.fair*(1+(Math.random()-0.5)*0.0003)).toFixed(2),j,age:0};}),3000);
+    this.a=setInterval(()=>this.setState(s=>({age:s.age+1})),1000);
+  }
+  componentWillUnmount(){clearInterval(this.t);clearInterval(this.a);clearTimeout(this.sg);}
+  rows(){const s=this.state;return ISS.map(i=>{const base=i.dev+(s.session==='ext'?EXT[i.id]:0);const imp=s.amount/i.depth*200;const k=base+imp;const b=k+s.j[i.id];const price=s.fair*(1+b/1e4);return{...i,dev:base+s.j[i.id],imp,b,k,price,cost:s.amount*b/(1e4+b),qty:s.amount/price,pass:Math.abs(k)<=s.guard};});}
+  calc(){const s=this.state;const rows=this.rows();const by=[...rows].sort((a,b)=>a.k-b.k);const best=by.find(r=>r.pass)||null;const worst=by[by.length-1];const sel=rows.find(r=>r.id===s.sel)||best||by[0];return{rows,by,best,worst,sel};}
+  snap(){const s=this.state;const {sel,worst}=this.calc();return{token:sel.token,price:sel.price,fair:s.fair,b:sel.b,qty:sel.qty,saved:worst.cost-sel.cost,net:s.net};}
+  openSrc(key){return e=>{e.stopPropagation();const root=this.rootRef.current;if(!root)return;const r=root.getBoundingClientRect();const sc=r.width/root.offsetWidth||1;const b=e.currentTarget.getBoundingClientRect();let left=(b.left-r.left)/sc;const top=(b.bottom-r.top)/sc+8;left=Math.max(12,Math.min(left,root.offsetWidth-342));this.setState({src:{key,top,left}});};}
+  srcData(key,c){const s=this.state;const ext=s.session==='ext';
+    if(key==='fair')return{title:'Fair value, '+px(s.fair),lines:[['Source','On-chain oracle · NVDA/USD'],['Session',ext?'Extended hours · derived':'Regular · Nasdaq'],['Published',s.age+'s ago · slot 318,442,907'],['Confidence',ext?'±$0.31 (±17 bps)':'±$0.04 (±2 bps)']],note:ext?'US markets are closed, so fair value is derived from extended-hours trading and its confidence is wider. Guards are measured against this number.':'The oracle price of one NVIDIA share. Parity does not set it. Every token is measured against the same number.'};
+    if(key.indexOf('exec:')===0){const r=c.rows.find(x=>x.id===key.slice(5));return{title:r.token+' at '+usd(s.amount)+', '+px(r.price),lines:[['Quoted mid vs fair',bp(r.dev)],['Price impact',bp(r.imp)],['Executable vs fair',bp(r.b)],['Simulated',s.age+'s ago']],note:'A simulated fill of your full amount against live '+r.issuer+' liquidity on Solana, including impact and fees. What you would pay, not the last traded price.'};}
+    if(key==='saved')return{title:'Saved vs costliest, '+usd(c.worst.cost-(c.best||c.sel).cost),lines:[['Best token',(c.best||c.sel).token+' · '+bp((c.best||c.sel).b)],['Costliest token',c.worst.token+' · '+bp(c.worst.b)],['Size',usd(s.amount)]],note:'The difference between the two executable prices at your size, in dollars. Only tokens of the same NVIDIA share are compared.'};
+    if(key==='best')return{title:c.best?'Why '+c.best.token:'No token within your guard',lines:c.by.map(r=>[r.token,bp(r.b)+(r.pass?'':' · outside')]),note:'Ranked by executable price at your size, inside your ±'+s.guard+' bps guard. Issuer and rights do not affect the ranking.'};
+    return{title:'Two strengths of protection',lines:[['Checked','Mainnet · live'],['Enforced','Testnet · unaudited']],note:'Checked: Parity verifies the quote against fair value before you sign, and after signing your slippage limit governs the fill. Enforced: the transaction reverts on-chain if the fill lands outside your guard, and writes a permanent public receipt. Enforced moves to mainnet after its audit.'};
+  }
+  renderVals(){
+    const s=this.state,c=this.calc(),g=s.guard,best=c.best,sel=c.sel,worst=c.worst;
+    const set=o=>()=>this.setState({step:'quote',alert:false,...o});
+    const cards=c.by.map((r,i)=>{const isBest=best&&r.id===best.id,isSel=r.id===sel.id;return{rank:ORD[i],token:r.token,issuer:r.issuer,ink:r.ink,price:px(r.price),vsFair:bp(r.b)+' · '+usd(Math.abs(r.cost))+(r.cost>=0?' over fair':' under fair'),dev:bp(r.dev),imp:bp(r.imp),depth:dep(r.depth),tag:isBest?'Best at your size':r.pass?'Within guard':'Outside guard',tagColor:isBest?VER:MUTE,selTxt:isSel?'On slip':'',bg:isSel?TINT:'transparent',onSelect:set({sel:r.id}),onSrc:this.openSrc('exec:'+r.id)};});
+    const idx={o:0,x:1,b:2};
+    const marks=c.rows.map(r=>{const top=idx[r.id]*17;return{left:Math.max(2,Math.min(98,(r.b+150)/300*100))+'%',top,h:Math.max(4,62-top-21),label:r.token+' '+bp(r.b),ink:r.ink,fs:r.pass?'normal':'italic'};});
+    const opts=[];
+    if(!sel.pass){
+      if(best&&best.id!==sel.id)opts.push({title:'Buy '+best.token+' instead',sub:bp(best.b)+' from fair · '+usd(sel.cost-best.cost)+' less',onClick:set({sel:best.id})});
+      if(g>sel.dev){const a=Math.floor((g-sel.dev)*sel.depth/200/100)*100;if(a>=500&&a<s.amount)opts.push({title:'Buy '+usd(a)+' of '+sel.token,sub:'Fits your guard at '+bp(sel.dev+a/sel.depth*200),onClick:set({amount:a})});}
+      const need=Math.min(300,Math.ceil(Math.abs(sel.k)/5)*5+5);
+      opts.push({title:'Widen guard to ±'+need+' bps',sub:'You would pay '+usd(Math.abs(sel.cost))+' '+(sel.cost>=0?'above':'below')+' fair',onClick:set({guard:need})});
+      opts.push({title:'Tell me when it tightens',sub:'Nothing trades automatically',onClick:()=>this.setState({alert:true})});
+    }
+    const closest=[...c.rows].sort((a,b)=>Math.abs(a.k)-Math.abs(b.k))[0];
+    const src=s.src?this.srcData(s.src.key,c):null,f=s.fill;
+    return{
+      rootRef:this.rootRef,stop:e=>e.stopPropagation(),closeSrc:()=>s.src&&this.setState({src:null}),
+      fairTxt:px(s.fair),confTxt:s.session==='ext'?'±$0.31 · derived, extended hours':'±$0.04 · Nasdaq, regular session',sessionTxt:s.session==='ext'?'Extended hours · derived fair value':'Regular session',ageTxt:s.age+'s ago',
+      worthTxt:usd(12.4*s.fair),amtTxt:usd(s.amount),
+      headA:best?'At '+usd(s.amount)+', buy':'At '+usd(s.amount)+', no token is within your guard.',headToken:best?best.token:'',headB:best?'.':'',
+      hasBest:!!best,noBest:!best,noBestTxt:'The closest is '+closest.token+' at '+bp(closest.b)+' from fair. The order slip lists what you can do instead.',
+      bestToken:best?best.token:'',savedTxt:best?usd(worst.cost-best.cost):'',bestVsFair:best?bp(best.b):'',
+      amountStr:s.amount.toLocaleString('en-US'),onAmount:e=>{const v=parseInt(String(e.target.value).replace(/[^0-9]/g,''),10)||0;this.setState({amount:Math.min(v,1e7),step:'quote',alert:false});},
+      chips:[1000,10000,25000,100000].map(v=>({label:'$'+v/1000+'k',border:INK,bg:s.amount===v?INK:'transparent',color:s.amount===v?PAPER:INK,onClick:set({amount:v})})),
+      bandL:((150-g)/300*100)+'%',bandW:(g*2/300*100)+'%',marks,cards,guard:g,
+      selToken:sel.token,selIssuer:sel.issuer,
+      showPickNote:!!(best&&sel.id!==best.id&&sel.pass),pickNote:best?sel.token+' costs '+usd(sel.cost-best.cost)+' more than '+best.token+' here.':'',useBest:set({sel:best?best.id:null}),
+      isQuote:s.step==='quote',isSigning:s.step==='signing',isFilled:s.step==='filled'&&!!f,
+      payTxt:usd(s.amount),recvTxt:sel.qty.toFixed(2)+' '+sel.token,
+      guardTxt:'±'+g+' bps',guardUsd:'At '+usd(s.amount)+' that is '+usd(s.amount*g/1e4)+'.',onGuard:e=>this.setState({guard:+e.target.value,step:'quote',alert:false}),
+      srcGuard:this.openSrc('guard'),srcFair:this.openSrc('fair'),srcBest:this.openSrc('best'),srcSaved:this.openSrc('saved'),
+      setMain:()=>this.setState({net:'main'}),setTest:()=>this.setState({net:'test'}),
+      mainBorder:s.net==='main'?INK:FAINT,testBorder:s.net==='test'?INK:FAINT,mainBg:s.net==='main'?PAPER:'transparent',testBg:s.net==='test'?PAPER:'transparent',
+      netDesc:s.net==='main'?'Parity checks this quote against fair value before you sign. After signing, your slippage limit governs the fill.':'The trade reverts on-chain if the fill lands outside ±'+g+' bps of fair, and writes a public receipt. Testnet only until the contract is audited.',
+      estPrice:px(sel.price),estVs:bp(sel.b)+' · '+usd(sel.cost),estSaved:usd(worst.cost-sel.cost)+' less',
+      canSign:sel.pass,refused:!sel.pass,
+      refTitle:sel.token+' would fill '+bp(sel.b)+' from fair.',
+      refBody:'At '+usd(s.amount)+' that is '+usd(Math.abs(sel.cost))+' '+(sel.cost>=0?'above':'below')+' fair value, outside your ±'+g+' bps guard. Nothing was signed and nothing was spent.',
+      opts:opts.map((o,i)=>({...o,bg:i===0?INK:'transparent',color:i===0?PAPER:INK,border:INK})),alertSet:s.alert,alertTxt:'Done. You will hear from us when '+sel.token+' is within ±'+g+' bps at '+usd(s.amount)+'.',
+      sign:()=>{this.setState({step:'signing',src:null});this.sg=setTimeout(()=>this.setState({step:'filled',fill:this.snap()}),1800);},
+      signTxt:s.net==='main'?'Quote checked against fair value. It is re-checked at signing; after that, your slippage limit applies.':'If the fill lands outside ±'+g+' bps of fair, the whole transaction reverts and you pay only the network fee.',
+      fillNet:f?(f.net==='main'?'Checked':'Enforced'):'',fillQty:f?f.qty.toFixed(2)+' '+f.token:'',fillPrice:f?px(f.price):'',fillFair:f?px(f.fair):'',fillDev:f?bp(f.b):'',fillSaved:f?usd(f.saved):'',
+      fillNote:f?(f.net==='main'?'Receipt recorded by Parity from the confirmed transaction. Anyone can check it against the chain.':'The on-chain check passed. A permanent receipt was written to testnet in the same transaction.'):'',
+      reset:set({fill:null}),
+      rights:['x','o','b'].map(id=>{const i=ISS.find(q=>q.id===id);return{token:i.token,issuer:i.issuer,ink:i.ink,...RIGHTS[id]};}),
+      receipts:[{t:'14:02:11',token:'NVDAon',size:'$12,400',dev:'+31 bps',guard:'Checked'},{t:'14:01:47',token:'NVDA',size:'$900',dev:'−37 bps',guard:'Checked'},{t:'13:59:02',token:'NVDAx',size:'$3,000',dev:'+46 bps',guard:'Enforced'},{t:'13:58:40',token:'NVDAon',size:'$48,000',dev:'+40 bps',guard:'Checked'},{t:'13:55:13',token:'NVDA',size:'$2,250',dev:'−33 bps',guard:'Enforced'}],
+      srcOpen:!!src,srcTop:s.src?s.src.top:0,srcLeft:s.src?s.src.left:0,srcTitle:src?src.title:'',srcLines:src?src.lines.map(l=>({k:l[0],v:l[1]})):[],srcNote:src?src.note:''
+    };
+  }
+}
+</script>
+</body>
+</html>

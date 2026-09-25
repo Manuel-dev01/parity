@@ -1,55 +1,141 @@
 @import "tailwindcss";
 
+/* Broadsheet: warm newsprint, one light theme. Authored in oklch, per design/. */
 :root {
-  color-scheme: dark;
-  --bg: #0b0d12;
-  --bg-2: #10131a;
-  --surface: #141821;
-  --surface-2: #1a1f2b;
-  --border: #232937;
-  --border-2: #2f3648;
-  --text: #e8eaf0;
-  --muted: #8b93a7;
-  --dim: #5c6478;
-  --accent: #35e0a1;
-  --accent-2: #1fb586;
-  --warn: #ffb020;
-  --danger: #ff5c7a;
-  --info: #6ea8ff;
+  color-scheme: light;
+  --paper: oklch(0.965 0.012 85);
+  --ink: oklch(0.2 0.01 60);
+  --vermilion: oklch(0.55 0.19 35);
+  --slip: oklch(0.985 0.008 85);
+  --on-vermilion: oklch(0.99 0.005 85);
+  --muted: oklch(0.4 0.01 60);
+
+  /* alpha derivations — used verbatim, not approximated */
+  --rule: oklch(0.2 0.01 60 / 0.2);
+  --rule-light: oklch(0.2 0.01 60 / 0.15);
+  --faint: oklch(0.2 0.01 60 / 0.25);
+  --ghost: oklch(0.2 0.01 60 / 0.3);
+  --leader: oklch(0.2 0.01 60 / 0.4);
+  --stem: oklch(0.2 0.01 60 / 0.5);
+  --dotted: oklch(0.2 0.01 60 / 0.6);
+  --meter-off: oklch(0.2 0.01 60 / 0.18);
+  --popover-shadow: oklch(0.2 0.01 60 / 0.12);
+  --tint: oklch(0.55 0.19 35 / 0.12);
+  --band: oklch(0.55 0.19 35 / 0.09);
+  --band-svg: oklch(0.55 0.19 35 / 0.08);
+  --selected: oklch(0.55 0.19 35 / 0.07);
+  --flash: oklch(0.55 0.19 35 / 0.1);
+  --band-edge: oklch(0.55 0.19 35 / 0.6);
+
+  /* issuer inks — one ink per issuer, everywhere. Vermilion marks only the answer. */
+  --ink-ondo: oklch(0.66 0.25 350);
+  --ink-xstocks: oklch(0.9 0.17 95);
+  --ink-backpack: oklch(0.76 0.14 220);
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-bg-2: var(--bg-2);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-border: var(--border);
-  --color-border-2: var(--border-2);
-  --color-text: var(--text);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-vermilion: var(--vermilion);
+  --color-slip: var(--slip);
   --color-muted: var(--muted);
-  --color-dim: var(--dim);
-  --color-accent: var(--accent);
-  --color-accent-2: var(--accent-2);
-  --color-warn: var(--warn);
-  --color-danger: var(--danger);
-  --color-info: var(--info);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-rule: var(--rule);
+  --color-faint: var(--faint);
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Newsreader', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-display: 'Archivo', system-ui, sans-serif;
 }
 
-html { background: var(--bg); }
-body {
-  background:
-    radial-gradient(1200px 600px at 50% -200px, rgba(53, 224, 161, 0.08), transparent 60%),
-    var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv11";
+html {
+  background: var(--paper);
 }
-.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
-.card-2 { background: var(--surface-2); border: 1px solid var(--border-2); border-radius: 12px; }
-.glow-best { box-shadow: 0 0 0 1px rgba(53, 224, 161, 0.55), 0 0 40px -10px rgba(53, 224, 161, 0.45); }
-.pulse { animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-::selection { background: rgba(53, 224, 161, 0.3); }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+a {
+  color: var(--vermilion);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+input[type="range"] {
+  accent-color: var(--vermilion);
+}
+
+/* Every size in the designs is cqw against the page root, not vw. Load-bearing. */
+.sheet {
+  container-type: inline-size;
+  overflow: hidden;
+}
+.gutter {
+  padding: 0 clamp(16px, 4cqw, 56px);
+}
+
+.serif {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+}
+.num {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+/* Archivo carries a wdth axis; the display sizes need it stretched. */
+.display {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-weight: 900;
+  font-stretch: 125%;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.display-mid {
+  font-family: 'Archivo', system-ui, sans-serif;
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+}
+.label {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.label-loose {
+  letter-spacing: 0.1em;
+}
+/* the signature broadsheet rule */
+.rule-double {
+  border-top: 3px double var(--ink);
+}
+.rule-hair {
+  border-bottom: 1px solid var(--rule);
+}
+/* "this figure has a source" */
+.provenance {
+  border-bottom: 1.5px dotted var(--dotted);
+  cursor: help;
+}
+.dot {
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px var(--ink);
+}
+::selection {
+  background: var(--tint);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

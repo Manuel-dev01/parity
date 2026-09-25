@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>body{margin:0} a{color:oklch(0.55 0.19 35);text-decoration:none} a:hover{text-decoration:underline}</style>
+</helmet>
+<div style="container-type:inline-size;overflow:hidden;background:oklch(0.965 0.012 85);color:oklch(0.2 0.01 60);font-family:'Newsreader',Georgia,serif;font-size:17px;line-height:1.5;font-variant-numeric:tabular-nums">
+  <div style="padding:0 clamp(20px,4cqw,56px)">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:14px 0;border-bottom:1px solid oklch(0.2 0.01 60);font-family:'IBM Plex Mono',monospace;font-size:12px;flex-wrap:wrap">
+      <span>Live price record · tokenized US stocks on Solana</span>
+      <span>{{ clock }}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 0 14px;border-bottom:3px double oklch(0.2 0.01 60);flex-wrap:wrap">
+      <div style="font-family:'Instrument Serif',serif;font-size:44px;line-height:1;letter-spacing:-0.01em">Parity</div>
+      <div style="display:flex;gap:22px;font-size:15px;align-items:center;flex-wrap:wrap">
+        <span>Markets</span><span>Receipts</span><span>Methodology</span><span>API</span>
+        <button style="font:inherit;font-size:14px;padding:8px 16px;white-space:nowrap;flex-shrink:0;background:oklch(0.2 0.01 60);color:oklch(0.965 0.012 85);border:none;cursor:pointer">Open app</button>
+      </div>
+    </div>
+
+    <div onMouseEnter="{{ onEnter }}" onMouseLeave="{{ onLeave }}" style="padding:clamp(20px,3cqw,36px) 0 0;cursor:crosshair">
+      <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:12px">
+        <span>{{ caption }}</span>
+        <span style="color:oklch(0.55 0.19 35)">{{ hint }}</span>
+      </div>
+      <div style="position:relative;height:clamp(140px,25cqw,330px);margin-top:6px">
+        <sc-for list="{{ layers }}" as="l" hint-placeholder-count="3">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(110px,24cqw,320px);line-height:1;letter-spacing:-0.04em;color:{{ l.color }};mix-blend-mode:multiply;transform:{{ l.tf }};transition:transform 1.4s cubic-bezier(.2,.8,.2,1)">NVDA</div>
+        </sc-for>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(110px,24cqw,320px);line-height:1;letter-spacing:-0.04em;color:transparent;-webkit-text-stroke:1.5px oklch(0.2 0.01 60);pointer-events:none">NVDA</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border-top:1px solid oklch(0.2 0.01 60);border-bottom:1px solid oklch(0.2 0.01 60);margin-top:clamp(12px,1.6cqw,24px)">
+        <sc-for list="{{ tokens }}" as="t" hint-placeholder-count="3">
+          <div style="padding:12px 16px 12px 0;display:flex;align-items:center;gap:10px;border-right:1px solid oklch(0.2 0.01 60 / 0.2)">
+            <span style="width:12px;height:12px;border-radius:6px;background:{{ t.color }};mix-blend-mode:multiply;flex-shrink:0"></span>
+            <span style="display:flex;flex-direction:column;min-width:0;line-height:1.25"><span style="font-weight:500">{{ t.token }}</span><span style="font-size:13px;font-style:italic;color:oklch(0.4 0.01 60);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.issuer }}</span></span>
+            <span style="flex:1"></span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;white-space:nowrap">{{ t.bps }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:24px 56px;align-items:flex-end;padding:clamp(32px,4cqw,56px) 0">
+      <h1 style="margin:0;flex:1 1 560px;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(52px,7.6cqw,116px);line-height:0.9;letter-spacing:-0.025em;text-wrap:balance">One share, printed three times. <span style="font-style:italic;color:oklch(0.55 0.19 35)">None of them line up.</span></h1>
+      <div style="flex:0 1 380px;display:flex;flex-direction:column;gap:18px">
+        <p style="margin:0;font-size:19px;line-height:1.4;text-wrap:pretty">NVIDIA's three Solana tokens are <span style="font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:oklch(0.55 0.19 35 / 0.12);padding:1px 5px">{{ spread }} bps</span> apart right now. Parity measures each against the fair price, shows what it really costs at your size, and buys the closest in one transaction.</p>
+        <div style="display:flex;border:1px solid oklch(0.2 0.01 60);max-width:380px">
+          <div style="flex:1;padding:0 14px;display:flex;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:14px;color:oklch(0.45 0.01 60);height:50px">NVDA</div>
+          <button style="font:inherit;padding:0 22px;background:oklch(0.55 0.19 35);color:oklch(0.99 0.005 85);border:none;cursor:pointer">Price it →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="border-top:3px double oklch(0.2 0.01 60);border-bottom:1px solid oklch(0.2 0.01 60);overflow:hidden;padding:12px 0">
+    <div ref="{{ marqRef }}" style="display:flex;gap:48px;white-space:nowrap;will-change:transform;font-family:'IBM Plex Mono',monospace;font-size:14px;width:max-content">
+      <sc-for list="{{ marq }}" as="m" hint-placeholder-count="16">
+        <span style="display:flex;gap:10px"><span style="font-weight:500">{{ m.sym }}</span><span style="color:oklch(0.45 0.01 60)">spread</span><span>{{ m.sp }}</span></span>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="padding:0 clamp(20px,4cqw,56px)">
+    <div style="padding:28px 0 10px;border-bottom:1px solid oklch(0.2 0.01 60)">
+      <div ref="{{ wrapRef }}" style="position:relative;width:100%;height:clamp(240px,26cqw,360px)">
+        <canvas ref="{{ canvasRef }}" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:8px;font-size:14px;font-style:italic;color:oklch(0.4 0.01 60)">
+        <span><span style="font-style:normal;font-weight:500">Fig. 1</span> The same three tokens over the last 90 seconds, distance from oracle fair value. Shaded band: a ±50 bps guard.</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:12px">— NVDAon   – – NVDAx   ··· NVDA</span>
+      </div>
+    </div>
+
+    <div style="padding:clamp(48px,6cqw,96px) 0;display:flex;flex-direction:column;gap:clamp(32px,4cqw,56px);border-bottom:3px double oklch(0.2 0.01 60)">
+      <div style="display:flex;flex-wrap:wrap;gap:8px 36px;align-items:baseline">
+        <span style="font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(56px,10cqw,150px);line-height:0.9;letter-spacing:-0.05em">−479</span>
+        <span style="font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(56px,10cqw,150px);line-height:0.9;letter-spacing:-0.05em;color:oklch(0.2 0.01 60 / 0.3)">+34</span>
+        <span style="flex:1 1 240px;max-width:320px;font-size:19px;line-height:1.35;text-wrap:pretty">Basis points from fair, NVDA on two issuers, <span style="font-style:italic">within the same minute.</span></span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px 36px;align-items:baseline">
+        <span style="font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(56px,10cqw,150px);line-height:0.9;letter-spacing:-0.05em">$122</span>
+        <span style="font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:clamp(56px,10cqw,150px);line-height:0.9;letter-spacing:-0.05em;color:oklch(0.2 0.01 60 / 0.3)">$176</span>
+        <span style="flex:1 1 240px;max-width:320px;font-size:19px;line-height:1.35;text-wrap:pretty">One SpaceX share after listing, <span style="font-style:italic">depending on which token you bought.</span></span>
+      </div>
+    </div>
+
+    <div style="padding:clamp(48px,6cqw,96px) 0;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:20px">
+        <span style="font-family:'Instrument Serif',serif;font-size:clamp(30px,3cqw,40px)">How Parity lines them up</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:oklch(0.45 0.01 60)">Methodology →</span>
+      </div>
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+        <div style="display:grid;grid-template-columns:minmax(48px,110px) minmax(0,1fr) minmax(0,1.1fr);gap:8px 32px;padding:24px 0;border-top:1px solid oklch(0.2 0.01 60);align-items:baseline">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:oklch(0.55 0.19 35)">{{ s.n }}</span>
+          <span style="font-family:'Archivo',sans-serif;font-weight:800;font-stretch:112%;font-size:clamp(24px,2.8cqw,38px);letter-spacing:-0.03em;line-height:1.05">{{ s.t }}</span>
+          <span style="font-size:18px;line-height:1.45;text-wrap:pretty">{{ s.d }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:40px;border-top:3px double oklch(0.2 0.01 60);padding:28px 0 48px">
+      <div style="flex:2 1 460px;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid oklch(0.2 0.01 60);padding-bottom:6px;margin-bottom:6px">
+          <span style="font-family:'Instrument Serif',serif;font-size:30px">Spreads, this minute</span>
+          <a href="#" style="font-size:14px">All markets</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));column-gap:32px">
+          <sc-for list="{{ board }}" as="r" hint-placeholder-count="8">
+            <div style="display:flex;align-items:baseline;gap:8px;padding:7px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.15);font-family:'IBM Plex Mono',monospace;font-size:14px">
+              <span style="font-weight:500;min-width:56px">{{ r.sym }}</span>
+              <span style="color:oklch(0.45 0.01 60)">{{ r.n }} tokens</span>
+              <span style="flex:1;border-bottom:1px dotted oklch(0.2 0.01 60 / 0.4);transform:translateY(-4px)"></span>
+              <span>{{ r.spread }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex:1 1 280px;min-width:0">
+        <div style="font-family:'Instrument Serif',serif;font-size:30px;border-bottom:1px solid oklch(0.2 0.01 60);padding-bottom:6px;margin-bottom:6px">Receipts</div>
+        <sc-for list="{{ receipts }}" as="rc" hint-placeholder-count="5">
+          <div style="padding:8px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.15);font-size:15px;line-height:1.35">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:oklch(0.45 0.01 60)">{{ rc.t }}</span><br>
+            {{ rc.size }} of <span style="font-weight:500">{{ rc.token }}</span>, filled <span style="font-family:'IBM Plex Mono',monospace;font-size:13px">{{ rc.dev }}</span> from fair. <span style="font-style:italic;color:oklch(0.45 0.01 60)">{{ rc.guard }}.</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid oklch(0.2 0.01 60);padding:18px 0 28px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:oklch(0.4 0.01 60);align-items:baseline">
+      <span style="font-family:'Instrument Serif',serif;font-size:20px;color:oklch(0.2 0.01 60)">Parity</span><span>Methodology</span><span>API</span><span style="flex:1"></span><span>Neutral toward every issuer. Not investment advice.</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const B=[['NVDA',[-41,22,34]],['COIN',[-88,12,40]],['TSLA',[-12,18,61]],['AMZN',[-19,7,28]],['GOOGL',[-8,14,20]],['META',[2,30]],['MSFT',[-6,11]],['AAPL',[4,9,15]]];
+const RC=[['NVDAon','$12,400','Checked','+31 bps'],['TSLAx','$3,000','Enforced','+18 bps'],['NVDA','$900','Checked','−37 bps'],['AMZNon','$48,000','Checked','+24 bps'],['COINx','$6,500','Enforced','+12 bps']];
+const TK=[{id:'o',label:'NVDAon',issuer:'Ondo',base:34,dash:[],color:'oklch(0.66 0.25 350)',dy:-0.6},{id:'x',label:'NVDAx',issuer:'xStocks',base:22,dash:[10,6],color:'oklch(0.9 0.17 95)',dy:0.5},{id:'b',label:'NVDA',issuer:'Backpack',base:-41,dash:[2,4],color:'oklch(0.76 0.14 220)',dy:0}];
+const p2=n=>String(n).padStart(2,'0');
+const bp=n=>{const r=Math.round(n);return (r>0?'+':r<0?'−':'±')+Math.abs(r)+' bps';};
+class Component extends DCLogic {
+  constructor(p){super(p);this.canvasRef=React.createRef();this.wrapRef=React.createRef();this.marqRef=React.createRef();this.v={o:34,x:22,b:-41};this.h={o:[],x:[],b:[]};this.state={now:Date.now(),v:{...this.v},j:B.map(r=>r[1].map(()=>0)),aligned:false};}
+  componentDidMount(){
+    for(let i=0;i<400;i++)this.step();
+    this.vis=true;this.vm=true;
+    this.io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.target===this.wrapRef.current)this.vis=e.isIntersecting;else this.vm=e.isIntersecting;});});
+    this.wrapRef.current&&this.io.observe(this.wrapRef.current);this.marqRef.current&&this.io.observe(this.marqRef.current);
+    let off=0,last=performance.now();
+    const loop=t=>{if(this.vis)this.draw();const el=this.marqRef.current;if(el&&this.vm){off+=(t-last)*0.04;const half=el.scrollWidth/2;if(half>0&&off>half)off-=half;el.style.transform='translateX('+(-off)+'px)';}last=t;this.raf=requestAnimationFrame(loop);};
+    this.raf=requestAnimationFrame(loop);
+    this.si=setInterval(()=>this.step(),110);
+    this.ti=setInterval(()=>this.setState(s=>({now:Date.now(),v:{...this.v},j:s.j.map(a=>a.map(x=>Math.max(-5,Math.min(5,x+(Math.random()-0.5)*4))))})),1000);
+  }
+  componentWillUnmount(){cancelAnimationFrame(this.raf);clearInterval(this.si);clearInterval(this.ti);this.io&&this.io.disconnect();}
+  step(){for(const t of TK){let v=this.v[t.id];v+=(t.base-v)*0.03+(Math.random()-0.5)*4;this.v[t.id]=v;const a=this.h[t.id];a.push(v);if(a.length>900)a.shift();}}
+  draw(){
+    const c=this.canvasRef.current,w=this.wrapRef.current;if(!c||!w)return;
+    const dpr=window.devicePixelRatio||1,W=w.clientWidth,H=w.clientHeight;
+    if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);}
+    const x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);
+    const ink='rgb(52,44,36)',ver='rgb(214,72,38)',mid=H/2,sc=(H/2-20)/110,right=W-120,step=2;
+    x.fillStyle='rgba(214,72,38,0.09)';x.fillRect(0,mid-50*sc,right,100*sc);
+    x.strokeStyle='rgba(214,72,38,0.5)';x.lineWidth=1;x.setLineDash([3,3]);
+    [50,-50].forEach(b=>{x.beginPath();x.moveTo(0,mid-b*sc);x.lineTo(right,mid-b*sc);x.stroke();});
+    x.setLineDash([]);x.strokeStyle=ink;x.lineWidth=1.2;x.beginPath();x.moveTo(0,mid);x.lineTo(right,mid);x.stroke();
+    x.font='12px "IBM Plex Mono", monospace';x.fillStyle='rgba(214,72,38,0.9)';x.fillText('+50',4,mid-50*sc-6);x.fillText('−50',4,mid+50*sc+14);
+    x.fillStyle=ink;x.fillText('FAIR',4,mid-6);
+    x.strokeStyle='rgba(52,44,36,0.12)';x.lineWidth=1;
+    for(let gx=right;gx>0;gx-=step*60){x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke();}
+    const heads=[];
+    for(const t of TK){const a=this.h[t.id],n=Math.min(a.length,Math.floor(right/step));x.strokeStyle=ink;x.lineWidth=1.6;x.setLineDash(t.dash);x.beginPath();
+      for(let i=0;i<n;i++){const v=a[a.length-n+i],px=right-(n-1-i)*step,py=mid-v*sc;i?x.lineTo(px,py):x.moveTo(px,py);}x.stroke();x.setLineDash([]);
+      heads.push({t,y:mid-a[a.length-1]*sc,v:a[a.length-1]});}
+    heads.sort((a,b)=>a.y-b.y);heads.forEach((h,i)=>{h.ly=i?Math.max(h.y,heads[i-1].ly+16):h.y;});
+    for(const h of heads){x.fillStyle=Math.abs(h.v)<=50?ink:ver;x.beginPath();x.arc(right,h.y,3.5,0,7);x.fill();const r=Math.round(h.v);x.fillText(h.t.label+' '+(r>0?'+':r<0?'−':'')+Math.abs(r),right+10,h.ly+4);}
+  }
+  renderVals(){
+    const s=this.state,t=new Date(s.now);
+    const cur=TK.map(k=>({...k,b:s.v[k.id]}));
+    const vs=cur.map(k=>k.b);const sp=Math.round(Math.max(...vs)-Math.min(...vs));
+    const rows=B.map((r,i)=>{const d=r[1].map((v,k)=>v+s.j[i][k]);return{sym:r[0],n:d.length,sp:Math.max(...d)-Math.min(...d),base:Math.max(...r[1])-Math.min(...r[1])};}).sort((a,b)=>b.base-a.base);
+    return{canvasRef:this.canvasRef,wrapRef:this.wrapRef,marqRef:this.marqRef,
+      clock:t.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+' · '+p2(t.getHours())+':'+p2(t.getMinutes())+':'+p2(t.getSeconds()),
+      spread:String(sp),
+      onEnter:()=>this.setState({aligned:true}),onLeave:()=>this.setState({aligned:false}),
+      caption:s.aligned?'Fair value: all three inks in register':'NVDA on Solana, live · '+sp+' bps between the three prints',
+      hint:s.aligned?'':'Hover to print it at fair',
+      layers:cur.map(k=>({color:k.color,tf:s.aligned?'translate(0,0)':'translate('+(k.b*0.12)+'%,'+(k.dy*1.5)+'%)'})),
+      tokens:cur.map(k=>({token:k.label,issuer:k.issuer,color:k.color,bps:bp(k.b)})),
+      marq:[...rows,...rows].map(r=>({sym:r.sym,sp:Math.round(r.sp)+' bps'})),
+      steps:[{n:'01',t:'Fair value',d:'The price of the underlying share, from an on-chain oracle. The black outline in the print above.'},{n:'02',t:'Your real price',d:'What each token costs at your size, including impact. The cheapest at $1,000 is often not the cheapest at $50,000.'},{n:'03',t:'A guard you set',d:'If no token fills close enough to fair, Parity doesn\'t build the trade, and shows you what it would have cost.'},{n:'04',t:'A public receipt',d:'Every fill is published: price, fair value at that moment, and which protection applied.'}],
+      board:rows.map(r=>({sym:r.sym,n:r.n,spread:Math.round(r.sp)+' bps'})),
+      receipts:RC.map((r,i)=>{const d=new Date(s.now-(i*47+12)*1000);return{t:p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds()),token:r[0],size:r[1],guard:r[2],dev:r[3]};})};
+  }
+}
+</script>
+</body>
+</html>

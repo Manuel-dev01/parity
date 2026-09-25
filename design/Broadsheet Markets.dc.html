@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>body{margin:0} a{color:oklch(0.55 0.19 35);text-decoration:none} a:hover{text-decoration:underline}</style>
+</helmet>
+<div style="container-type:inline-size;overflow:hidden;background:oklch(0.965 0.012 85);color:oklch(0.2 0.01 60);font-family:'Newsreader',Georgia,serif;font-size:17px;line-height:1.5;font-variant-numeric:tabular-nums">
+  <div style="padding:0 clamp(16px,4cqw,56px)">
+    <div style="display:flex;justify-content:space-between;gap:8px 16px;padding:12px 0;border-bottom:1px solid oklch(0.2 0.01 60);font-family:'IBM Plex Mono',monospace;font-size:12px;flex-wrap:wrap">
+      <span>Markets · {{ count }} stocks, {{ tokens }} tokens on Solana</span>
+      <span>{{ clock }}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px 20px;padding:16px 0 12px;border-bottom:3px double oklch(0.2 0.01 60);flex-wrap:wrap">
+      <div style="font-family:'Instrument Serif',serif;font-size:38px;line-height:1">Parity</div>
+      <div style="display:flex;gap:18px;font-size:15px;align-items:center;flex-wrap:wrap">
+        <span style="border-bottom:2px solid oklch(0.2 0.01 60)">Markets</span><span>Holdings</span><span>Receipts</span><span>Methodology</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 10px;border:1px solid oklch(0.2 0.01 60);white-space:nowrap">7Fq4…w3kP</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:20px 48px;align-items:flex-end;padding:clamp(24px,3.4cqw,44px) 0 24px">
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px">
+        <h1 style="margin:0;font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(40px,5.8cqw,84px);line-height:0.95;letter-spacing:-0.02em;text-wrap:balance">{{ headline }}</h1>
+        <p style="margin:0;font-size:clamp(18px,1.7cqw,22px);line-height:1.4;max-width:640px;text-wrap:pretty">{{ sub }}</p>
+      </div>
+      <div style="display:flex;border:1px solid oklch(0.2 0.01 60)">
+        <button onClick="{{ toNow }}" style="font:inherit;padding:10px 20px;border:none;cursor:pointer;background:{{ nowBg }};color:{{ nowColor }}">Now</button>
+        <button onClick="{{ toHist }}" style="font:inherit;padding:10px 20px;border:none;border-left:1px solid oklch(0.2 0.01 60);cursor:pointer;background:{{ histBg }};color:{{ histColor }}">History</button>
+      </div>
+    </div>
+
+    <sc-if value="{{ isNow }}" hint-placeholder-val="{{ true }}">
+      <div style="border-top:1px solid oklch(0.2 0.01 60)">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;padding:8px 0;border-bottom:1px solid oklch(0.2 0.01 60);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(0.4 0.01 60)">
+          <span>Ranked by spread between tokens</span>
+          <span style="display:flex;gap:14px;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:5px;background:oklch(0.66 0.25 350);box-shadow:0 0 0 1px oklch(0.2 0.01 60)"></span>Ondo</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:5px;background:oklch(0.9 0.17 95);box-shadow:0 0 0 1px oklch(0.2 0.01 60)"></span>xStocks</span>
+            <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:5px;background:oklch(0.76 0.14 220);box-shadow:0 0 0 1px oklch(0.2 0.01 60)"></span>Backpack</span>
+          </span>
+        </div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;padding:14px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.2);cursor:pointer">
+            <div style="flex:0 0 150px;display:flex;flex-direction:column;line-height:1.2">
+              <span style="font-family:'Archivo',sans-serif;font-weight:800;font-stretch:112%;font-size:24px;letter-spacing:-0.02em">{{ r.sym }}</span>
+              <span style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60)">{{ r.name }} · <span style="font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:12px">{{ r.fair }}</span></span>
+            </div>
+            <div style="flex:1 1 260px;position:relative;height:36px;min-width:200px">
+              <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:oklch(0.2 0.01 60 / 0.25)"></div>
+              <div style="position:absolute;top:22%;bottom:22%;left:50%;width:1.5px;background:oklch(0.2 0.01 60)"></div>
+              <div style="position:absolute;top:50%;height:3px;margin-top:-1px;left:{{ r.barL }};width:{{ r.barW }};background:oklch(0.55 0.19 35 / 0.35);transition:left 1.2s ease,width 1.2s ease"></div>
+              <sc-for list="{{ r.dots }}" as="d" hint-placeholder-count="3">
+                <div style="position:absolute;top:50%;left:{{ d.left }};width:11px;height:11px;margin:-5px 0 0 -5px;border-radius:6px;background:{{ d.ink }};box-shadow:0 0 0 1px oklch(0.2 0.01 60);transition:left 1.2s ease"></div>
+              </sc-for>
+            </div>
+            <div style="flex:0 0 auto;display:flex;gap:28px;align-items:baseline">
+              <div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.2;min-width:92px">
+                <span style="font-family:'Instrument Serif',serif;font-size:30px">{{ r.spread }}</span>
+                <span style="font-size:13px;font-style:italic;color:oklch(0.4 0.01 60)">{{ r.usd }} per $10k</span>
+              </div>
+              <div style="display:flex;flex-direction:column;line-height:1.2;min-width:110px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:oklch(0.4 0.01 60)">Lowest quote</span>
+                <span style="font-weight:500">{{ r.low }}</span>
+              </div>
+              <span style="color:oklch(0.55 0.19 35)">→</span>
+            </div>
+          </div>
+        </sc-for>
+        <div style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60);padding:10px 0 40px">Quotes at mid, measured from oracle fair value (the vertical rule). The best token at your size can differ; open a stock to price your amount.</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isHist }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top:1px solid oklch(0.2 0.01 60);padding-bottom:40px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));column-gap:32px">
+          <sc-for list="{{ hist }}" as="h" hint-placeholder-count="8">
+            <div style="padding:16px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.2);display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font-family:'Archivo',sans-serif;font-weight:800;font-stretch:112%;font-size:22px;letter-spacing:-0.02em">{{ h.sym }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">median {{ h.med }} · max {{ h.max }}</span>
+              </div>
+              <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:72px;display:block;overflow:visible">
+                <rect x="0" y="{{ h.guardY }}" width="100" height="{{ h.guardH }}" fill="oklch(0.55 0.19 35 / 0.08)"></rect>
+                <polyline points="{{ h.pts }}" fill="none" stroke="oklch(0.2 0.01 60)" stroke-width="1.2" vector-effect="non-scaling-stroke"></polyline>
+              </svg>
+              <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;color:oklch(0.4 0.01 60)"><span>30 days ago</span><span>today</span></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:14px;font-style:italic;color:oklch(0.4 0.01 60);padding:10px 0 28px"><span style="font-style:normal;font-weight:500">Fig. 2</span> Spread between each stock's cheapest and costliest token, daily. Shaded: under 50 bps.</div>
+
+        <div style="border-top:3px double oklch(0.2 0.01 60);padding-top:18px;display:flex;flex-direction:column">
+          <span style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1;padding-bottom:8px;border-bottom:1px solid oklch(0.2 0.01 60)">Widest gaps on record</span>
+          <sc-for list="{{ records }}" as="rc" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:minmax(90px,auto) minmax(0,1fr);gap:4px 24px;padding:14px 0;border-bottom:1px solid oklch(0.2 0.01 60 / 0.2);align-items:baseline">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:oklch(0.4 0.01 60)">{{ rc.when }}</span>
+              <span style="font-size:19px;line-height:1.35;text-wrap:pretty"><span style="font-weight:500">{{ rc.sym }}.</span> {{ rc.txt }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="border-top:1px solid oklch(0.2 0.01 60);padding:16px 0 26px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:oklch(0.4 0.01 60);align-items:baseline">
+      <span style="font-family:'Instrument Serif',serif;font-size:20px;color:oklch(0.2 0.01 60)">Parity</span><span>Methodology</span><span>API</span><span style="flex:1"></span><span>Neutral toward every issuer. Not investment advice.</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;view&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;now&quot;,&quot;history&quot;],&quot;default&quot;:&quot;now&quot;,&quot;tsType&quot;:&quot;'now'|'history'&quot;}}">
+const INKS={o:'oklch(0.66 0.25 350)',x:'oklch(0.9 0.17 95)',b:'oklch(0.76 0.14 220)'};
+const SUF={o:'on',x:'x',b:''};
+const M=[['NVDA','NVIDIA',182.41,{o:30,x:48,b:-41}],['COIN','Coinbase',311.08,{o:40,x:12,b:-88}],['TSLA','Tesla',248.90,{o:61,x:18,b:-12}],['AMZN','Amazon',201.33,{o:28,x:7,b:-19}],['GOOGL','Alphabet',176.52,{o:20,x:14,b:-8}],['META','Meta',598.70,{o:30,x:2}],['MSFT','Microsoft',441.15,{o:11,x:-6}],['AAPL','Apple',231.40,{o:15,x:9,b:4}]];
+const pos=b=>Math.max(1,Math.min(99,(b+150)/300*100));
+const p2=n=>String(n).padStart(2,'0');
+const rnd=seed=>()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+const HIST=M.map((m,i)=>{const r=rnd(i*97+13);const devs=Object.values(m[3]);const base=Math.max(...devs)-Math.min(...devs);const a=[];let v=base*0.8;for(let d=0;d<30;d++){v+=(base-v)*0.25+(r()-0.5)*base*0.5;if(r()>0.93)v+=base*(1+r()*1.5);a.push(Math.max(3,v));}a[29]=base;return a;});
+class Component extends DCLogic {
+  state={view:this.props.view||'now',j:M.map(m=>Object.keys(m[3]).map(()=>0)),now:Date.now()};
+  componentDidMount(){this.t=setInterval(()=>this.setState(s=>({j:s.j.map(a=>a.map(v=>Math.max(-4,Math.min(4,v+(Math.random()-0.5)*3)))),now:Date.now()})),3000);}
+  componentWillUnmount(){clearInterval(this.t);}
+  renderVals(){
+    const s=this.state,t=new Date(s.now);
+    const rows=M.map((m,i)=>{const ks=Object.keys(m[3]);const d=ks.map((k,n)=>({k,v:m[3][k]+s.j[i][n]}));const vs=d.map(x=>x.v);const mn=Math.min(...vs),mx=Math.max(...vs);const base=Math.max(...Object.values(m[3]))-Math.min(...Object.values(m[3]));const lowK=ks.reduce((a,k)=>m[3][k]<m[3][a]?k:a,ks[0]);return{sym:m[0],name:m[1],fair:'$'+m[2].toFixed(2),sp:mx-mn,base,d,mn,mx,low:m[0]+SUF[lowK]};}).sort((a,b)=>b.base-a.base);
+    const top=rows[0];const nt=M.reduce((a,m)=>a+Object.keys(m[3]).length,0);
+    const hmax=Math.max(...HIST.map(a=>Math.max(...a)));
+    return{
+      count:M.length,tokens:nt,clock:'Live · '+p2(t.getHours())+':'+p2(t.getMinutes())+':'+p2(t.getSeconds()),
+      headline:s.view==='now'?top.sym+' is the most mispriced stock on Solana this minute.':'The gaps come and go. Some are enormous.',
+      sub:s.view==='now'?Math.round(top.sp)+' bps between its cheapest and costliest token, about $'+Math.round(top.sp)+' on every $10,000. Same share, different wrappers.':'Thirty days of spreads between tokens of the same share, and the widest ones Parity has recorded.',
+      isNow:s.view==='now',isHist:s.view==='history',
+      toNow:()=>this.setState({view:'now'}),toHist:()=>this.setState({view:'history'}),
+      nowBg:s.view==='now'?'oklch(0.2 0.01 60)':'transparent',nowColor:s.view==='now'?'oklch(0.965 0.012 85)':'oklch(0.2 0.01 60)',
+      histBg:s.view==='history'?'oklch(0.2 0.01 60)':'transparent',histColor:s.view==='history'?'oklch(0.965 0.012 85)':'oklch(0.2 0.01 60)',
+      rows:rows.map(r=>({sym:r.sym,name:r.name,fair:r.fair,spread:Math.round(r.sp)+' bps',usd:'$'+Math.round(r.sp),low:r.low,barL:pos(r.mn)+'%',barW:(pos(r.mx)-pos(r.mn))+'%',dots:r.d.map(x=>({left:pos(x.v)+'%',ink:INKS[x.k]}))})),
+      hist:M.map((m,i)=>{const a=HIST[i];const sc=v=>40-v/hmax*38;const sorted=[...a].sort((p,q)=>p-q);return{sym:m[0],med:Math.round(sorted[15])+' bps',max:Math.round(sorted[29])+' bps',pts:a.map((v,d)=>(d/29*100).toFixed(1)+','+sc(v).toFixed(1)).join(' '),guardY:sc(50).toFixed(1),guardH:(40-sc(50)).toFixed(1)};}),
+      records:[{when:'Today 14:02',sym:'NVDA',txt:'−479 bps on one issuer and +34 bps on another, within the same minute.'},{when:'Listing day',sym:'SpaceX',txt:'One share traded anywhere from $122 to $176, depending on which token you bought.'},{when:'Sep 9',sym:'COIN',txt:'212 bps between tokens for most of the US open, closing to 30 bps by noon.'}]
+    };
+  }
+}
+</script>
+</body>
+</html>
