@@ -33,8 +33,10 @@ export interface BoardRow {
 // Jupiter's keyless endpoint is rate-limited and every board render costs several calls.
 // The cache has to be shared across instances: an in-process map only helped whichever
 // instance happened to serve you, which left page loads swinging between 3s and 25s.
+// 60s because a "this minute" board does not need to be fresher than a minute, and every
+// miss costs several calls to a keyless, rate-limited endpoint.
 export const liveBoard = (limit = 30, minIssuers = 2): Promise<BoardRow[]> =>
-  unstable_cache(() => buildBoard(limit, minIssuers), ["board", String(limit), String(minIssuers)], { revalidate: 20 })();
+  unstable_cache(() => buildBoard(limit, minIssuers), ["board", String(limit), String(minIssuers)], { revalidate: 60 })();
 
 /**
  * Cheap, keyless live board: one Jupiter Price v3 batch per 50 mints gives the last

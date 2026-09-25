@@ -24,7 +24,7 @@ const STEPS: [string, string, string][] = [
 ];
 
 export default async function Landing() {
-  const rows = await liveBoard(60).catch(() => []);
+  const rows = await liveBoard(40).catch(() => []);
   const ranked = rows.filter((r) => r.spreadBps != null).sort((a, b) => (b.spreadBps ?? 0) - (a.spreadBps ?? 0));
   // Prefer a share whose inks can all be placed honestly: three comparable pool prints if
   // any exist, otherwise the most mispriced comparable name.

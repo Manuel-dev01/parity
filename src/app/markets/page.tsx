@@ -18,7 +18,7 @@ type Point = { symbol: string; ts: string; spread: number };
 export default async function Markets({ searchParams }: Props) {
   const { view } = await searchParams;
   const isNow = view !== "history";
-  const rows = await liveBoard(60).catch(() => []);
+  const rows = await liveBoard(40).catch(() => []);
   const ranked = rows.filter((r) => r.spreadBps != null).sort((a, b) => (b.spreadBps ?? 0) - (a.spreadBps ?? 0));
   const top = ranked[0] ?? null;
   const tokenCount = rows.reduce((n, r) => n + r.prints.length, 0);
