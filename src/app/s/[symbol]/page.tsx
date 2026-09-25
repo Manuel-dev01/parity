@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getUnderlying } from "@/lib/universe";
 import { parityQuote } from "@/lib/venues";
-import { Ticker } from "@/components/Ticker";
+import { guardDeployment } from "@/lib/guard";
+import { MARKET_LABEL } from "@/lib/market";
+import { Sheet } from "@/components/broadsheet/Sheet";
+import { Ticker } from "@/components/ticker/Ticker";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +22,17 @@ export default async function TickerPage({ params, searchParams }: Props) {
   const { usd } = await searchParams;
   const u = getUnderlying(symbol);
   if (!u) notFound();
-  const size = Math.min(Math.max(Number(usd) || 1000, 1), 1_000_000);
+  const size = Math.min(Math.max(Number(usd) || 1000, 1), 100_000);
   const initial = await parityQuote(u, size).catch(() => null);
-  return <Ticker underlying={u} initial={initial} usd={size} />;
+  const cluster = guardDeployment()?.cluster ?? null;
+
+  return (
+    <Sheet
+      dateline={`${u.symbol} · ${u.name} · ${initial ? MARKET_LABEL[initial.fair.marketState] : "—"}`}
+      datelineRight={initial ? `Fair value updated ${initial.fair.ageSec}s ago` : undefined}
+      active="markets"
+    >
+      <Ticker underlying={u} initial={initial} guardCluster={cluster} />
+    </Sheet>
+  );
 }

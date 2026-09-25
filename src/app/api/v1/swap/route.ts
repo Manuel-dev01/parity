@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     const built = await buildSwap({ underlying: u, token, usd, owner, maxDevBps, inputMint: pay });
     return NextResponse.json(built);
   } catch (e) {
-    if (e instanceof SwapRejected) return NextResponse.json({ error: e.message, rejected: true }, { status: e.status });
+    if (e instanceof SwapRejected) return NextResponse.json({ error: e.message, rejected: true, refusal: e.refusal }, { status: e.status });
     if (e instanceof JupiterError) return NextResponse.json({ error: `Jupiter: ${e.message}`, code: e.code }, { status: 502 });
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }

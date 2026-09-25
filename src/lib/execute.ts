@@ -12,6 +12,7 @@ import { STABLES, USDC_MINT } from "./universe";
 import { getFairValue, jupiterPrices, type JupPrice } from "./fairvalue";
 import { rpc } from "./pyth-onchain";
 import { JupiterError, swapInstructions, swapQuote, ultraOrder } from "./jupiter";
+import { quoteVenue } from "./venues";
 import {
   GUARD_DEFAULTS,
   TOKEN_PROGRAM,
@@ -57,9 +58,115 @@ export interface SwapBuild {
 }
 
 export class SwapRejected extends Error {
-  constructor(msg: string, public status = 409) {
+  constructor(
+    msg: string,
+    public status = 409,
+    public refusal?: SwapRefusal,
+  ) {
     super(msg);
   }
+}
+
+/** One concrete thing the buyer can do instead. Every figure here is a real quote. */
+export interface RefusalOption {
+  kind: "issuer" | "size" | "guard";
+  title: string;
+  detail: string;
+  mint?: string;
+  token?: string;
+  usd?: number;
+  maxDevBps?: number;
+}
+
+export interface SwapRefusal {
+  symbol: string;
+  token: string;
+  issuer: IssuerId;
+  usd: number;
+  payToken: string;
+  devBps: number;
+  maxDevBps: number;
+  fairPx: number;
+  fillPx: number;
+  /** distance from fair in dollars at this size */
+  awayUsd: number;
+  options: RefusalOption[];
+}
+
+/**
+ * Builds the alternatives shown when the guard holds a trade: a sibling issuer that passes,
+ * the largest size that still fits, and what widening the guard would actually cost. Each is
+ * quoted for real — nothing here is derived from a formula standing in for liquidity.
+ */
+async function refusal(p: {
+  u: Underlying;
+  token: UniverseToken;
+  usd: number;
+  maxDevBps: number;
+  fair: FairValue;
+  devBps: number;
+  fillPx: number;
+  payToken: string;
+}): Promise<SwapRefusal> {
+  const { u, token, usd, maxDevBps, fair, devBps, fillPx, payToken } = p;
+  const options: RefusalOption[] = [];
+  const awayUsd = Math.abs((usd * devBps) / 1e4);
+  const jp = await jupiterPrices(u.tokens.map((t) => t.mint)).catch(() => ({}) as Record<string, JupPrice>);
+
+  // 1. another issuer's token for the same share, at the same size
+  const siblings = u.tokens.filter((t) => t.mint !== token.mint);
+  const quoted = await Promise.all(
+    siblings.map(async (t) => {
+      const v = await quoteVenue(t, [usd], usd, fair, jp[t.mint]).catch(() => null);
+      const eff = v?.effPx[String(usd)];
+      return v && eff != null && v.devBps != null ? { t, eff, devBps: v.devBps } : null;
+    }),
+  );
+  const passing = quoted.filter((q): q is NonNullable<typeof q> => !!q && Math.abs(q.devBps) <= maxDevBps).sort((a, b) => a.eff - b.eff);
+  if (passing.length) {
+    const best = passing[0];
+    const saved = Math.max(0, usd / best.eff - usd / fillPx) * fair.price;
+    options.push({
+      kind: "issuer",
+      title: `Buy ${best.t.symbol} instead`,
+      detail: `${best.devBps > 0 ? "+" : ""}${best.devBps} bps from fair${saved >= 1 ? ` · $${Math.round(saved)} more stock` : ""}`,
+      mint: best.t.mint,
+      token: best.t.symbol,
+    });
+  }
+
+  // 2. the largest size that still fits, probed against real liquidity
+  const ladder = [...new Set([0.5, 0.25, 0.1].map((f) => Math.max(100, Math.floor((usd * f) / 100) * 100)))].filter((s) => s < usd).sort((a, b) => b - a);
+  if (ladder.length) {
+    const v = await quoteVenue(token, ladder, ladder[0], fair, jp[token.mint]).catch(() => null);
+    const fits = ladder.find((s) => {
+      const eff = v?.effPx[String(s)];
+      return eff != null && Math.abs(Math.round(((eff - fair.price) / fair.price) * 1e4)) <= maxDevBps;
+    });
+    if (fits) {
+      const eff = v!.effPx[String(fits)]!;
+      const d = Math.round(((eff - fair.price) / fair.price) * 1e4);
+      options.push({
+        kind: "size",
+        title: `Buy $${fits.toLocaleString("en-US")} of ${token.symbol}`,
+        detail: `Fits your guard at ${d > 0 ? "+" : ""}${d} bps`,
+        usd: fits,
+        mint: token.mint,
+        token: token.symbol,
+      });
+    }
+  }
+
+  // 3. widen the guard, with the cost stated in dollars
+  const widened = Math.min(1000, Math.ceil(Math.abs(devBps) / 5) * 5 + 5);
+  options.push({
+    kind: "guard",
+    title: `Widen guard to ±${widened} bps`,
+    detail: `You would pay $${Math.round(awayUsd)} ${devBps > 0 ? "above" : "below"} fair`,
+    maxDevBps: widened,
+  });
+
+  return { symbol: u.symbol, token: token.symbol, issuer: token.issuer, usd, payToken, devBps, maxDevBps, fairPx: fair.price, fillPx, awayUsd, options };
 }
 
 const bps = (px: number, fair: number) => Math.round(((px - fair) / fair) * 1e4);
@@ -96,19 +203,24 @@ export async function buildSwap(p: {
   const payPriceUsd = (await jupiterPrices([payMint]).catch(() => ({}) as Record<string, JupPrice>))[payMint]?.usdPrice ?? 1;
   const usdValue = usd * payPriceUsd;
 
-  // Refuse early rather than let the wallet sign something that fails on-chain for want of funds.
-  const held = await stableBalance(owner, payMint);
-  if (held < amount) {
-    throw new SwapRejected(`wallet holds ${(held / 10 ** pay.decimals).toFixed(2)} ${pay.symbol}, needs ${usd.toFixed(2)}`, 400);
-  }
-
-  const check = (outAmount: string) => {
+  // A refusal is the product working, so it carries what to do next rather than just a message.
+  const check = async (outAmount: string) => {
     const shares = Number(outAmount) / 10 ** token.decimals;
     if (!(shares > 0)) throw new SwapRejected("route returned zero output");
     const fillPx = usdValue / shares;
     const devBps = bps(fillPx, fair.price);
     if (Math.abs(devBps) > maxDevBps) {
-      throw new SwapRejected(`fill would be ${devBps > 0 ? "+" : ""}${devBps} bps from fair value (${fair.price.toFixed(2)}); your guard is ±${maxDevBps} bps`);
+      throw new SwapRejected(
+        `fill would be ${devBps > 0 ? "+" : ""}${devBps} bps from fair value (${fair.price.toFixed(2)}); your guard is ±${maxDevBps} bps`,
+        409,
+        await refusal({ u, token, usd, maxDevBps, fair, devBps, fillPx, payToken: pay.symbol }).catch(() => undefined),
+      );
+    }
+    // Funding is checked only once the price is acceptable: a bad quote is the more useful
+    // thing to report, and it is true whether or not the wallet happens to be funded.
+    const held = await stableBalance(owner, payMint);
+    if (held < amount) {
+      throw new SwapRejected(`wallet holds ${(held / 10 ** pay.decimals).toFixed(2)} ${pay.symbol}, needs ${usd.toFixed(2)}`, 400);
     }
     return { shares, fillPx, devBps };
   };
@@ -147,7 +259,7 @@ export async function buildSwap(p: {
       reason = "No pool route for this size; falling back to Jupiter Ultra (client-side guard).";
     }
     if (quote) {
-      const q = check(quote.outAmount);
+      const q = await check(quote.outAmount);
       const ixs = await swapInstructions({ quoteResponse: quote, userPublicKey: p.owner });
       const guarded = !!program && !!fair.onchainAccount;
       const instructions: TransactionInstruction[] = [...ixs.computeBudget, ...ixs.setup];
@@ -216,7 +328,7 @@ export async function buildSwap(p: {
 
   const order = await ultraOrder({ inputMint: payMint, outputMint: token.mint, amount, taker: p.owner });
   if (!order.transaction) throw new SwapRejected("Jupiter Ultra returned no transaction for this order", 502);
-  const q = check(order.outAmount);
+  const q = await check(order.outAmount);
   return {
     mode: "ultra",
     tx: order.transaction,
