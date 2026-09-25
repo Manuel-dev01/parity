@@ -4,7 +4,7 @@
 
 The same US share now trades under three issuers on Solana — xStocks (`NVDAx`), Ondo Global Markets (`NVDAon`) and Backpack Securities (`NVDA`) — and they disagree, sometimes by whole percent. Within ten days of the SpaceX IPO the same share was priced from $122 to $176 depending on which token you bought. During testing for this submission, `NVDA` was quoted at **−479 bps on xStocks and +34 bps on Ondo within the same minute**, and Ondo moved from +34 to +98 bps in the minutes after that.
 
-Nobody tells a buyer which of the three is fair, liquid, or redeemable. Parity is the layer above the issuers:
+Nobody tells a buyer which of the three is fair, liquid, or redeemable. Parity is the layer above the issuers — five screens, all on live data:
 
 1. **Fair value** — Pyth's sponsored on-chain equity accounts read directly from mainnet, with Jupiter's stock reference and Backpack's 24/7 perp marks as fallbacks, picked by market session.
 2. **Executable price by issuer** — live Jupiter quotes at $100 / $1k / $10k per issuer token, so you see effective price including impact, not just the last print.
@@ -26,8 +26,10 @@ Everything below can be checked on-chain. Read the Guard section for the one del
 | Mainnet execution | **Real.** Signature below |
 | Pre-sign fair-value check | **Real.** Refuses to return a transaction outside your bps tolerance — including a live refusal recorded during testing |
 | `fair_fill_guard` on-chain guard | **Deployed and proven on devnet, deliberately not on mainnet.** See below |
-| Tape history | **Real.** Neon Postgres, though Vercel Hobby caps the sampler at one run/day — an external pinger on `/api/cron/snapshot` restores per-minute sampling |
-| Fill history (`fills` table) | **Real.** `GET /api/v1/fills` returns the mainnet fill above |
+| Tape history | **Real.** Neon Postgres, sampled every minute by a Railway cron service (`ops/sampler`). Vercel Hobby caps its own cron at one run/day, which is why the sampler lives elsewhere |
+| Holdings | **Real.** Token accounts read from both token programs and grouped by underlying; "if you sold today" is a live sell-side Jupiter quote for the whole position |
+| Receipts | **Real.** `/receipts` and `/r/[sig]` render recorded fills; every one links to the transaction |
+| "Best of N" on a fill | **Real going forward.** The swap build captures every issuer's executable price at that size and stores it with the fill; rank is derived from that snapshot. Fills recorded before this say their rank is unknown |
 
 ### Real mainnet transactions
 
@@ -127,10 +129,22 @@ src/lib/guard.ts          snapshot/verify encoders — Anchor discriminators, no
 programs/fair_fill_guard  the on-chain guard (anchor-lang only)
 ```
 
+## Screens
+
+| Route | What it answers |
+|---|---|
+| `/` | The problem, shown live — three issuer inks printed out of register by their real deviation from fair |
+| `/markets` | Which stock is most mispriced right now (Now), and how spreads have moved (History) |
+| `/s/[symbol]` | What to buy at *your* size, with every figure's source one tap away |
+| `/holdings` | What you hold, grouped by share, against what you paid |
+| `/receipts` · `/r/[sig]` | The public record, and one permanent verifiable receipt |
+| `/methodology` | Where every number comes from, and what Parity does not know |
+
 ## Known limitations
 
 - The guard is devnet-only until audited (above).
-- `fills` rows need `DATABASE_URL`; the tape falls back to live-only without it.
+- The divergence tape begins when the sampler first ran — there is no back-history, and the charts state their own sample count rather than implying more.
+- Holdings can only show what you paid for fills Parity recorded; a wallet that bought elsewhere shows balances with no purchase history, and says so.
 - The UI reports the **quoted** fill price; the settled price can differ materially. The mainnet fill above quoted 18 bps and settled at 38 bps once slippage landed. The `fills` row records the settled figure, but the success screen does not yet — deriving it from the transaction's balance deltas is the next correctness fix.
 - Ondo tokens only pair with USDC on Jupiter, so a USDT buyer needs one conversion first.
 - Backpack coverage is thin (44 tokens); many names exist on only one or two issuers.
