@@ -6,7 +6,8 @@ import { Connection, PublicKey } from "@solana/web3.js";
 export const PYTH_PUSH_ORACLE = "pythWSnswVUd12oZpeFP8e9CVaEqJg25g1Vtc2biRsT";
 export const PYTH_RECEIVER = "rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ";
 
-export const rpc = () => new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
+// Server-only: the RPC URL carries an API key, so it must never be NEXT_PUBLIC_.
+export const rpc = () => new Connection(process.env.SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
 
 export interface OnchainPrice {
   feedId: string;

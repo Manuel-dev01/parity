@@ -24,7 +24,7 @@ const env = Object.fromEntries(
 );
 if (!env.DEMO_WALLET_SECRET_KEY) throw new Error("DEMO_WALLET_SECRET_KEY missing — run scripts/generate-demo-wallet.mjs");
 const kp = Keypair.fromSecretKey(bs58.decode(env.DEMO_WALLET_SECRET_KEY));
-const conn = new Connection(env.NEXT_PUBLIC_SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
+const conn = new Connection(env.SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
 
 const post = (path, body) =>
   fetch(`${BASE}${path}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then(async (r) => [r.ok, await r.json()]);

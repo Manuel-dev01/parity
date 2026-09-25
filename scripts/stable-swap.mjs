@@ -26,7 +26,7 @@ const env = Object.fromEntries(
     .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()]),
 );
 const kp = Keypair.fromSecretKey(bs58.decode(env.DEMO_WALLET_SECRET_KEY));
-const conn = new Connection(env.NEXT_PUBLIC_SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
+const conn = new Connection(env.SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
 
 async function main() {
   console.log(`wallet ${kp.publicKey.toBase58()}  swapping ${amtArg} ${fromSym} -> ${toSym}${dry ? "  (dry run)" : ""}`);

@@ -5,7 +5,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 
 const PUSH = new PublicKey("pythWSnswVUd12oZpeFP8e9CVaEqJg25g1Vtc2biRsT");
 const SHARDS = [0, 1, 2, 3];
-const conn = new Connection(process.env.NEXT_PUBLIC_SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
+const conn = new Connection(process.env.SOLANA_RPC || "https://api.mainnet-beta.solana.com", "confirmed");
 
 const file = "src/data/universe.json";
 const data = JSON.parse(readFileSync(file, "utf8"));
