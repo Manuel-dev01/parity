@@ -53,4 +53,7 @@ export async function migrate() {
     guarded boolean not null default false,
     receipt text
   )`);
+  // Every issuer's executable price for the same share at the same size and moment. Without
+  // this a receipt cannot honestly say a fill was the best of three, only that it happened.
+  await sql(`alter table fills add column if not exists routes jsonb`);
 }

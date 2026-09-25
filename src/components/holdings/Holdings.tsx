@@ -161,7 +161,9 @@ export function Holdings() {
                     </span>{" "}
                     <span style={{ fontSize: 14, fontStyle: "italic", color: "var(--muted)" }}>from fair {fmtPx(l.fairPx)}</span>
                   </span>
-                  <span style={{ flex: 1 }} />
+                  <span style={{ flex: "1 1 160px", fontSize: 15 }}>
+                    {l.rank ? <span style={{ fontWeight: 500 }}>{l.rank}</span> : <span style={{ fontStyle: "italic", color: "var(--muted)" }}>rank not recorded</span>}
+                  </span>
                   <a className="num" style={{ fontSize: 13 }} href={`/r/${l.sig}`}>
                     Receipt →
                   </a>

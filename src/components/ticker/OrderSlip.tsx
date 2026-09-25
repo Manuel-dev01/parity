@@ -115,6 +115,7 @@ export function OrderSlip({
           devBps: build.quote.devBps,
           guarded: build.mode === "guarded",
           receipt: build.guard?.receipt ?? null,
+          routes: build.routes ?? [],
         }),
       }).catch(() => {});
       setFill({ sig, build });

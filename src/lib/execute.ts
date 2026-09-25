@@ -37,6 +37,8 @@ export interface SwapBuild {
   guard?: { programId: string; priceUpdate: string; nonce: string; receipt: string; maxDevBps: number; maxConfBps: number; maxAgeSec: number };
   /** why this mode was chosen, shown verbatim in the UI */
   reason: string;
+  /** what the other issuers were quoting at the same size, captured at build time */
+  routes: RouteSnapshot[];
   quote: {
     symbol: string;
     issuer: IssuerId;
@@ -55,6 +57,15 @@ export interface SwapBuild {
     route: string[];
     marketState: FairValue["marketState"];
   };
+}
+
+/** Every issuer's executable price for this share, at this size, at this moment. */
+export interface RouteSnapshot {
+  token: string;
+  issuer: IssuerId;
+  mint: string;
+  effPx: number;
+  devBps: number;
 }
 
 export class SwapRejected extends Error {
@@ -224,6 +235,20 @@ export async function buildSwap(p: {
     }
     return { shares, fillPx, devBps };
   };
+  /** Quoted once per build so a receipt can say where the fill ranked, rather than guess later. */
+  const routeSnapshot = async (chosenEff: number): Promise<RouteSnapshot[]> => {
+    const jp = await jupiterPrices(u.tokens.map((t) => t.mint)).catch(() => ({}) as Record<string, JupPrice>);
+    const rows = await Promise.all(
+      u.tokens.map(async (t) => {
+        if (t.mint === token.mint) return { token: t.symbol, issuer: t.issuer, mint: t.mint, effPx: chosenEff, devBps: bps(chosenEff, fair.price) };
+        const v = await quoteVenue(t, [usd], usd, fair, jp[t.mint]).catch(() => null);
+        const eff = v?.effPx[String(usd)];
+        return eff != null ? { token: t.symbol, issuer: t.issuer, mint: t.mint, effPx: eff, devBps: bps(eff, fair.price) } : null;
+      }),
+    );
+    return rows.filter((r): r is RouteSnapshot => !!r).sort((a, b) => a.effPx - b.effPx);
+  };
+
   const quoteBase = {
     symbol: u.symbol,
     issuer: token.issuer,
@@ -321,6 +346,7 @@ export async function buildSwap(p: {
         tx: Buffer.from(tx.serialize()).toString("base64"),
         guard,
         reason,
+        routes: await routeSnapshot(q.fillPx).catch(() => []),
         quote: { ...quoteBase, ...q, priceImpactPct: Number(quote.priceImpactPct) || null, route: labels(quote.routePlan) },
       };
     }
@@ -334,6 +360,7 @@ export async function buildSwap(p: {
     tx: order.transaction,
     requestId: order.requestId,
     reason,
+    routes: await routeSnapshot(q.fillPx).catch(() => []),
     quote: { ...quoteBase, ...q, priceImpactPct: order.priceImpactPct != null ? Number(order.priceImpactPct) : null, route: order.swapType === "rfq" ? ["JupiterZ RFQ"] : labels(order.routePlan ?? []) },
   };
 }

@@ -18,7 +18,20 @@ export interface FillRow {
   saved_usd: number | null;
   guarded: boolean;
   receipt: string | null;
+  /** every issuer's executable price at the moment of the fill */
+  routes: { token: string; issuer: string; mint: string; effPx: number; devBps: number }[] | null;
 }
+
+/** Where the bought token ranked among the share's tokens, by executable price. */
+export function rankOf(row: Pick<FillRow, "mint" | "routes">): { rank: number; of: number } | null {
+  if (!row.routes?.length) return null;
+  const sorted = [...row.routes].sort((a, b) => a.effPx - b.effPx);
+  const i = sorted.findIndex((r) => r.mint === row.mint);
+  return i < 0 ? null : { rank: i + 1, of: sorted.length };
+}
+
+export const rankLabel = (r: { rank: number; of: number }) =>
+  `${r.rank === 1 ? "Best" : r.rank === 2 ? "2nd" : r.rank === 3 ? "3rd" : `${r.rank}th`} of ${r.of}`;
 
 /** GET /api/v1/fills?symbol=&limit= — recent fills executed through Parity. */
 export async function GET(req: Request) {
@@ -41,8 +54,8 @@ export async function POST(req: Request) {
   const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : null);
   try {
     await sql(
-      `insert into fills (sig, wallet, symbol, issuer, mint, usd, shares, fill_px, fair_px, dev_bps, saved_usd, guarded, receipt)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) on conflict (sig) do nothing`,
+      `insert into fills (sig, wallet, symbol, issuer, mint, usd, shares, fill_px, fair_px, dev_bps, saved_usd, guarded, receipt, routes)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) on conflict (sig) do nothing`,
       [
         b.sig,
         b.wallet,
@@ -57,6 +70,7 @@ export async function POST(req: Request) {
         num(b.savedUsd),
         b.guarded === true,
         typeof b.receipt === "string" ? b.receipt : null,
+        Array.isArray(b.routes) ? JSON.stringify(b.routes) : null,
       ],
     );
     return NextResponse.json({ recorded: true });

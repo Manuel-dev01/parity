@@ -7,7 +7,7 @@ import { swapQuote } from "@/lib/jupiter";
 import { TOKEN_2022_PROGRAM, TOKEN_PROGRAM } from "@/lib/guard";
 import type { IssuerId, Underlying } from "@/lib/types";
 import { dbConfigured, sql } from "@/lib/db";
-import type { FillRow } from "../fills/route";
+import { rankLabel, rankOf, type FillRow } from "../fills/route";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -21,6 +21,8 @@ export interface HoldingLot {
   fillPx: number;
   fairPx: number;
   devBps: number;
+  /** "Best of 3" — derived from the quotes captured at fill time, never inferred after */
+  rank: string | null;
 }
 
 export interface HoldingToken {
@@ -143,6 +145,10 @@ export async function GET(req: Request) {
             fillPx: Number(f.fill_px),
             fairPx: Number(f.fair_px),
             devBps: Number(f.dev_bps),
+            rank: (() => {
+              const r = rankOf(f);
+              return r ? rankLabel(r) : null;
+            })(),
           })),
       };
     }),
