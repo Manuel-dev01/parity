@@ -2,6 +2,9 @@ import { multiIssuer } from "./universe";
 import { jupiterPrices, type JupPrice } from "./fairvalue";
 import type { IssuerId, Underlying } from "./types";
 
+/** Below this, a token's last print is noise rather than a price. */
+const POOL_FLOOR = 25_000;
+
 export interface BoardPrint {
   issuer: IssuerId;
   symbol: string;
@@ -9,6 +12,8 @@ export interface BoardPrint {
   px: number | null;
   bps: number | null;
   liquidity: number;
+  /** has a real pool behind it, so its last print can be compared with another's */
+  comparable: boolean;
 }
 
 export interface BoardRow {
@@ -17,7 +22,7 @@ export interface BoardRow {
   ref: number | null;
   refAt: string | null;
   prints: BoardPrint[];
-  /** richest print minus cheapest print across issuers, in bps of the cheapest */
+  /** richest minus cheapest across *comparable* prints, in bps of the cheapest */
   spreadBps: number | null;
   cheapest: IssuerId | null;
   richest: IssuerId | null;
@@ -65,11 +70,14 @@ async function buildBoard(limit: number, minIssuers: number): Promise<BoardRow[]
           px,
           bps: px != null && ref ? Math.round(((px - ref) / ref) * 1e4) : null,
           liquidity: Math.round(prices[t.mint]?.liquidity ?? t.liquidity),
+          comparable: (prices[t.mint]?.liquidity ?? t.liquidity) > POOL_FLOOR,
         };
       });
-      // Only prints with real pool depth count toward the spread; RFQ-only tokens are
-      // priced properly on the ticker page, where we quote at size.
-      const priced = prints.filter((p) => p.px != null && p.liquidity > 1000);
+      // Only prints with a real pool behind them can be compared. Ondo trades by RFQ and
+      // carries almost no pool, so its last print drifts — comparing it produced spreads of
+      // several hundred bps that no one could have traded. Those names are quoted at size on
+      // the ticker instead, where RFQ answers properly.
+      const priced = prints.filter((p) => p.px != null && p.comparable);
       const lo = priced.length ? priced.reduce((a, b) => ((b.px as number) < (a.px as number) ? b : a)) : null;
       const hi = priced.length ? priced.reduce((a, b) => ((b.px as number) > (a.px as number) ? b : a)) : null;
       return {

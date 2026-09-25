@@ -12,6 +12,8 @@ export interface HeroToken {
 
 /** Vertical offsets, so the three inks miss each other on two axes like bad registration. */
 const DY: Record<IssuerId, number> = { ondo: -0.6, xstocks: 0.5, backpack: 0 };
+/** Horizontal shift per bp, capped: a 300 bps outlier must not throw the word off the page. */
+const SHIFT = (bps: number | null) => Math.max(-5, Math.min(5, (bps ?? 0) * 0.12));
 
 /**
  * Three issuer inks printed out of register, offset by each token's real deviation from
@@ -33,7 +35,7 @@ export function Hero({ symbol, initial }: { symbol: string; initial: HeroToken[]
         /* keep the last good print */
       }
     };
-    const t = setInterval(load, 8000);
+    const t = setInterval(load, 4000);
     return () => {
       dead = true;
       clearInterval(t);
@@ -59,10 +61,11 @@ export function Hero({ symbol, initial }: { symbol: string; initial: HeroToken[]
             style={{
               position: "absolute",
               inset: 0,
-              fontSize: "clamp(110px,24cqw,320px)",
+              fontSize: "clamp(64px,24cqw,460px)",
+              textAlign: "center",
               color: INK[t.issuer],
               mixBlendMode: "multiply",
-              transform: aligned ? "translate(0,0)" : `translate(${(t.bps ?? 0) * 0.12}%, ${DY[t.issuer] * 1.5}%)`,
+              transform: aligned ? "translate(0,0)" : `translate(${SHIFT(t.bps)}%, ${DY[t.issuer] * 1.5}%)`,
               transition: "transform 1.4s cubic-bezier(.2,.8,.2,1)",
             }}
           >
@@ -74,7 +77,8 @@ export function Hero({ symbol, initial }: { symbol: string; initial: HeroToken[]
           style={{
             position: "absolute",
             inset: 0,
-            fontSize: "clamp(110px,24cqw,320px)",
+            fontSize: "clamp(64px,24cqw,460px)",
+            textAlign: "center",
             color: "transparent",
             WebkitTextStroke: "1.5px var(--ink)",
             pointerEvents: "none",

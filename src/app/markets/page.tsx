@@ -131,7 +131,7 @@ export default async function Markets({ searchParams }: Props) {
                   {r.name} · <span className="num" style={{ fontStyle: "normal", fontSize: 12 }}>{fmtPx(r.ref)}</span>
                 </span>
               </span>
-              <Dispersion prints={r.prints.map((p) => ({ issuer: p.issuer, bps: p.bps }))} />
+              <Dispersion prints={r.prints.filter((p) => p.comparable).map((p) => ({ issuer: p.issuer, bps: p.bps }))} />
               <span style={{ flex: "0 0 auto", display: "flex", gap: 28, alignItems: "baseline" }}>
                 <span style={{ minWidth: 92, textAlign: "right" }}>
                   <span className="serif" style={{ fontSize: 30, display: "block" }}>
@@ -151,8 +151,9 @@ export default async function Markets({ searchParams }: Props) {
           ))}
 
           <p style={{ fontSize: 14, fontStyle: "italic", color: "var(--muted)", padding: "10px 0 40px" }}>
-            Last prints measured from the underlying reference price (the vertical rule). The best token at your size can differ once impact is included; open a
-            stock to price your amount.
+            Last prints measured from the underlying reference price (the vertical rule), and only for tokens with a real pool behind them. Ondo quotes by RFQ
+            and carries almost no pool, so its last price cannot be compared this way — open a stock to quote every issuer at your size. The best token at your
+            size can differ once impact is included.
           </p>
         </div>
       ) : (

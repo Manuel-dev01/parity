@@ -26,8 +26,12 @@ const STEPS: [string, string, string][] = [
 export default async function Landing() {
   const rows = await liveBoard(60).catch(() => []);
   const ranked = rows.filter((r) => r.spreadBps != null).sort((a, b) => (b.spreadBps ?? 0) - (a.spreadBps ?? 0));
-  const feature = ranked.find((r) => r.symbol === "NVDA") ?? ranked[0] ?? null;
-  const heroTokens: HeroToken[] = feature ? feature.prints.map((p) => ({ issuer: p.issuer, token: p.symbol, bps: p.bps })) : [];
+  // Prefer a share whose inks can all be placed honestly: three comparable pool prints if
+  // any exist, otherwise the most mispriced comparable name.
+  const feature = ranked.find((r) => r.prints.filter((p) => p.comparable).length >= 3) ?? ranked[0] ?? null;
+  const heroTokens: HeroToken[] = feature
+    ? feature.prints.filter((p) => p.comparable).map((p) => ({ issuer: p.issuer, token: p.symbol, bps: p.bps }))
+    : [];
   const fills = dbConfigured ? await sql<FillRow>(`select * from fills order by ts desc limit 5`).catch(() => []) : [];
 
   return (
@@ -41,7 +45,7 @@ export default async function Landing() {
         </h1>
         <div style={{ flex: "0 1 380px", display: "flex", flexDirection: "column", gap: 18 }}>
           <p style={{ margin: 0, fontSize: 19, lineHeight: 1.4 }}>
-            {feature?.name ?? "These"} tokens on Solana are <Figure>{spreadOf(heroTokens.map((t) => t.bps)) ?? "—"} bps</Figure> apart right now. Parity measures each against the
+            {feature?.name ?? "These"} tokens on Solana are <Figure>{feature?.spreadBps ?? "—"} bps</Figure> apart right now. Parity measures each against the
             fair price, shows what it really costs at your size, and buys the closest in one transaction.
           </p>
           <Link
