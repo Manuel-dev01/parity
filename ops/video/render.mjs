@@ -35,7 +35,7 @@ const film = JSON.parse(await readFile(filmPath, "utf8"));
 const from = Number(arg("from", preview ? 77 : 0));
 const to = Number(arg("to", preview ? 95 : film.duration));
 const name = arg("name", preview ? "parity-demo-preview" : "parity-demo-5min");
-const bitrate = Number(arg("bitrate", 12_000_000));
+const bitrate = Number(arg("bitrate", 6_000_000));
 
 // ── a tiny static server: WebCodecs needs a secure context, 127.0.0.1 counts ──
 const TYPES = {
@@ -95,11 +95,13 @@ await page.exposeFunction("__progress", (i, n) => {
 await page.addScriptTag({ url: "/studio/encode.mjs", type: "module" });
 await page.waitForFunction(() => typeof window.encodeFilm === "function", null, { timeout: 30_000 });
 
-const downloadPromise = page.waitForEvent("download", { timeout: 40 * 60_000 });
+// The clock on this starts before the encode does, so it has to cover the whole render.
+const downloadPromise = page.waitForEvent("download", { timeout: 150 * 60_000 });
 const result = await page.evaluate(
   (o) => window.encodeFilm(o),
   { from, to, bitrate, filename: `${name}.mp4` },
 );
+console.log(`  encoded ${result.frames} frames, ${(result.bytes / 1e6).toFixed(0)} MB — saving…`);
 const download = await downloadPromise;
 const dest = join(OUT, `${name}.mp4`);
 await download.saveAs(dest);

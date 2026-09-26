@@ -118,3 +118,34 @@ before it moves, and any move longer than four seconds eases in and out.
 | `out/` | rendered video, contact sheets and extracted frames |
 
 Re-rendering the same range produces the same frames: nothing reads the wall clock.
+
+## What was delivered
+
+| File | What it is |
+|---|---|
+| `out/parity-demo-5min.mp4` | **the film** — 18,000 frames, 300.000 s, 1920×1080 @ 60 fps, H.264 High L4.2 + AAC, 157 MB |
+| `out/parity-demo-preview-18s.mp4` | the 18 s motion test, cut from the same timeline (83 s → 101 s) |
+| `out/parity-demo-preview-v2-pre-script-correction.mp4` | earlier cut, before the narration was corrected to match the closed-market session |
+| `out/parity-demo-preview-v1-full-bleed-framing.mp4` | earlier cut, before the window was scaled to sit inside the frame |
+| `out/contact/` | one frame per shot |
+| `out/frames/` | frames extracted back out of the encoded files |
+
+Verified on the finished file: the container reports 300.011 s and exactly 18,000 video
+samples; it decodes to 1920×1080 in Edge and plays; every cut changes the picture and none go
+black; the closing QR scans to `https://parity-manuel-dev01s-projects.vercel.app`. Two
+boundaries report no visible change — `refusal-honesty` and `close-honesty` — which is correct:
+they continue the previous shot rather than cutting to a new one.
+
+## What to expect when you render
+
+The full cut is 18,000 frames and takes **45–80 minutes** on this machine; the 18-second
+preview takes two or three. Check framing with `contact.mjs` first — it renders one frame per
+shot straight off the canvas in seconds, and it is the difference between finding a bad camera
+target now and finding it an hour from now.
+
+Default bitrate is 6 Mbps, which is ample for synthetic screen content and keeps what the page
+must hold in memory to roughly 225 MB. Raising it (`--bitrate=12000000`) noticeably slows the
+last quarter of the render as memory fills. Note that `render.mjs` starts waiting for the
+download *before* the encode begins, so that timeout has to cover the entire render — a 40
+minute wait once expired with the frames already done.
+
