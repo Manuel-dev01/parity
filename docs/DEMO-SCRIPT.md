@@ -1,5 +1,10 @@
 # Parity — demo video script
 
+> **There are two demos.** This file is the script for recording one *live*, in front of the
+> product, during market hours. A separate 5:00 film is already rendered and reproducible —
+> see [`ops/video/README.md`](../ops/video/README.md), which also sets out exactly what in it
+> is real product footage and what is presentation.
+
 **Target: 2 minutes 40 seconds.** Record during the US regular session (09:30–16:00 ET) so the
 numbers move and Ondo actually quotes. Anything in `[brackets]` is live — say what's on your
 screen, not what's written here.

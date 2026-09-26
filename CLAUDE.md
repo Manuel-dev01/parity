@@ -11,7 +11,15 @@ Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Bac
 - ✅ Execution: `POST /api/v1/swap` (`src/lib/execute.ts`) returns one unsigned tx in mode `guarded` (snapshot→swap→verify, when `NEXT_PUBLIC_GUARD_PROGRAM_ID` is set) / `plain` (Jupiter swap, pre-sign fair-value check) / `ultra` (Ondo RFQ, non-sponsored names). `TradePanel` signs, confirms, records to `fills`, shows fill vs fair + Solscan. Encoders in `src/lib/guard.ts` need no IDL.
 - ✅ Guard deployed to **devnet**: `ADcP7kHjLkyMmdsRNWvsrb62ivFg54BdGDenvM3eSCpS` (in `.env`). `scripts/guard-proof.mjs` passes both cases — Receipt PDA written at +0 bps, and a 300 bps fill reverts with `FillOffFairValue` (6012). Links in README.
 - ✅ Real mainnet fill: `5Tdxx…nddf` (2 USDT → 0.0088995 NVDAx, 18 bps). Ondo refused at +98 bps by the pre-sign check — kept as evidence, not a failure. Wallet has ~4.8 USDT + 1.0 USDC left.
-- ⬜ Remaining: Neon `DATABASE_URL`, Vercel deploy, demo video during US market hours. Record fill price from tx balance deltas rather than the quote (~2 bps off).
+- ✅ Deployed and wired: `parity-manuel-dev01s-projects.vercel.app`, Neon `DATABASE_URL` live
+  (`/api/v1/fills` reports `configured: true`), two real mainnet fills in the ledger.
+- ✅ Demo film: a rendered 5:00 MP4 (1920×1080, 60fps) plus the whole pipeline in `ops/video/`
+  — see `ops/video/README.md`, which states exactly what is real footage and what is
+  presentation. Built here because no native ffmpeg will download over this link: frames are
+  composited on a canvas and encoded with WebCodecs (H.264 + AAC) inside Chromium. The
+  voiceover is Microsoft `en-US-AndrewNeural` over Edge's free Read Aloud endpoint.
+  `docs/DEMO-SCRIPT.md` is still the script for recording a *live* demo during market hours.
+- ⬜ Remaining: record fill price from tx balance deltas rather than the quote (~2 bps off).
 
 ## Hard constraints of this environment
 - Bandwidth ~150 KB/s. **Use `npm` (never pnpm); keep dependencies minimal.** New packages take minutes; think before adding.

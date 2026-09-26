@@ -53,3 +53,7 @@ ops/shots/
 .agents/
 .claude/
 skills-lock.json
+
+# rendered video and extracted frames — large, and reproducible from ops/video/
+ops/video/out/
+ops/video/audio/

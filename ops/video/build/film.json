@@ -1,0 +1,841 @@
+{
+  "duration": 300,
+  "fps": 60,
+  "width": 1920,
+  "height": 1080,
+  "url": "parity-manuel-dev01s-projects.vercel.app",
+  "builtAt": "2026-09-26T08:24:57.665Z",
+  "evidence": {
+    "note": "Captured from the deployed app. The order slip requires a connected wallet, so this refusal was requested from the same endpoint the slip calls.",
+    "request": [
+      "POST /api/v1/swap",
+      "  symbol     SPCX",
+      "  usd        1000",
+      "  maxDevBps  10",
+      "  owner      4N6FeA9C…6BWdvA"
+    ],
+    "response": [
+      "HTTP 409 — the transaction was not built",
+      "  SPCXon would fill +27 bps from fair value",
+      "  fair 148.58   fill 148.99   guard ±10 bps",
+      "  that is $2.70 above fair on $1000",
+      "  nothing was signed and nothing was spent",
+      "  → Widen guard to ±35 bps — You would pay $3 above fair"
+    ]
+  },
+  "shots": [
+    {
+      "id": "open",
+      "kind": "card",
+      "card": {
+        "title": "One share, printed three times.",
+        "sub": "None of them line up.",
+        "regAt": 0.8
+      },
+      "voFile": "audio/open.mp3",
+      "voSeconds": 4.2,
+      "duration": 5.57602919708029,
+      "start": 0,
+      "voAt": 0.38
+    },
+    {
+      "id": "hero",
+      "shot": "landing-hero",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 700,
+          "cy": 360,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 700,
+          "cy": 360,
+          "zoom": 1
+        },
+        {
+          "at": 8,
+          "cx": 700,
+          "cy": 470,
+          "zoom": 1.42,
+          "ease": "inOut"
+        },
+        {
+          "at": 16,
+          "cx": 740,
+          "cy": 505,
+          "zoom": 1.5,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "The same share, priced two ways, on the same chain.",
+          "at": 3.4,
+          "until": 9.5
+        }
+      ],
+      "voFile": "audio/hero.mp3",
+      "voSeconds": 18.552,
+      "duration": 19.79747445255474,
+      "start": 5.57602919708029,
+      "voAt": 5.95602919708029
+    },
+    {
+      "id": "hero-aligned",
+      "shot": "landing-hero-aligned",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 740,
+          "cy": 505,
+          "zoom": 1.5
+        },
+        {
+          "at": 1.0499999999999998,
+          "cx": 740,
+          "cy": 505,
+          "zoom": 1.5
+        },
+        {
+          "at": 3,
+          "cx": 700,
+          "cy": 360,
+          "zoom": 1,
+          "ease": "camera"
+        },
+        {
+          "at": 13,
+          "cx": 700,
+          "cy": 360,
+          "zoom": 1.02,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Each print is offset by how far that issuer sits from fair value.",
+          "at": 1,
+          "until": 7
+        }
+      ],
+      "voFile": "audio/hero-aligned.mp3",
+      "voSeconds": 16.008,
+      "duration": 17.35347445255474,
+      "start": 25.373503649635033,
+      "voAt": 25.753503649635032
+    },
+    {
+      "id": "headline",
+      "shot": "landing-headline",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 640,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 640,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 9,
+          "cx": 600,
+          "cy": 470,
+          "zoom": 1.44,
+          "ease": "inOut"
+        }
+      ],
+      "voFile": "audio/headline.mp3",
+      "voSeconds": 9.984,
+      "duration": 11.107649635036495,
+      "start": 42.726978102189776,
+      "voAt": 43.10697810218978
+    },
+    {
+      "id": "fig1",
+      "shot": "landing-fig1",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 460,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 460,
+          "zoom": 1
+        },
+        {
+          "at": 9,
+          "cx": 720,
+          "cy": 470,
+          "zoom": 1.4,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Sampled live, in this session — not stored history.",
+          "at": 4.5,
+          "until": 10.5
+        }
+      ],
+      "voFile": "audio/fig1.mp3",
+      "voSeconds": 10.056,
+      "duration": 11.201474452554741,
+      "start": 53.83462773722627,
+      "voAt": 54.21462773722627
+    },
+    {
+      "id": "steps",
+      "shot": "landing-steps",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 400,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 400,
+          "zoom": 1
+        },
+        {
+          "at": 14,
+          "cx": 700,
+          "cy": 500,
+          "zoom": 1.38,
+          "ease": "inOut"
+        }
+      ],
+      "voFile": "audio/steps.mp3",
+      "voSeconds": 15.144,
+      "duration": 16.367649635036496,
+      "start": 65.03610218978102,
+      "voAt": 65.41610218978101
+    },
+    {
+      "id": "markets",
+      "shot": "markets-now",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 5,
+          "cx": 436,
+          "cy": 450,
+          "zoom": 1.44
+        },
+        {
+          "at": 11,
+          "cx": 700,
+          "cy": 516,
+          "zoom": 1.56,
+          "ease": "inOut"
+        },
+        {
+          "at": 15,
+          "cx": 1050,
+          "cy": 512,
+          "zoom": 1.68
+        }
+      ],
+      "cursor": [
+        {
+          "at": 0.8,
+          "x": 900,
+          "y": 700,
+          "scale": 1
+        },
+        {
+          "at": 3,
+          "x": 640,
+          "y": 520,
+          "scale": 1
+        },
+        {
+          "at": 11.5,
+          "x": 1166,
+          "y": 512,
+          "scale": 1
+        }
+      ],
+      "voFile": "audio/markets.mp3",
+      "voSeconds": 14.856,
+      "duration": 16.079649635036496,
+      "start": 81.40375182481752,
+      "voAt": 81.78375182481751
+    },
+    {
+      "id": "markets-ondo",
+      "shot": "markets-now",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 1050,
+          "cy": 512,
+          "zoom": 1.68
+        },
+        {
+          "at": 1.3,
+          "cx": 1050,
+          "cy": 512,
+          "zoom": 1.68
+        },
+        {
+          "at": 12,
+          "cx": 860,
+          "cy": 480,
+          "zoom": 1.44,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Excluded on purpose, rather than counted and wrong.",
+          "at": 6.5,
+          "until": 13
+        }
+      ],
+      "voFile": "audio/markets-ondo.mp3",
+      "voSeconds": 14.544,
+      "duration": 15.789474452554744,
+      "start": 97.48340145985401,
+      "voAt": 97.863401459854
+    },
+    {
+      "id": "history",
+      "shot": "markets-history",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 9,
+          "cx": 700,
+          "cy": 480,
+          "zoom": 1.4,
+          "ease": "inOut"
+        }
+      ],
+      "voFile": "audio/history.mp3",
+      "voSeconds": 10.128,
+      "duration": 11.251649635036495,
+      "start": 113.27287591240875,
+      "voAt": 113.65287591240875
+    },
+    {
+      "id": "answer",
+      "shot": "ticker-1k",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 430,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 430,
+          "zoom": 1
+        },
+        {
+          "at": 4.5,
+          "cx": 420,
+          "cy": 450,
+          "zoom": 1.46
+        },
+        {
+          "at": 10,
+          "cx": 340,
+          "cy": 455,
+          "zoom": 1.62,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Ranked by what you would actually pay.",
+          "at": 9.5,
+          "until": 14.5
+        }
+      ],
+      "voFile": "audio/answer.mp3",
+      "voSeconds": 11.592,
+      "duration": 12.937474452554744,
+      "start": 124.52452554744525,
+      "voAt": 124.90452554744525
+    },
+    {
+      "id": "fair",
+      "shot": "ticker-1k",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 340,
+          "cy": 455,
+          "zoom": 1.62
+        },
+        {
+          "at": 1.26,
+          "cx": 340,
+          "cy": 455,
+          "zoom": 1.62
+        },
+        {
+          "at": 3.6,
+          "cx": 1230,
+          "cy": 445,
+          "zoom": 1.7
+        },
+        {
+          "at": 9,
+          "cx": 1240,
+          "cy": 455,
+          "zoom": 1.66,
+          "ease": "inOut"
+        }
+      ],
+      "cursor": [
+        {
+          "at": 0.5,
+          "x": 400,
+          "y": 430,
+          "scale": 1
+        },
+        {
+          "at": 2.6,
+          "x": 1274,
+          "y": 250,
+          "scale": 1
+        }
+      ],
+      "voFile": "audio/fair.mp3",
+      "voSeconds": 14.736,
+      "duration": 15.859649635036495,
+      "start": 137.462,
+      "voAt": 137.84199999999998
+    },
+    {
+      "id": "size",
+      "shot": "ticker-25k",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 1192,
+          "cy": 450,
+          "zoom": 1.66
+        },
+        {
+          "at": 1.0499999999999998,
+          "cx": 1192,
+          "cy": 450,
+          "zoom": 1.66
+        },
+        {
+          "at": 3,
+          "cx": 1150,
+          "cy": 460,
+          "zoom": 1.5,
+          "ease": "camera"
+        },
+        {
+          "at": 9,
+          "cx": 620,
+          "cy": 470,
+          "zoom": 1.42,
+          "ease": "inOut"
+        },
+        {
+          "at": 15,
+          "cx": 700,
+          "cy": 620,
+          "zoom": 1.46,
+          "ease": "inOut"
+        }
+      ],
+      "cursor": [
+        {
+          "at": 0.3,
+          "x": 1192,
+          "y": 456,
+          "scale": 1,
+          "click": true
+        },
+        {
+          "at": 2.6,
+          "x": 1100,
+          "y": 470,
+          "scale": 1
+        },
+        {
+          "at": 7.5,
+          "x": 700,
+          "y": 560,
+          "scale": 1
+        }
+      ],
+      "voFile": "audio/size.mp3",
+      "voSeconds": 16.608,
+      "duration": 17.931649635036493,
+      "start": 153.3216496350365,
+      "voAt": 153.7016496350365
+    },
+    {
+      "id": "source",
+      "shot": "ticker-source",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 900,
+          "cy": 450,
+          "zoom": 1.4
+        },
+        {
+          "at": 1.3,
+          "cx": 900,
+          "cy": 450,
+          "zoom": 1.4
+        },
+        {
+          "at": 4.5,
+          "cx": 1180,
+          "cy": 450,
+          "zoom": 1.56
+        },
+        {
+          "at": 14,
+          "cx": 1195,
+          "cy": 465,
+          "zoom": 1.62,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Source, age, confidence — and a link to verify on-chain.",
+          "at": 6,
+          "until": 12.5
+        }
+      ],
+      "voFile": "audio/source.mp3",
+      "voSeconds": 19.416,
+      "duration": 20.76147445255474,
+      "start": 171.253299270073,
+      "voAt": 171.633299270073
+    },
+    {
+      "id": "guard",
+      "shot": "ticker-guard-10",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 900,
+          "cy": 500,
+          "zoom": 1.4
+        },
+        {
+          "at": 1.3,
+          "cx": 900,
+          "cy": 500,
+          "zoom": 1.4
+        },
+        {
+          "at": 5,
+          "cx": 1195,
+          "cy": 660,
+          "zoom": 1.68
+        },
+        {
+          "at": 13,
+          "cx": 1195,
+          "cy": 680,
+          "zoom": 1.74,
+          "ease": "inOut"
+        }
+      ],
+      "cursor": [
+        {
+          "at": 1,
+          "x": 900,
+          "y": 600,
+          "scale": 1
+        },
+        {
+          "at": 4.5,
+          "x": 1120,
+          "y": 706,
+          "scale": 1
+        },
+        {
+          "at": 6.2,
+          "x": 1120,
+          "y": 706,
+          "scale": 1,
+          "click": true
+        }
+      ],
+      "voFile": "audio/guard.mp3",
+      "voSeconds": 13.2,
+      "duration": 14.623649635036495,
+      "start": 192.01477372262775,
+      "voAt": 192.39477372262775
+    },
+    {
+      "id": "refusal",
+      "shot": "ticker-guard-10",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 1195,
+          "cy": 680,
+          "zoom": 1.74
+        },
+        {
+          "at": 0.9099999999999999,
+          "cx": 1195,
+          "cy": 680,
+          "zoom": 1.74
+        },
+        {
+          "at": 2.6,
+          "cx": 720,
+          "cy": 450,
+          "zoom": 1,
+          "ease": "camera"
+        }
+      ],
+      "evidence": {
+        "at": 2,
+        "over": 6
+      },
+      "voFile": "audio/refusal.mp3",
+      "voSeconds": 15.12,
+      "duration": 16.943649635036493,
+      "start": 206.63842335766424,
+      "voAt": 207.01842335766423
+    },
+    {
+      "id": "refusal-honesty",
+      "shot": "ticker-guard-10",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 450,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 450,
+          "zoom": 1
+        },
+        {
+          "at": 14,
+          "cx": 720,
+          "cy": 450,
+          "zoom": 1.03,
+          "ease": "inOut"
+        }
+      ],
+      "evidence": {
+        "at": -1,
+        "over": 1
+      },
+      "voFile": "audio/refusal-honesty.mp3",
+      "voSeconds": 15.408,
+      "duration": 17.031649635036494,
+      "start": 223.58207299270072,
+      "voAt": 223.9620729927007
+    },
+    {
+      "id": "receipts",
+      "shot": "receipts",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 5,
+          "cx": 700,
+          "cy": 470,
+          "zoom": 1.38
+        }
+      ],
+      "voFile": "audio/receipts.mp3",
+      "voSeconds": 3.6,
+      "duration": 4.723649635036495,
+      "start": 240.61372262773722,
+      "voAt": 240.9937226277372
+    },
+    {
+      "id": "receipt",
+      "shot": "receipt-verify",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 9,
+          "cx": 640,
+          "cy": 480,
+          "zoom": 1.48,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Verifiable without trusting us.",
+          "at": 5.5,
+          "until": 10.5
+        }
+      ],
+      "voFile": "audio/receipt.mp3",
+      "voSeconds": 8.304,
+      "duration": 9.549474452554744,
+      "start": 245.33737226277373,
+      "voAt": 245.71737226277372
+    },
+    {
+      "id": "devnet",
+      "shot": "methodology-unknown",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 1.3,
+          "cx": 720,
+          "cy": 420,
+          "zoom": 1
+        },
+        {
+          "at": 10,
+          "cx": 660,
+          "cy": 470,
+          "zoom": 1.42,
+          "ease": "inOut"
+        },
+        {
+          "at": 21,
+          "cx": 700,
+          "cy": 520,
+          "zoom": 1.5,
+          "ease": "inOut"
+        }
+      ],
+      "captions": [
+        {
+          "text": "Proven on devnet. Not shipped to mainnet unaudited.",
+          "at": 14,
+          "until": 21.5
+        }
+      ],
+      "voFile": "audio/devnet.mp3",
+      "voSeconds": 21.768,
+      "duration": 23.213474452554742,
+      "start": 254.88684671532846,
+      "voAt": 255.26684671532846
+    },
+    {
+      "id": "close-honesty",
+      "shot": "methodology-unknown",
+      "camera": [
+        {
+          "at": 0,
+          "cx": 700,
+          "cy": 520,
+          "zoom": 1.5
+        },
+        {
+          "at": 1.3,
+          "cx": 700,
+          "cy": 520,
+          "zoom": 1.5
+        },
+        {
+          "at": 13,
+          "cx": 720,
+          "cy": 440,
+          "zoom": 1,
+          "ease": "inOut"
+        }
+      ],
+      "voFile": "audio/close-honesty.mp3",
+      "voSeconds": 13.584,
+      "duration": 15.207649635036494,
+      "start": 278.1003211678832,
+      "voAt": 278.4803211678832
+    },
+    {
+      "id": "close",
+      "kind": "card",
+      "card": {
+        "title": "Parity",
+        "sub": "Every stock on Solana, one fair price.",
+        "foot": "parity-manuel-dev01s-projects.vercel.app",
+        "regAt": 0.5,
+        "qr": {
+          "href": "https://parity-manuel-dev01s-projects.vercel.app",
+          "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAaQAAAGkCAYAAAB+TFE1AAAAAklEQVR4AewaftIAAAzjSURBVO3BMa5gN7AdwKPGrIQMuP/lMCA3oFCBQjky4EQBAV3/fn+q6o+///rznwDA/7AKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAYqANDArzyaY4X/zrk7P9kcKz/ZuTsv5lj5yc7d+dIcK186d+dLc6zw3zl350UFABqoAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGjgVz527s7vZI6Vn2yOlRfn7nxpjpUvzbHSybk7v5Nzd17MsfLi3J0vnbvzO5lj5UsVAGigAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBX2lmjpVOzt3pZI6VF+fuvDh35yc7d+fFHCudzLHy4tydF3OsfOncnS+du/OTzbHSybk7nVQAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAZ+BRo7d+fFHCsvzt15McfKi3N3vjTHypfO3Xkxx8qLc3dezLHy4twdfo4KADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAYqANDAr8D/Y46VTs7deXHuzos5Vl6cu/NijpUvnbvTybk7L+ZYgf+rAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBCgA08CvNnLvDz3Huzos5Vn6yOVZenLvTyRwrXzp358W5Oy/mWPnJzt3h31UAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAZ+5WNzrMD/L3OsvDh358UcK1+aY+XFuTtfOnfnxRwrL87d+cnmWOG/UwGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGvjj77/+/Cf8GHOsdHLuzos5Vl6cu/OlOVZenLvzO5lj5Uvn7sD/VQGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGvjj77/+/CcP5lh5ce7OizlWfifn7nQyx8qXzt15McdKJ+fuvJhj5cW5O7+TOVZenLvzpTlWfifn7nRSAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAYqANBABQAa+JWPzbHypXN3Xsyx8qVzd17MsfKlc3denLvzpTlWXpy782KOlRfn7nzp3J0Xc6z8ZOfu8O/O3Xkxx0onc6y8OHfnRQUAGqgAQAMVAGigAgANVACggQoANFABgAYqANBABQAaqABAAxUAaOBXfrg5Vl6cu/NijpUXc6x86dydF3Os/E7O3Xkxx8qXzt350rk7L+ZY6eTcnS/NsfLi3J0vzbHy4tydF3OsvJhj5cW5O1+qAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgAN/MoPd+7OizlWXpy708kcK186d+cnm2Plxbk7nZy785PNsfLi3J0Xc6y8OHfnxRwrL87d+dIcK186d+fFHCsvzt15UQGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGviVj52782KOlRdzrLw4d+dLc6y8OHfnxbk7L+ZY+dIcKy/O3fnSuTsv5lh5ce7Ol+ZYeXHuzotzd740x8qLOVa+NMfKi3N3frJzd36yCgA0UAGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAGKgDQwB9///XnP3kwx8qLc3e+NMfKi3N3Xsyx8uLcnS/NscLPce5OJ3OsvDh358UcK186d+dLc6y8OHfnS3Os/GTn7ryoAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgAN/Mqjc3f4d3OsvDh350vn7ryYY+VL5+68mGPlS+fu/GRzrLw4d+fFHCtfOnfnS3OsfGmOld/JuTtfqgBAAxUAaKACAA1UAKCBCgA0UAGABioA0EAFABqoAEADFQBooAIADfzKozlWXpy782KOlRfn7nzp3J0vzbHSybk7L+ZYeTHHypfO3fnSHCsvzt15McfKl+ZY4b9z7s6LOVY6OXenkwoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBCgA0UAGABioA0MAff//15z95MMfKl87deTHHCv+dc3e+NMdKJ+fuvJhj5Uvn7ryYY+XFuTtfmmPlxbk7L+ZY+dK5Oy/mWPnSuTudzLHy4tydFxUAaKACAA1UAKCBCgA0UAGABioA0EAFABqoAEADFQBooAIADVQAoIFfeXTuzpfmWPnSuTsv5lh5ce7Ol+ZY6WSOlS+du/M7mWPlS3OsfOncnRdzrLw4d+fFHCsv5lj50rk7L+ZY+dK5O51UAKCBCgA0UAGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAG/vj7rz//yYM5Vr507s6LOVa+dO7OizlW+Hfn7nxpjpWf7NydL82x8qVzd740x8qXzt15McfKl87deTHHypfO3flSBQAaqABAAxUAaKACAA1UAKCBCgA0UAGABioA0EAFABqoAEADFQBo4Fc+du7OizlWvnTuzos5Vl6cu9PJHCv8d87deTHHyos5Vl6cu/OTzbHCv5tjpZM5Vl6cu/OiAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBCgA08Csfm2PlS+fufOncnRdzrLw4d+dL5+78ZHOsvDh358UcKy/mWHlx7s5Pdu7OizlWXpy782KOFf7duTsv5ljppAIADVQAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANPArHzt358UcKy/mWOnk3J0Xc6y8OHfnJ5tj5Sc7d+dLc6y8OHfnxbk7ncyx8uLcnRdzrLyYY+VL5+58aY6VF+fuvJhj5UsVAGigAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBX2nm3J0Xc6y8OHfnxRwrL+ZY6WSOlRfn7nRy7k4nc6y8OHfnxbk7X5pjpZNzd7507k4nc6x86dydF3OsvDh350sVAGigAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBX+E/de5OJ+fuvJhj5cW5O7+Tc3d+snN3Xsyx8qU5Vr507s6X5lh5ce7OizlWXsyx8uLcnU4qANBABQAaqABAAxUAaKACAA1UAKCBCgA0UAGABioA0EAFABqoAEADv9LMHCtfmmPlxbk7L+ZY+Z3MsfI7mWPlS+fufGmOlRfn7ryYY+XFuTsv5lh5McdKJ3OsfOncnZ+sAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBCgA08Mfff/35T/gx5lh5ce4O/3vNsdLJuTsv5lj50rk7ncyx8uLcnRdzrLw4d+fFHCsvzt15UQGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAGKgDQQAUAGviVR3Os8N85d+fFuTsv5lh5ce7OizlWXpy782KOlU7O3fnSHCsvzt350hwrv5M5Vl6cu/OTzbHy4tydL1UAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAZ+5WPn7vxO5lj50hwrL87deTHHyotzdzo5d+fFHCudnLvzYo4V/jvn7nQyx8qXzt15McfKi3N3XlQAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAZ+pZk5Vjo5d+cnm2Plxbk7L+ZY4b8zx8qXzt15McfKl87deTHHyos5Vn4n5+586dydL1UAoIEKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAZ+Bf4fc6zw7+ZYeXHuzotzd740x0onc6x0cu7Ol+ZY+dIcK52cu/OiAgANVACggQoANFABgAYqANBABQAaqABAAxUAaKACAA1UAKCBCgA08Cvwv8gcKy/O3fnSHCsvzt15McfKi3N3Xsyx8qVzd17MsfLi3J0Xc6x86dydL82x8uLcnU4qANBABQAaqABAAxUAaKACAA1UAKCBCgA0UAGABioA0EAFABqoAEADv9LMuTv8u3N3Xsyx8uLcnRdzrPxO5lh5ce7OizlWvjTHypfmWHlx7s6Lc3e+dO7Ol+ZY4d9VAKCBCgA0UAGABioA0EAFABqoAEADFQBooAIADVQAoIEKADRQAYAGfuVjc6zw35lj5cW5O186d4d/N8dKJ+fufGmOlRdzrHzp3J0Xc6x86dydF3OsvDh358UcKy/O3flSBQAaqABAAxUAaKACAA1UAKCBCgA0UAGABioA0EAFABqoAEADFQBo4I+///rznwDA/7AKADRQAYAGKgDQQAUAGqgAQAMVAGigAgANVACggQoANFABgAYqANDA/wFN1fI1lzR7LwAAAABJRU5ErkJggg=="
+        }
+      },
+      "voFile": "audio/close.mp3",
+      "voSeconds": 3.816,
+      "duration": 6.6920291970803465,
+      "start": 293.30797080291967,
+      "voAt": 293.68797080291966
+    }
+  ]
+}

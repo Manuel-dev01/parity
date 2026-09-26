@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-09-26T06:57:35.406Z",
+  "base": "https://parity-manuel-dev01s-projects.vercel.app",
+  "endpoint": "POST /api/v1/swap",
+  "request": {
+    "symbol": "SPCX",
+    "mint": "wzAyQTorWyoVXuJKj2x8EqKEGJpS13z6EWE9z5Aondo",
+    "usd": 1000,
+    "owner": "4N6FeA9CzNSZVE3qTd6PevishNUtWDjwry3Nv66BWdvA",
+    "maxDevBps": 10,
+    "pay": "USDC"
+  },
+  "status": 409,
+  "response": {
+    "error": "fill would be +27 bps from fair value (148.58); your guard is ±10 bps",
+    "rejected": true,
+    "refusal": {
+      "symbol": "SPCX",
+      "token": "SPCXon",
+      "issuer": "ondo",
+      "usd": 1000,
+      "payToken": "USDC",
+      "devBps": 27,
+      "maxDevBps": 10,
+      "fairPx": 148.58,
+      "fillPx": 148.98673700886104,
+      "awayUsd": 2.7,
+      "options": [
+        {
+          "kind": "guard",
+          "title": "Widen guard to ±35 bps",
+          "detail": "You would pay $3 above fair",
+          "maxDevBps": 35
+        }
+      ]
+    }
+  },
+  "presentation": {
+    "label": "Live API response",
+    "note": "Captured from the deployed app. The order slip requires a connected wallet, so this refusal was requested from the same endpoint the slip calls."
+  }
+}

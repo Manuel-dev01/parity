@@ -22,8 +22,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "jsqr": "^1.4.0",
+    "mp4-muxer": "^5.2.2",
     "playwright": "^1.63.0",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "ws": "^8.21.3"
   }
 }
