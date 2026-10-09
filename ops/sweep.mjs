@@ -5,7 +5,7 @@
 import { chromium } from "playwright";
 import { mkdirSync } from "node:fs";
 
-const BASE = process.argv[2] || "https://parity-manuel-dev01s-projects.vercel.app";
+const BASE = process.argv[2] || "https://parity-kappa.vercel.app";
 const SHOTS = "ops/shots";
 mkdirSync(SHOTS, { recursive: true });
 

@@ -6,7 +6,7 @@ const DESCRIPTION =
   "Every US stock now exists two or three times on Solana, and the prices disagree. Parity measures each against the oracle fair price, shows what it really costs at your size, and buys the closest in one transaction.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://parity-manuel-dev01s-projects.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://parity-kappa.vercel.app"),
   title: { default: "Parity — every stock on Solana, one fair price", template: "%s · Parity" },
   description: DESCRIPTION,
   applicationName: "Parity",

@@ -57,3 +57,10 @@ skills-lock.json
 # rendered video and extracted frames — large, and reproducible from ops/video/
 ops/video/out/
 ops/video/audio/
+
+# internal working notes — not part of the product
+CLAUDE.md
+AGENTS.md
+docs/STRATEGY.md
+docs/DEMO-SCRIPT.md
+docs/DEMO.md

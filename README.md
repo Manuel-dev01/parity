@@ -2,8 +2,7 @@
 
 **Every stock on Solana. One fair price.**
 
-Live → **https://parity-manuel-dev01s-projects.vercel.app** · Built for
-[Stocklana](https://hackathons.solana.com/hackathons/stocklana)
+Live → **https://parity-kappa.vercel.app** · [MIT](LICENSE) · [the business case](docs/BUSINESS.md)
 
 The same US share now trades under three issuers on Solana — xStocks (`NVDAx`), Ondo Global
 Markets (`NVDAon`) and Backpack Securities (`NVDA`) — and the prices disagree. Within ten days of
@@ -38,17 +37,17 @@ refuses the trade outright if nothing is close enough.
 
 No wallet needed for the first three.
 
-1. **[Open the landing page](https://parity-manuel-dev01s-projects.vercel.app)** and hover the big
+1. **[Open the landing page](https://parity-kappa.vercel.app)** and hover the big
    wordmark. Three issuer inks, printed out of register by how far each token actually is from
    fair value, snapping together when you hover.
-2. **[Markets](https://parity-manuel-dev01s-projects.vercel.app/markets)** — every share ranked by
+2. **[Markets](https://parity-kappa.vercel.app/markets)** — every share ranked by
    the gap between its cheapest and costliest token, right now.
-3. **[A ticker](https://parity-manuel-dev01s-projects.vercel.app/s/SPCX)** — the headline names
+3. **[A ticker](https://parity-kappa.vercel.app/s/SPCX)** — the headline names
    the token to buy at your size. Change the size; the answer can change with it. Tap any dotted
    figure to see where the number came from.
 4. **Drag the price guard down to ~10 bps and press Review and sign.** Parity refuses to build the
    trade and offers what *would* work instead. *This is the product.*
-5. **[Receipts](https://parity-manuel-dev01s-projects.vercel.app/receipts)** — what was paid, fair
+5. **[Receipts](https://parity-kappa.vercel.app/receipts)** — what was paid, fair
    value at that moment, and steps to verify it against the chain without trusting us.
 
 ## What it does
@@ -209,12 +208,8 @@ design/           the approved Broadsheet artboards
 |---|---|
 | [docs/BUSINESS.md](docs/BUSINESS.md) | The problem in measured numbers, who feels it, how Parity makes money, and what it does not know |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How a price becomes an answer: fair value, executable price, the three execution modes, refusals, receipts, caching, failure handling |
-| [docs/DEMO.md](docs/DEMO.md) | Demo checklist — pre-flight, click path, fallbacks |
-| [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md) | Shot-by-shot video script with voiceover |
 | [docs/PROGRAM.md](docs/PROGRAM.md) | Building and deploying the guard in Solana Playground |
 | [docs/PROGRAM_PATCH.md](docs/PROGRAM_PATCH.md) | Why the Receipt PDA is seeded by a client nonce and not the slot |
-| [docs/STRATEGY.md](docs/STRATEGY.md) | Original build plan and rubric analysis (working notes, partly stale) |
-| [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md) | Working notes for AI assistants — internal, not part of the product |
 
 ## Why it matters
 
