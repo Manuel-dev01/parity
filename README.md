@@ -21,6 +21,7 @@ refuses the trade outright if nothing is close enough.
 
 - [Try it in two minutes](#try-it-in-two-minutes)
 - [What it does](#what-it-does)
+- [Why it matters](#why-it-matters)
 - [What is real, and what is not](#what-is-real-and-what-is-not)
 - [Proof on-chain](#proof-on-chain)
 - [The guard, and why it is on devnet](#the-guard-and-why-it-is-on-devnet)
@@ -29,6 +30,7 @@ refuses the trade outright if nothing is close enough.
 - [Repository map](#repository-map)
 - [Documentation](#documentation)
 - [Known limitations](#known-limitations)
+- [Licence](#licence)
 
 ---
 
@@ -205,6 +207,7 @@ design/           the approved Broadsheet artboards
 
 | Doc | What it covers |
 |---|---|
+| [docs/BUSINESS.md](docs/BUSINESS.md) | The problem in measured numbers, who feels it, how Parity makes money, and what it does not know |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | How a price becomes an answer: fair value, executable price, the three execution modes, refusals, receipts, caching, failure handling |
 | [docs/DEMO.md](docs/DEMO.md) | Demo checklist — pre-flight, click path, fallbacks |
 | [docs/DEMO-SCRIPT.md](docs/DEMO-SCRIPT.md) | Shot-by-shot video script with voiceover |
@@ -212,6 +215,21 @@ design/           the approved Broadsheet artboards
 | [docs/PROGRAM_PATCH.md](docs/PROGRAM_PATCH.md) | Why the Receipt PDA is seeded by a client nonce and not the slot |
 | [docs/STRATEGY.md](docs/STRATEGY.md) | Original build plan and rubric analysis (working notes, partly stale) |
 | [CLAUDE.md](CLAUDE.md) · [AGENTS.md](AGENTS.md) | Working notes for AI assistants — internal, not part of the product |
+
+## Why it matters
+
+Across the 64 tokenized stocks on Solana with a real pool behind them — $40.5M of combined
+depth — the **median one trades 18 bps away from the share it tracks**, the mean is 41 bps, and
+one in five is more than 50 bps off. None of that is visible when you click buy.
+
+It is the premium-to-NAV problem ETF buyers have checked for decades, except there is no NAV
+line on-chain to check against. It falls hardest on people using these instruments because they
+have no other route to US equities — someone converting naira to USDT has already paid an FX
+spread before the silent 60 bps premium is added on top.
+
+Measured live on 9 October 2026 with [`scripts/coverage-check.mjs`](scripts/coverage-check.mjs).
+The full case, including the risks and what Parity cannot measure, is in
+[docs/BUSINESS.md](docs/BUSINESS.md).
 
 ## Known limitations
 
@@ -225,3 +243,10 @@ design/           the approved Broadsheet artboards
 - Ondo tokens pair only with USDC on Jupiter, so a USDT buyer needs one conversion first.
 - Backpack lists 44 symbols, so many shares exist on only one or two issuers.
 - Ondo quotes only during US market hours.
+
+## Licence
+
+[MIT](LICENSE). Use it, fork it, ship it. The on-chain program in
+[`programs/fair_fill_guard`](programs/fair_fill_guard) is covered by the same licence and is
+**unaudited** — read [The guard, and why it is on devnet](#the-guard-and-why-it-is-on-devnet)
+before deploying it anywhere that holds real money.

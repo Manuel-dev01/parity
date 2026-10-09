@@ -1,6 +1,6 @@
 # Parity — working notes for Claude
 
-Stocklana hackathon entry. **Deadline extended: Fri 2026-09-25, 4:00pm ET** (was 09-18). Submit a first version by Wed 09-23; Thu/Fri are buffer. Strategy, rubric analysis and the day-by-day roadmap are in `docs/STRATEGY.md` — read it before any scope decision. Program build/deploy steps are in `docs/PROGRAM.md`.
+Originally a Stocklana entry (not submitted). **Now targeting Colosseum Crypto World's Fair + the Superteam Nigeria side track — submissions close ~2026-10-13.** Judged on product functionality, potential impact, novelty, UX, **open-source**, and **business plan**; the Nigeria track also requires registering on Colosseum marked "Nigeria", submitting to the Solana ecosystem track *and* the Superteam Earn listing, and attending 3+ pitch reviews plus demo day. Strategy notes in `docs/STRATEGY.md` are from the Stocklana run and partly stale. Program build/deploy steps are in `docs/PROGRAM.md`.
 
 ## What this is
 Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Backpack `NVDA`) and the prices disagree. Parity = fair value + executable price per issuer + one-click best-execution buy, bracketed by the `fair_fill_guard` Anchor program that reverts off-fair fills and writes a Receipt PDA. Plus a divergence tape and a public `/api/v1/quote`.
@@ -19,7 +19,14 @@ Every US stock exists 2–3 times on Solana (xStocks `NVDAx`, Ondo `NVDAon`, Bac
   composited on a canvas and encoded with WebCodecs (H.264 + AAC) inside Chromium. The
   voiceover is Microsoft `en-US-AndrewNeural` over Edge's free Read Aloud endpoint.
   `docs/DEMO-SCRIPT.md` is still the script for recording a *live* demo during market hours.
-- ⬜ Remaining: record fill price from tx balance deltas rather than the quote (~2 bps off).
+- ✅ Coverage widened 2026-10-09: the markets page showed **4** stocks, because a row needed two
+  pool-backed prints. It now shows every tradable name — **64**, including SPY, NVDA, AAPL, QQQ —
+  reporting a spread where one exists and distance from the share where it does not. `boardCandidates()`
+  replaced `multiIssuer(2)`: wider *and* cheaper (6 price calls vs 10). Landing still filters to
+  comparable names because the hero draws one ink per issuer.
+- ✅ `LICENSE` (MIT) and `docs/BUSINESS.md` added — both are explicit judging criteria.
+- ⬜ Remaining: record fill price from tx balance deltas rather than the quote (~2 bps off); the
+  demo film's Markets footage predates the widening (narration is unaffected and still accurate).
 
 ## Hard constraints of this environment
 - Bandwidth ~150 KB/s. **Use `npm` (never pnpm); keep dependencies minimal.** New packages take minutes; think before adding.
