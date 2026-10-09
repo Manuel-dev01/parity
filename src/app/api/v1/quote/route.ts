@@ -11,8 +11,12 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const symbol = (searchParams.get("symbol") || "").toUpperCase();
-  const usd = Math.min(Math.max(Number(searchParams.get("usd") || 1000), 1), 1_000_000);
+  // A symbol is a ticker; refuse to quote — or echo back — anything of that shape.
+  const symbol = (searchParams.get("symbol") || "").toUpperCase().slice(0, 16);
+  // Math.max(NaN, 1) is NaN, so clamping alone lets `?usd=NaN` through and it surfaces much
+  // later as an unhandled read on an undefined route. Reject non-finite input up front.
+  const asked = Number(searchParams.get("usd") ?? 1000);
+  const usd = Number.isFinite(asked) ? Math.min(Math.max(asked, 1), 1_000_000) : 1000;
   const u = getUnderlying(symbol);
   if (!u) return NextResponse.json({ error: `unknown symbol ${symbol}` }, { status: 404 });
   try {

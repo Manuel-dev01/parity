@@ -25,6 +25,12 @@ export default async function Markets({ searchParams }: Props) {
   const ranked = rows;
   const compared = rows.filter((r) => r.spreadBps != null);
   const top = compared[0] ?? null;
+  // "Most mispriced" would be a claim about two different measurements at once: a spread
+  // between issuers and a distance from the share are not the same number, and the widest
+  // distance is usually larger than the widest spread. Name each for what it is.
+  const furthest = rows
+    .filter((r) => r.spreadBps == null && r.bestBps != null)
+    .sort((a, b) => Math.abs(b.bestBps ?? 0) - Math.abs(a.bestBps ?? 0))[0] ?? null;
   const tokenCount = rows.reduce((n, r) => n + r.prints.filter((p) => p.comparable).length, 0);
 
   // History is whatever the sampler has actually recorded. No synthetic series.
@@ -58,7 +64,7 @@ export default async function Markets({ searchParams }: Props) {
           <h1 className="serif" style={{ margin: 0, fontSize: "clamp(40px,5.8cqw,84px)", lineHeight: 0.95, letterSpacing: "-0.02em", textWrap: "balance" }}>
             {isNow
               ? top
-                ? `${top.symbol} is the most mispriced stock on Solana this minute.`
+                ? `${top.symbol} has the widest gap between its issuers this minute.`
                 : rows.length
                   ? "Every tokenized stock on Solana, priced against the share it tracks."
                   : "Nothing is quoting right now."
@@ -69,8 +75,13 @@ export default async function Markets({ searchParams }: Props) {
               top ? (
                 <>
                   {top.spreadBps} bps between its cheapest and costliest token, about {usd(((top.spreadBps ?? 0) / 1e4) * 10_000)} on every $10,000. Same share,
-                  different wrappers. {compared.length} of these {rows.length} names have a second pool deep enough to compare that way; the rest are
-                  measured against the underlying instead.
+                  different wrappers. Only {compared.length} of these {rows.length} names have a second pool deep enough to compare that way
+                  {furthest ? (
+                    <>
+                      ; the rest are measured against the share itself, and the furthest of those is {furthest.symbol} at {bp(furthest.bestBps ?? 0)}
+                    </>
+                  ) : null}
+                  .
                 </>
               ) : (
                 <>Quotes return when at least one issuer&apos;s pool is routable.</>
