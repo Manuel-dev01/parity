@@ -20,6 +20,23 @@ export function multiIssuer(min = 2): Underlying[] {
   return all.filter((u) => u.issuers.length >= min).sort((a, b) => b.liquidity - a.liquidity);
 }
 
+/**
+ * Every underlying with a pool behind at least one of its tokens, most liquid first.
+ *
+ * Scanning `multiIssuer(2)` priced 493 tokens to surface four rows, because a name only
+ * earns a spread when *two* of its tokens have real pools — which today is true of four
+ * stocks. But a single tradable print is still worth pricing: that is SPY, NVDA, AAPL and
+ * ~55 others, where Parity can say what the token costs against the underlying even though
+ * it has no sibling to rank it against. This set is both wider and cheaper: ~143 names in
+ * ~280 tokens.
+ *
+ * The filter is on liquidity recorded when the universe was built, so it is a cheap
+ * pre-filter, not a claim about now — live pool depth is re-checked when the board prices.
+ */
+export function boardCandidates(): Underlying[] {
+  return all.filter((u) => u.tokens.some((t) => (t.liquidity ?? 0) > 0)).sort((a, b) => b.liquidity - a.liquidity);
+}
+
 export function searchUnderlyings(q: string, limit = 12): Underlying[] {
   const s = q.trim().toUpperCase();
   if (!s) return multiIssuer().slice(0, limit);

@@ -17,7 +17,8 @@ export async function GET(req: Request) {
   if (!dbConfigured) return NextResponse.json({ ok: false, reason: "DATABASE_URL not set" });
 
   await migrate();
-  const rows = await liveBoard(60);
+  // every tradable name, so the history tab fills out for more than the four comparable ones
+  const rows = await liveBoard();
   const ts = new Date().toISOString();
   const values: unknown[] = [];
   const tuples: string[] = [];

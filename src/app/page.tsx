@@ -24,7 +24,10 @@ const STEPS: [string, string, string][] = [
 ];
 
 export default async function Landing() {
-  const rows = await liveBoard(40).catch(() => []);
+  // Same cached board the markets page builds, so the two agree and the second render is
+  // free. The hero still needs *comparable* names — it places one ink per issuer — so it
+  // filters to those, even though the board now carries every tradable stock.
+  const rows = await liveBoard().catch(() => []);
   const ranked = rows.filter((r) => r.spreadBps != null).sort((a, b) => (b.spreadBps ?? 0) - (a.spreadBps ?? 0));
   // Prefer a share whose inks can all be placed honestly: three comparable pool prints if
   // any exist, otherwise the most mispriced comparable name.

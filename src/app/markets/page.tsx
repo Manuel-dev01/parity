@@ -18,10 +18,14 @@ type Point = { symbol: string; ts: string; spread: number };
 export default async function Markets({ searchParams }: Props) {
   const { view } = await searchParams;
   const isNow = view !== "history";
-  const rows = await liveBoard(40).catch(() => []);
-  const ranked = rows.filter((r) => r.spreadBps != null).sort((a, b) => (b.spreadBps ?? 0) - (a.spreadBps ?? 0));
-  const top = ranked[0] ?? null;
-  const tokenCount = rows.reduce((n, r) => n + r.prints.length, 0);
+  // Every name with a tradable print, not only the handful with two. A stock with one real
+  // pool has no spread, but it still has a price against the underlying, and that is the
+  // number most of this list is reporting.
+  const rows = await liveBoard().catch(() => []);
+  const ranked = rows;
+  const compared = rows.filter((r) => r.spreadBps != null);
+  const top = compared[0] ?? null;
+  const tokenCount = rows.reduce((n, r) => n + r.prints.filter((p) => p.comparable).length, 0);
 
   // History is whatever the sampler has actually recorded. No synthetic series.
   let history: Point[] = [];
@@ -48,14 +52,16 @@ export default async function Markets({ searchParams }: Props) {
     .slice(0, 12);
 
   return (
-    <Sheet dateline={`Markets · ${rows.length} stocks, ${tokenCount} tokens on Solana`} datelineRight={<Clock prefix="Live" />} active="markets">
+    <Sheet dateline={`Markets · ${rows.length} tradable stocks, ${tokenCount} tokens on Solana`} datelineRight={<Clock prefix="Live" />} active="markets">
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px 48px", alignItems: "flex-end", padding: "clamp(24px,3.4cqw,44px) 0 24px" }}>
         <div style={{ flex: "1 1 560px", minWidth: 0, display: "flex", flexDirection: "column", gap: 12 }}>
           <h1 className="serif" style={{ margin: 0, fontSize: "clamp(40px,5.8cqw,84px)", lineHeight: 0.95, letterSpacing: "-0.02em", textWrap: "balance" }}>
             {isNow
               ? top
                 ? `${top.symbol} is the most mispriced stock on Solana this minute.`
-                : "No stock is quoting across issuers right now."
+                : rows.length
+                  ? "Every tokenized stock on Solana, priced against the share it tracks."
+                  : "Nothing is quoting right now."
               : "How the gaps have moved since Parity started watching."}
           </h1>
           <p style={{ margin: 0, fontSize: "clamp(18px,1.7cqw,22px)", lineHeight: 1.4, maxWidth: 640, textWrap: "pretty" }}>
@@ -63,7 +69,8 @@ export default async function Markets({ searchParams }: Props) {
               top ? (
                 <>
                   {top.spreadBps} bps between its cheapest and costliest token, about {usd(((top.spreadBps ?? 0) / 1e4) * 10_000)} on every $10,000. Same share,
-                  different wrappers.
+                  different wrappers. {compared.length} of these {rows.length} names have a second pool deep enough to compare that way; the rest are
+                  measured against the underlying instead.
                 </>
               ) : (
                 <>Quotes return when at least one issuer&apos;s pool is routable.</>
@@ -109,7 +116,7 @@ export default async function Markets({ searchParams }: Props) {
             </span>
           </div>
 
-          {ranked.slice(0, 20).map((r) => (
+          {ranked.map((r) => (
             <Link
               key={r.symbol}
               href={`/s/${r.symbol}`}
@@ -136,14 +143,20 @@ export default async function Markets({ searchParams }: Props) {
               <span style={{ flex: "0 0 auto", display: "flex", gap: 28, alignItems: "baseline" }}>
                 <span style={{ minWidth: 92, textAlign: "right" }}>
                   <span className="serif" style={{ fontSize: 30, display: "block" }}>
-                    {r.spreadBps} bps
+                    {r.spreadBps != null ? `${r.spreadBps} bps` : r.bestBps != null ? bp(r.bestBps) : "—"}
                   </span>
-                  <span style={{ fontSize: 13, fontStyle: "italic", color: "var(--muted)" }}>{usd(((r.spreadBps ?? 0) / 1e4) * 10_000)} per $10k</span>
+                  <span style={{ fontSize: 13, fontStyle: "italic", color: "var(--muted)" }}>
+                    {r.spreadBps != null
+                      ? `${usd((r.spreadBps / 1e4) * 10_000)} per $10k`
+                      : r.bestBps != null
+                        ? "from the share price"
+                        : "no quote"}
+                  </span>
                 </span>
                 <span style={{ minWidth: 110 }}>
-                  <span className="label">Lowest quote</span>
+                  <span className="label">{r.spreadBps != null ? "Lowest quote" : "Only pool"}</span>
                   <span style={{ display: "block", fontWeight: 500 }}>
-                    {r.prints.find((p) => p.issuer === r.cheapest)?.symbol ?? "—"}
+                    {r.prints.find((p) => p.issuer === (r.cheapest ?? r.best))?.symbol ?? "—"}
                   </span>
                 </span>
                 <span style={{ color: "var(--vermilion)" }}>→</span>
@@ -152,9 +165,11 @@ export default async function Markets({ searchParams }: Props) {
           ))}
 
           <p style={{ fontSize: 14, fontStyle: "italic", color: "var(--muted)", padding: "10px 0 40px" }}>
-            Last prints measured from the underlying reference price (the vertical rule), and only for tokens with a real pool behind them. Ondo quotes by RFQ
-            and carries almost no pool, so its last price cannot be compared this way — open a stock to quote every issuer at your size. The best token at your
-            size can differ once impact is included.
+            Last prints measured from the underlying reference price (the vertical rule), and only for tokens with a real pool behind them. Most names have one
+            such pool, so what they report is the distance from the share itself; where a second pool is deep enough to compare, the figure is the spread between
+            the two. Ondo quotes by RFQ and carries almost no pool, so its last price cannot be compared this way — open a stock to quote every issuer at your
+            size. Outside US market hours the reference price is the last one Parity can verify rather than a live print, so a gap can be the token pricing ahead
+            of the next session rather than a mispricing. The best token at your size can differ once impact is included.
           </p>
         </div>
       ) : (
