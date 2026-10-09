@@ -74,9 +74,20 @@ async function audit(page, screen, vpName, width) {
   if (width < 500) {
     const small = await page.evaluate(() => {
       const out = [];
+      // WCAG 2.5.8 exempts a link sitting in a sentence — its target is the text, and
+      // padding it would break the line. Only flag controls and standalone links, or the
+      // check cries wolf on every inline link in the prose and real findings get lost.
+      const inlineInProse = (el) => {
+        if (el.tagName !== "A") return false;
+        const p = el.closest("p, li, figcaption, blockquote");
+        if (!p) return false;
+        const own = (el.textContent || "").trim();
+        return (p.textContent || "").trim().length > own.length + 2;
+      };
       for (const el of document.querySelectorAll("button, a, input[type=range], select")) {
         const r = el.getBoundingClientRect();
         if (r.width === 0 || r.height === 0) continue;
+        if (inlineInProse(el)) continue;
         if (r.height < 24) out.push(`${el.tagName.toLowerCase()} ${Math.round(r.width)}x${Math.round(r.height)} "${(el.textContent || "").trim().slice(0, 30)}"`);
       }
       return out.slice(0, 6);

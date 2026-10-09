@@ -228,7 +228,13 @@ The full case, including the risks and what Parity cannot measure, is in
 
 ## Known limitations
 
-- The guard is devnet-only until audited (above).
+- The guard is devnet-only until audited (above). A self-review found its oracle handling sound
+  — it checks the Pyth receiver owns the account, that the update is fully verified, that the feed
+  id matches, and that the price is neither stale nor too wide — but the **feed id is supplied by
+  the caller and is not bound on-chain to the token being bought**. Guarding your own trade that
+  is fine, since you choose your own reference; a hostile transaction builder could name a
+  convenient feed. The Receipt stores the feed id, so it is auditable after the fact. Binding
+  mint to feed on-chain is the fix, and is a reason the program is not on mainnet.
 - The divergence tape begins when the sampler first ran. There is no back-history, and the charts
   state their own sample count rather than implying more.
 - Holdings can only show what you paid for fills Parity recorded; a wallet that bought elsewhere
