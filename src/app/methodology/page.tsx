@@ -117,8 +117,12 @@ export default function Methodology() {
             <br />
             Guard program: {cluster ? `${cluster.cluster} · ${cluster.id.toBase58().slice(0, 8)}…` : "not deployed"}.
           </p>
-          <p style={{ margin: "10px 0 0", fontSize: 16 }}>
-            <Link href="/receipts">Every fill Parity has routed →</Link>
+          {/* A link alone in its own paragraph is a call to action, not prose, so it needs a
+              target you can actually hit on a phone. */}
+          <p style={{ margin: "4px 0 0", fontSize: 16 }}>
+            <Link href="/receipts" style={{ display: "inline-block", padding: "12px 0" }}>
+              Every fill Parity has routed →
+            </Link>
           </p>
         </div>
       </div>

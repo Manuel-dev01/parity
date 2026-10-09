@@ -197,9 +197,8 @@ src/components/   broadsheet (shared chrome) · ticker · landing · markets · 
 src/data/         universe.json — generated, not hand-edited
 programs/         fair_fill_guard — the Anchor guard
 scripts/          universe build, guard proof, swap tests, demo wallet
-ops/              sampler (Railway cron) · sweep.mjs (Playwright audit)
-docs/             architecture, demo, program build notes
-design/           the approved Broadsheet artboards
+ops/              sampler (Railway cron) · sweep.mjs (Playwright audit) · video (demo film pipeline)
+docs/             architecture, business case, program build notes
 ```
 
 ## Documentation
