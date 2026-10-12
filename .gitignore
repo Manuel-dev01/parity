@@ -70,3 +70,7 @@ design/
 
 # demo film production pipeline — internal tooling
 ops/video/
+
+# generated brand assets — upload them, no need to ship them
+brand/
+scripts/brand.mjs
