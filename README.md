@@ -188,6 +188,26 @@ Add `&sizes=100,10000` for a size ladder.
 | `GET /api/v1/holdings?owner=…` | positions grouped by share, with live exit quotes |
 | `GET /api/v1/fills` · `POST /api/v1/fills` | the public receipt ledger |
 
+**See the guard refuse a trade**, no wallet needed — set a tolerance tighter than the market can
+fill and it declines to build the transaction at all:
+
+```bash
+curl -s -X POST https://parity-kappa.vercel.app/api/v1/swap   -H 'content-type: application/json'   -d '{"symbol":"SPCX","mint":"Xs3oZwbHvqis4NYcf4YKWmEia2eC84wSiVrcYcTqpH8",
+       "usd":1000,"owner":"4N6FeA9CzNSZVE3qTd6PevishNUtWDjwry3Nv66BWdvA","maxDevBps":10}'
+```
+
+```
+HTTP 409
+{ "error": "fill would be -29 bps from fair value (164.53); your guard is ±10 bps",
+  "rejected": true,
+  "refusal": { "token": "SPCXx", "devBps": -29, "maxDevBps": 10, "fairPx": 164.53,
+               "awayUsd": 2.9, "options": [ { "title": "Widen guard to ±35 bps", ... } ] } }
+```
+
+`POST /api/v1/fills` does not take your word for anything: it reads the transaction back off the
+chain and derives the buyer, token, size and price from it, so the public ledger cannot be written
+by someone who never traded.
+
 ## Repository map
 
 ```
