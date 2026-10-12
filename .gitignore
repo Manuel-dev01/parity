@@ -67,3 +67,6 @@ docs/DEMO.md
 
 # design artboards — source material, not product code
 design/
+
+# demo film production pipeline — internal tooling
+ops/video/
